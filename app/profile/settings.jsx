@@ -14,9 +14,6 @@ const SettingsScreen = ({ navigation }) => {
 
       {/* Other settings options can go here */}
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Log Out</Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 };
