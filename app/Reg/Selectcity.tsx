@@ -1,13 +1,32 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, SafeAreaView, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  TouchableOpacity,
+  SafeAreaView,
+  StyleSheet,
+} from 'react-native';
+import { router } from 'expo-router'; 
 
-const cities = ['Hyderabad','Telangana','Hitech City','Madhapur','Andra pradesh','Uppal','Yamnampet','Ghatkesar','Manikonda'];
+const cities = [
+  'Hyderabad',
+  'Telangana',
+  'Hitech City',
+  'Madhapur',
+  'Andra pradesh',
+  'Uppal',
+  'Yamnampet',
+  'Ghatkesar',
+  'Manikonda',
+];
 
 const SelectCityScreen = () => {
   const [search, setSearch] = useState('');
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
 
-  const filteredCities = cities.filter(city =>
+  const filteredCities = cities.filter((city) =>
     city.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -17,28 +36,43 @@ const SelectCityScreen = () => {
       onPress={() => setSelectedCity(item)}
     >
       <Text style={styles.cityText}>{item}</Text>
-      <View style={[styles.radio, selectedCity === item && styles.radioSelected]} />
+      <View
+        style={[styles.radio, selectedCity === item && styles.radioSelected]}
+      />
     </TouchableOpacity>
   );
 
+  const handleContinue = () => {
+    if (selectedCity) {
+
+      router.push('/Reg/vachile'); 
+    } else {
+      alert('Please select a city first.');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      
       <Text style={styles.title}>Select City</Text>
-      <Text style={styles.subtitle}>Please select the city where you want to work</Text>
+      <Text style={styles.subtitle}>
+        Please select the city where you want to work
+      </Text>
+
       <TextInput
         style={styles.searchInput}
         placeholder="Search your city"
         value={search}
         onChangeText={setSearch}
       />
+
       <FlatList
         data={filteredCities}
         keyExtractor={(item) => item}
         renderItem={renderCity}
         style={styles.cityList}
       />
-      <TouchableOpacity style={styles.continueButton}>
+
+      <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
         <Text style={styles.continueText}>Continue</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -53,16 +87,11 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
-  progress: {
-    textAlign: 'center',
-    color: '#B57BE9',
-    fontSize: 18,
-    marginVertical: 10,
-  },
   title: {
     fontSize: 24,
     fontWeight: '600',
     textAlign: 'center',
+    marginTop: 10,
   },
   subtitle: {
     textAlign: 'center',

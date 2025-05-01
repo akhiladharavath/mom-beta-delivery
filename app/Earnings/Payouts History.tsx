@@ -15,7 +15,7 @@ const PayoutHistoryScreen: React.FC = () => {
 
       <View style={styles.imageContainer}>
         <Image
-          source={require('../assets/images/a.png')} 
+          source={require('../../assets/images/icon.png')} 
           style={styles.image}
         />
       </View>

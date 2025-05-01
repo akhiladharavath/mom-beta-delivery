@@ -9,8 +9,8 @@ import {
   Provider as PaperProvider,
   DefaultTheme,
 } from 'react-native-paper';
+import { router } from 'expo-router'; 
 
-// Define custom theme
 const theme = {
   ...DefaultTheme,
   colors: {
@@ -23,15 +23,15 @@ const theme = {
   },
 };
 
-export default function App() {
+export default function SelectWorkDetails() {
   const [selectedShop, setSelectedShop] = useState('');
   const [workType, setWorkType] = useState('');
   const [step, setStep] = useState(1);
 
   const shops = [
-    { id: '1', name: 'Corner Grocery', location: 'Sector 21' },
-    { id: '2', name: 'FreshMart', location: 'Sector 34' },
-    { id: '3', name: 'Daily Needs', location: 'Sector 18' },
+    { id: '1', name: 'MOM PHARMACY-division-1', address: ' Tanda, Ayyappa Society, Chanda Naik Nagar, Madhapur, Hyderabad, Telangana 500081', },
+  { id: '2', name: 'MOM PHARMACY-division-2', address: 'Plot No: 2-56/9/C/1, Thanda, Khanmet, Hi-Tech City, Ayyappa Society, Chanda Naik Nagar, Madhapur, Telangana 500081', },
+  { id: '3', name: 'MOM PHARMACY-division-3', address: 'Thanda, Khanmet, Hi-Tech City, Ayyappa Society, Chanda Naik Nagar, Madhapur, Telangana 500081',  },
   ];
 
   const handleShopSelect = (shopName: string) => {
@@ -46,10 +46,9 @@ export default function App() {
       Alert.alert('Incomplete', 'Please select your work type.');
       return;
     }
-    Alert.alert('Success', `Shop: ${selectedShop}\nWork Type: ${workType}`);
-    setSelectedShop('');
-    setWorkType('');
-    setStep(1);
+
+  
+    router.push('/Reg/adhar');
   };
 
   return (
@@ -97,7 +96,7 @@ export default function App() {
             </RadioButton.Group>
 
             <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
-              Submit
+              Continue
             </Button>
           </>
         )}
