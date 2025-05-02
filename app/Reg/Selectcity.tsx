@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
-  },
+  }, 
   progress: {
     textAlign: 'center',
     color: '#B57BE9',
