@@ -9,6 +9,7 @@ import {
   Provider as PaperProvider,
   DefaultTheme,
 } from 'react-native-paper';
+import { router } from 'expo-router'; // Import router for navigation
 
 // Define custom theme
 const theme = {
@@ -23,7 +24,7 @@ const theme = {
   },
 };
 
-export default function App() {
+export default function SelectWorkDetails() {
   const [selectedShop, setSelectedShop] = useState('');
   const [workType, setWorkType] = useState('');
   const [step, setStep] = useState(1);
@@ -46,10 +47,9 @@ export default function App() {
       Alert.alert('Incomplete', 'Please select your work type.');
       return;
     }
-    Alert.alert('Success', `Shop: ${selectedShop}\nWork Type: ${workType}`);
-    setSelectedShop('');
-    setWorkType('');
-    setStep(1);
+
+    // Navigate to Aadhaar page after submission
+    router.push('/Reg/adhar');
   };
 
   return (
@@ -97,7 +97,7 @@ export default function App() {
             </RadioButton.Group>
 
             <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
-              Submit
+              Continue
             </Button>
           </>
         )}

@@ -27,7 +27,7 @@ const earnings = () => {
         This week 20 Dec 2024
         </Text>
         
-        <Image source={require('../assets/images/earnings.png')} style={styles.ernimg}/>
+        <Image source={require('../../assets/images/icon.png')} style={styles.ernimg}/>
         <TouchableOpacity>
           <Text style={styles.registerLink} onPress={()=>router.push('../Weekly Earnings')}>See My Earning History →</Text>
         </TouchableOpacity>
@@ -39,7 +39,7 @@ const earnings = () => {
         <Text>
             Earn more with mom pharmacy Incentives
         </Text>
-        <Image source={require('../assets/images/icon.png')} style={styles.ernimg}/>
+        <Image source={require('../../assets/images/icon.png')} style={styles.ernimg}/>
         <TouchableOpacity>
           <Text style={styles.registerLink} onPress={()=>router.push('../Rate Card')}>Check My rate Card →</Text>
         </TouchableOpacity>
@@ -51,7 +51,7 @@ const earnings = () => {
         
         <Text style={styles.cardText}>Get paid every weekendds</Text>
 
-        <Image source={require('../assets/images/icon.png')} style={styles.ernimg}/>
+        <Image source={require('../../assets/images/icon.png')} style={styles.ernimg}/>
         <TouchableOpacity>
           <Text style={styles.registerLink} onPress={()=>router.push('../Payouts History')}>Check Payouts History →</Text>
         </TouchableOpacity>
