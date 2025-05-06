@@ -26,7 +26,6 @@ const profileItems = [
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
     link: './benefits',
   },
- 
   
   {
     

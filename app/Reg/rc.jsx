@@ -45,7 +45,7 @@ export default function AadhaarScreen() {
             Alert.alert('Missing Photo', 'Please capture a photo before continuing.');
             return;
         }
-        router.push('../profile/profile'); 
+        router.push('../home'); 
     };
 
     return (
