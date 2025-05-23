@@ -32,7 +32,7 @@ export default function RegistrationScreen() {
         
       }
       try {
-        const response = await fetch(`http://localhost:3000/delivery/add-delivery`, {
+        const response = await fetch(`http://192.168.159.31:3000/delivery/add-delivery`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

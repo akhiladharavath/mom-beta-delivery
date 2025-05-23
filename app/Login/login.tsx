@@ -1,33 +1,59 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   Image, StyleSheet, Alert, KeyboardAvoidingView,
   Platform, ScrollView, TouchableWithoutFeedback, Keyboard,
   Dimensions,
 } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import { useRouter } from 'expo-router';
- import { sendOtp, sendSmsOtp } from '../lib/otp'; 
+import { sendSmsOtp } from '../lib/otp';
+import { UserContext } from '@/context/Auth2Context';
 
 
 const { height } = Dimensions.get('window');
 
+
+
+
 export default function LoginScreen() {
   const [input, setInput] = useState('');
+  const { login } = useContext(UserContext);
   const router = useRouter();
 
   const handleSendOtp = async () => {
+    if (!isPhone(input)) {
+      Alert.alert('Invalid Input', 'Please enter a valid 10-digit mobile number');
+      return;
+    }
+  
     try {
-     if (isPhone(input)) {
-        await sendSmsOtp(input);
-      } else {
-        Alert.alert('Enter a valid mobile number');
-        return;
+      const loginResponse = await fetch('http://192.168.159.31:3000/delivery/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: input }),
+      });
+  
+      if (!loginResponse.ok) {
+        const errorData = await loginResponse.json();
+        throw new Error(errorData.message || 'Login failed');
       }
-
-      router.push({ pathname: './otp', params: { user: input } });
+  
+      const result = await loginResponse.json();
+      console.log('Login response:', result);
+  
+      
+      await SecureStore.setItemAsync('user', JSON.stringify(result.data));
+      await SecureStore.setItemAsync('token', result.data.token);
+  
+      
+      await sendSmsOtp(input);
+  
+      router.replace({ pathname: './otp', params: { user: input } });
+  
     } catch (error) {
-      console.error(error);
-      Alert.alert('Failed to send OTP');
+      console.error('Error:', error);
+      Alert.alert('Error', error.message || 'Failed to login or send OTP');
     }
   };
 
@@ -37,20 +63,16 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={styles.inner}>
             <View style={styles.topSection}>
               <Image
                 source={require('../../assets/images/picimg.jpeg')}
                 style={styles.image}
-              /> 
-              <Text style={styles.tagline}>Instant medicine to your door step</Text>
+              />
+              <Text style={styles.tagline}>Instant medicine to your doorstep</Text>
             </View>
-            
+
             <View style={styles.bottomCard}>
               <Text style={styles.heading}>
                 Sign In /{' '}
@@ -59,16 +81,15 @@ export default function LoginScreen() {
                 </Text>
               </Text>
 
-              <Text style={styles.orText}> </Text>
-
               <View style={styles.phoneContainer}>
                 <Text style={styles.countryCode}>+91</Text>
                 <TextInput
                   style={styles.input}
-                  placeholder="Enter your number or email"
-                  keyboardType="default"
+                  placeholder="Enter your mobile number"
+                  keyboardType="phone-pad"
                   value={input}
                   onChangeText={setInput}
+                  maxLength={10}
                 />
               </View>
 
@@ -115,9 +136,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    overflow: 'hidden',
     paddingTop: 40,
     paddingHorizontal: 25,
+   
     paddingBottom: 200,
     marginTop: 0,
   },

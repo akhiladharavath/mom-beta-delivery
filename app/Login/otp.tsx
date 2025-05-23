@@ -41,15 +41,16 @@ export default function OtpScreen() {
     }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     const fullOtp = otp.join('');
-    if (verifyOtp(fullOtp)) {
-    
+    const isValid = await verifyOtp(fullOtp);
+    if (isValid) {
       router.replace('../home');
     } else {
       Alert.alert('Invalid OTP');
     }
   };
+  
 
   const handleResendOtp = () => {
     if (canResend) {
