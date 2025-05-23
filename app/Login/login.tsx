@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 // import { Checkbox } from 'react-native-paper';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import HomeScreen from '../home';
+
 
 const slides = [
   require('../../assets/images/1image.png'),

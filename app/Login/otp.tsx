@@ -115,7 +115,7 @@ export default function OtpScreen() {
               </View> */}
 
               <TouchableOpacity
-                onPress={()=>router.push('/home')}
+                onPress={()=>router.push('/Tabs/home')}
                 style={styles.verifyButton}
               >
                 <Text style={styles.verifyButtonText}>Submit</Text>

@@ -2,6 +2,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { BlurView } from 'expo-blur';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+import Home from '../Tabs/home' ;
 import {
   Alert,
   Keyboard,
@@ -199,7 +200,7 @@ const SignUpScreen = () => {
             <Button
               mode="contained"
               style={styles.signUpButton}
-              onPress={()=> router.push('/home')}
+              onPress={()=> router.push('/Tabs/home')}
               disabled={!isChecked}
             >
               <Text style={styles.signText}>Sign up</Text>
