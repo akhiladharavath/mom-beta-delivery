@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import Fetch from "./fetch"
+import Fetch from "../fetch"
 import { router, useLocalSearchParams } from 'expo-router';
 
 const HomeScreen = () => {
@@ -123,7 +123,7 @@ const HomeScreen = () => {
           </View>
           <TouchableOpacity style={styles.helpButton}>
          
-            <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
+            <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile')} />
      
           </TouchableOpacity>
         </View>

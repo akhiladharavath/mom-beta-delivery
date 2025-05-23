@@ -21,7 +21,7 @@ const OrderDetailsScreen = () => {
     const deliveryId = '6819b30120851289c77d81f0';
     const fetchOrders = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/delivery/${deliveryId}`);
+        const response = await fetch(`https://mom-beta-server1.onrender.com/api/delivery/${deliveryId}`);
         const data = await response.json();
         console.log(data)
         if (data.success) {

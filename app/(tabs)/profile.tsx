@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 //import MangeProfiles from './Profile/ManageProfiles';//
-import ProfileItem from './ProfileItems';
+import ProfileItem from '../profile/ProfileItems';
 import { Entypo, Feather, FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 //import { AuthContext } from '@/context/authContext';
 
@@ -12,19 +12,19 @@ const profileItems = [
         name: 'Way to Earn',
         mainIcon: <FontAwesome6 name="money-bill-trend-up" size={24} color="#00a99d" />,
         icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-        link: './earn',
+        link: '../profile/earn',
       },
   {
     name: 'Refer and Earn',
     mainIcon: <FontAwesome6 name="gifts" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './refer',
+    link: '../profile/refer',
   },
   {
     name: 'Mom Benefits',
     mainIcon: <Ionicons name="star-outline" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './benefits',
+    link: '../profile/benefits',
   },
   
   {
@@ -32,56 +32,56 @@ const profileItems = [
       name: 'Help And Support',
       mainIcon: <MaterialIcons name="support-agent" size={24} color="#00a99d" />,
       icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-      link: './Help',
+      link: '../profile/Help',
   },
   {
     name: 'Store',
     mainIcon: <Entypo name="shop" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './store',
+    link: '../profile/store',
   },
   {
     name: 'Slot History',
     mainIcon: <FontAwesome name="calendar-check-o" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './slot',
+    link: '../profile/slot',
   },
   {
     name: 'Order History',
     mainIcon: <Feather name="shopping-bag" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './order_history',
+    link: '../profile/order_history',
   },
   {
     name: 'Reusable Bag',
     mainIcon: <Ionicons name="bag" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './reusablebags',
+    link: '../profile/reusablebags',
   },
   {
     name: 'Message Center',
     mainIcon: <MaterialIcons name="message" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './messageCenter',
+    link: '../profile/messageCenter',
   },
   {
     name: 'Document',
     mainIcon: <Ionicons name="document-text-outline" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './document',
+    link: '../profile/document',
   },
   {
     name: 'Terms And Conditions',
     mainIcon:<MaterialCommunityIcons name="file-document-multiple" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './terms',
+    link: '../profile/terms',
 
 },
   {
     name: 'Settings',
     mainIcon: <Ionicons name="settings-outline" size={24} color="#00a99d" />,
     icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './settings',
+    link: '../profile/settings',
   },
  
 
@@ -120,7 +120,7 @@ const myProfile = () => {
             margin: 20,
             alignItems: 'center',
           }}
-          onPress={() => logout()}
+          onPress={() => console.log('Logout pressed')}
         >
           <Text style={{ color: 'white', fontSize: 16 }}>Logout</Text>
         </TouchableOpacity>
