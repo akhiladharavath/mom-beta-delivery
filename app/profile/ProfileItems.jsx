@@ -2,7 +2,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
 
-function ProfileItem({ title, icon, mainIcon, link }) {
+function ProfileItem({ title, icon, link }) {
   return (
     <Link href={link} asChild>
       <Pressable
@@ -14,7 +14,7 @@ function ProfileItem({ title, icon, mainIcon, link }) {
       >
         <View style={styles.row}>
           <View style={styles.left}>
-            {mainIcon}
+            {icon}
             <Text style={styles.title}>{title}</Text>
           </View>
           <View style={styles.right}>

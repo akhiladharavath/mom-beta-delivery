@@ -1,144 +1,132 @@
-
-import React, { useContext } from 'react';
-import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
-//import MangeProfiles from './Profile/ManageProfiles';//
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
 import ProfileItem from './ProfileItems';
-import { Entypo, Feather, FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-//import { AuthContext } from '@/context/authContext';
+import * as ImagePicker from 'expo-image-picker';
 
-const profileItems = [
-    {
-        name: 'Way to Earn',
-        mainIcon: <FontAwesome6 name="money-bill-trend-up" size={24} color="#00a99d" />,
-        icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-        link: './earn',
-      },
-  {
-    name: 'Refer and Earn',
-    mainIcon: <FontAwesome6 name="gifts" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './refer',
-  },
-  {
-    name: 'Mom Benefits',
-    mainIcon: <Ionicons name="star-outline" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './benefits',
-  },
+const options = [
+  { 
+    title: 'Ways to Earn', 
+    icon: <Image source={require('@/assets/images/money-flow.png')} style={{ height: 30, width: 30}} />,
  
-  
-  {
-    
-      name: 'Help And Support',
-      mainIcon: <MaterialIcons name="support-agent" size={24} color="#00a99d" />,
-      icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-      link: './Help',
   },
-  {
-    name: 'Store',
-    mainIcon: <Entypo name="shop" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './store',
-  },
-  {
-    name: 'Slot History',
-    mainIcon: <FontAwesome name="calendar-check-o" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './slot',
-  },
-  {
-    name: 'Order History',
-    mainIcon: <Feather name="shopping-bag" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './order_history',
-  },
-  {
-    name: 'Reusable Bag',
-    mainIcon: <Ionicons name="bag" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './reusablebags',
-  },
-  {
-    name: 'Message Center',
-    mainIcon: <MaterialIcons name="message" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './messageCenter',
-  },
-  {
-    name: 'Document',
-    mainIcon: <Ionicons name="document-text-outline" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './document',
-  },
-  {
-    name: 'Terms And Conditions',
-    mainIcon:<MaterialCommunityIcons name="file-document-multiple" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './terms',
+  { 
+    title: 'Refer & Earn',
+    icon: <Image source={require('@/assets/images/refer.png')} style={{ height: 30, width: 25}} />,
 
-},
-  {
-    name: 'Settings',
-    mainIcon: <Ionicons name="settings-outline" size={24} color="#00a99d" />,
-    icon: <Ionicons name="arrow-forward" size={20} color="#ccc" />,
-    link: './settings',
-  },
+   },
+  { 
+    title: 'Wrong Action', 
+    icon: <Image source={require('@/assets/images/wrong.png')} style={{ height: 30, width: 25}} />,
  
+  },
+  {
+     title: 'Partner Club', 
+     icon: <Image source={require('@/assets/images/membership.png')} style={{ height: 30, width: 25}} />,
 
+  },
+  { 
+    title: 'Help & Support',
+    icon: <Image source={require('@/assets/images/help.png')} style={{ height: 30, width: 25}} />,
+
+  },
+  {
+     title: 'Store', 
+     icon: <Image source={require('@/assets/images/store.png')} style={{ height: 30, width: 25}} />,
+
+  },
+  {
+     title: 'Reusable Bags', 
+     icon: <Image source={require('@/assets/images/bag.png')} style={{ height: 30, width: 25}} />,
+
+ },
+  { 
+    title: 'Message Center', 
+    icon: <Image source={require('@/assets/images/email.png')} style={{ height: 30, width: 25}} />,
+ 
+  },
+  {
+     title: 'Settings', 
+     icon: <Image source={require('@/assets/images/settings.png')} style={{ height: 30, width: 25}} />,
+ 
+  },
+  { 
+    title: 'Logout',
+    icon: <Image source={require('@/assets/images/logout.png')} style={{ height: 30, width: 25}} />,
+
+   },
 ];
 
-const myProfile = () => {
-  return (
-    <ScrollView>
-      <View>
-        <View style={styles.header}>
-          <Image source={require('../../assets/images/profile.avif')} style={styles.profileImage} />
-          <Text style={styles.name}></Text>
-          <Text style={styles.phone}></Text>
-        </View>
+export default function MyProfile() {
 
-        {/* <MangeProfiles /> */}
+  const [imageUri, setImageUri] = useState(
 
-        <FlatList
-          data={profileItems}
-          keyExtractor={(item) => item.name}
-          renderItem={({ item }) => (
-            <ProfileItem
-              title={item.name}
-              mainIcon={item.mainIcon}
-              icon={item.icon}
-              link={item.link}
-            />
-          )}
-          scrollEnabled={false}
-        />
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#00a99d',
-            padding: 10,
-            borderRadius: 5,
-            margin: 20,
-            alignItems: 'center',
-          }}
-          onPress={() => logout()}
-        >
-          <Text style={{ color: 'white', fontSize: 16 }}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
   );
-};
 
-export default myProfile;
+  const openCamera = async () => {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permission.granted) {
+      Alert.alert('Permission Denied', 'Camera permission is required to take a photo.');
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
+
+  
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scroll}>
+      <View style={styles.header}>
+
+       <View >
+      <Image
+       source={imageUri ? {uri: imageUri } : require('../../assets/images/profile.jpg')}
+       style={styles.profileImage}
+      />
+    </View>
+    <TouchableOpacity  onPress={openCamera}>
+    <Image source={require('../../assets/images/camera.png')} style={styles.cam}></Image>
+    </TouchableOpacity>
+
+    <View style={styles.nameContainer}>
+     <Text style={styles.name}>Adarsh</Text>
+     <Text style={styles.phone}>7671812449</Text>
+   </View>
+    </View>
+       
+       <View style={styles.optionsContainer}>
+        {options.map((item, index) => (
+          <TouchableOpacity key={index} style={styles.option}>
+            <View style={styles.iconWrapper}>
+            {item.icon}
+            </View>
+           <Text style={styles.optionText}>{item.title}</Text>
+          </TouchableOpacity>
+        ))}
+        </View> 
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create({
   header: {
+    padding: 50,
+    backgroundColor: '#008080CC',
+    // borderBottomEndRadius: 20,
+    // borderBottomStartRadius: 20,\
+    borderRadius:20,
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
-    backgroundColor: '#00a99d',
-    borderBottomEndRadius: 20,
-    borderBottomStartRadius: 20,
   },
   profileImage: {
     width: 100,
@@ -146,8 +134,26 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 2,
     borderColor: 'black',
-    marginTop: 10,
-    marginBottom: 10,
+    margin: 15,
+  },
+  cam:
+  {
+    height:40,
+    width:40,
+    borderRadius:30,
+    textAlign:'center',
+    paddingEnd:2,
+    marginHorizontal:-25,
+    marginTop:50,
+    backgroundColor:'#7DF9FF'
+    
+
+
+
+  },
+  nameContainer: {
+    marginTop: 20,
+    marginHorizontal: 50
   },
   name: {
     fontSize: 20,
@@ -155,7 +161,81 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   phone: {
-    fontSize: 15,
+    fontSize: 16,
     color: 'white',
+    marginTop: 5,
+  },
+  container: { 
+    flex: 1,
+     backgroundColor: '#fff'
+   },
+
+  profileHeader: {
+    backgroundColor: '#35a79c',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: 'center',
+    padding: 90,
+  },
+  iconWrapper:{
+    padding:12 ,
+    paddingHorizontal:14, 
+    backgroundColor:"#D9D9D9",
+    borderRadius:40
+  },
+  profileImageWrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  profileImage: {
+     width: 100,
+      height: 100, 
+      borderRadius: 50 
+  },
+  cameraIcon: {
+    width: 25,
+    height: 25,
+    position: 'absolute',
+    bottom: 0,
+    right: -10,
+  },
+  profileName: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  profileItems: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderBottomColor: '#f0f0f0',
+    borderBottomWidth: 1,
+  },
+  icon: { 
+    width: 24, 
+    height: 24, 
+    marginRight: 16,
+  
+   },
+   option: {
+    flexDirection: 'row',
+    padding: 10,
+    alignItems:"center"
+   },
+optionText: { 
+    fontSize: 16,
+     fontWeight: '500', 
+     color: '#333' ,
+    //  marginTop: -20,
+    //  marginLeft: 50,
+     padding:15,
+  },
+  authButtons: {
+    marginTop: 30,
+    paddingHorizontal: 20,
+    alignItems: 'center',
   },
 });
