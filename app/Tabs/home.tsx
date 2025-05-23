@@ -1,4 +1,3 @@
-
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Switch, SafeAreaView, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
@@ -6,17 +5,16 @@ import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import Fetch from "./fetch"
 import { router, useLocalSearchParams } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const HomeScreen = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [locationName, setLocationName] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [earning, setEarning] = useState(0)
+  const [earning, setEarning] = useState(0);
   const navigation = useNavigation();
-  const {regId}=useLocalSearchParams();
-  
+  const { regId } = useLocalSearchParams();
 
   const toggleSwitch = () => {
     const newState = !isOnline;
@@ -26,31 +24,30 @@ const HomeScreen = () => {
     }
   };
 
-  const hasPermissions = async ()=>{
-    const {status} = await ImagePicker.requestCameraPermissionsAsync()
-    if(!status) {
-      alert("camera permission needed")
-      return false 
+  const hasPermissions = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (!status) {
+      alert("Camera permission needed");
+      return false;
     }
-    return true ;
-  }
+    return true;
+  };
 
-  const handleCameraOpen = async ()=>{
-    const persmission = await hasPermissions()
-    if(!persmission) return ;
-    
+  const handleCameraOpen = async () => {
+    const permission = await hasPermissions();
+    if (!permission) return;
+
     const result = await ImagePicker.launchCameraAsync({
-      preferredCameraType:"black",
-      quality:1 ,
-      allowsEditing:false
-    })
+      preferredCameraType: "black",
+      quality: 1,
+      allowsEditing: false
+    });
 
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       console.log('Photo URI:', uri);
     }
-    console.log(result)
-  }
+  };
 
   const handleCancel = () => {
     setModalVisible(false);
@@ -94,21 +91,20 @@ const HomeScreen = () => {
     greet = "Good Evening,";
   }
 
-
-  const earnings=async() =>{
+  const earnings = async () => {
     const response = await fetch("http://localhost:3000/earning/681a0e53f32e786edf2e4503");
     const data = await response.json();
-    console.log(data)
-    setEarning(data)
-  }
-  useEffect(()=>{
-    earnings()
+    setEarning(data);
+  };
 
-  },[])
+  useEffect(() => {
+    earnings();
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 150, padding: 10 }}>
+      <ScrollView>
+
         <View style={styles.headerSection}>
           <View style={styles.leftSection}>
             <TouchableOpacity onPress={getUserLocation}>
@@ -122,23 +118,17 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.helpButton}>
-         
             <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
-     
           </TouchableOpacity>
         </View>
 
         <View style={styles.topSection}>
-          <Text style={styles.greetText}>{greet}</Text>
-          <Text style={styles.name}></Text>
+          <Text style={styles.greetText}>{greet} Akhila</Text>
           <View style={styles.personal}>
             <Text style={styles.personalText}>Stay safe on the road, and have a great day!</Text>
           </View>
-
           <View style={styles.onlineSwitchContainer}>
-            <Text style={styles.onlineInfoText}>
-              Go online on time and earn bonuses!
-            </Text>
+            <Text style={styles.onlineInfoText}>Go online on time and earn bonuses!</Text>
             <View style={styles.statusSwitch}>
               <Text style={[styles.statusText, { color: isOnline ? '#00A99D' : 'gray' }]}>
                 {isOnline ? 'Online' : 'Offline'}
@@ -154,47 +144,68 @@ const HomeScreen = () => {
           </View>
         </View>
 
-        <View style={styles.ShiftCard}>
-        {/*  <Image source={require('../../assets/images/calendar.png')} style={styles.calendarImage} resizeMode="contain" />*/}
-          <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text style={styles.shiftTitle}>Upcoming Shift</Text>
-            <Text style={styles.shiftTime}>9:00 AM - 01:00 PM</Text>
-            <TouchableOpacity>
-              <Text style={styles.shiftButton}>Book Shift Now →</Text>
-            </TouchableOpacity>
+        <LinearGradient colors={['#008080', '#979797']} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={styles.ShiftCard}>
+          <View style={styles.ShiftCard}>
+            <View style={{ flex: 1, marginLeft: 10 }}>
+              <Text style={styles.shiftTitle}>Get Bonuses for Timely Deliverires and Customer Ratings!</Text>
+            </View>
+            <Image source={require('@/assets/images/fast.png')} alt="image" style={{ height: 70, width: 70 }} />
           </View>
-        </View>
+        </LinearGradient>
 
-        <View style={styles.banner}>
-          <View style={{ flex: 1 }}>
-            <Fetch />
-          </View>
-         {/* <Image source={require('../../assets/images/scooter.png')} style={styles.bannerImage} resizeMode="contain" />*/}
-        </View>
+  
+        <View style={{ margin: "2%" }}>
+          <LinearGradient
+            colors={['#FFD900B3', '#FDDF34B3', '#FFE75CB3']}
+            locations={[0.3254, 0.7896, 0.9992]}
+            start={{ x: 1, y: 0.5 }}
+            end={{ x: 0, y: 0.5 }}
+            style={{ borderRadius: 15 }}
+          >
+            <View style={styles.sectionTitle}>
+              <Text style={styles.sectionTitleText}>My Progress</Text>
 
-        <View style={styles.sectionTitle}>
-          <Text style={styles.sectionTitleText}>My Progress - This Week</Text>
-        </View>
+              <View style={{ flexDirection: 'row', marginTop: '7%', marginBottom: '2%', gap: 20 }}>
+                <TouchableOpacity style={styles.filterButton}>
+                  <Text style={styles.filterButtonText}>Start</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.filterButton}>
+                  <Text style={styles.filterButtonText}>This week</Text>
+                </TouchableOpacity>
+              </View>
 
-        <View style={styles.earningsOrdersContainer}>
-          <View style={styles.earningsCard}>
-            <Text style={styles.earningsTitle}>Earnings</Text>
-            <Text style={styles.earningsValue}>{earning.current_balance}</Text>
-          </View>
-          <View style={styles.ordersCard}>
-            <Text style={styles.earningsTitle}>Orders</Text>
-            <Text style={styles.earningsValue}>{earning.total_orders}</Text>
-          </View>
-        </View>
+              <View style={{ margin: 15 }}>
+                  <View style={styles.horizontalDivider} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                  <View style={styles.statItem}>
+                    <Text style={styles.statValue}>₹ 0</Text>
+                    <Text style={styles.statLabel}>Earnings</Text>
+                  </View>
 
-        <View style={styles.loginHoursCard}>
-          <Text style={styles.loginTitle}>Login Hours</Text>
-          <Text style={styles.loginValue}>18h 30m</Text>
-          <Text style={styles.loginCaption}>Take a break and have a chai ☕</Text>
+                  <View style={styles.divider} />
+
+                  <View style={styles.statItem}>
+                    <Text style={styles.statValue}>0:00 hrs</Text>
+                    <Text style={styles.statLabel}>Login hours</Text>
+                  </View>
+
+                  <View style={styles.divider} />
+
+                  <View style={styles.statItem}>
+                    <Text style={styles.statValue}>0</Text>
+                    <Text style={styles.statLabel}>Orders</Text>
+                  </View>
+                </View>
+
+                <Text style={{ color: '#00a99d', paddingTop: 10, fontSize: 15 }}>
+                  Traffic advisor for your route.
+                </Text>
+              </View>
+            </View>
+          </LinearGradient>
         </View>
       </ScrollView>
 
-      {/* Camera Modal */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -227,19 +238,55 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#00A99D",
-    paddingHorizontal: 10,
-    paddingVertical: 15,
-    borderRadius: 18,
-    marginBottom: 10,
-    marginHorizontal: 0,
-    top: 0,
-    right: 1
+    backgroundColor: "rgba(0, 128, 128, 1)",
+    paddingVertical: '4%',
+    paddingHorizontal: "3%",
+    marginBottom: 2,
   },
   leftSection: {
     flex: 1,
     marginRight: 10,
   },
+  statItem: {
+  flex: 1,
+  alignItems: 'center',
+},
+statValue: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  marginBottom: 5,
+},
+statLabel: {
+  fontSize: 16,
+  textAlign: 'center',
+},
+divider: {
+  width: 1,
+  backgroundColor: '#A9A9A9',
+  height: '120%',
+},
+horizontalDivider: {
+  height: 1,
+  backgroundColor: '#A9A9A9',
+  marginBottom: 15,
+  marginTop: 5,
+},
+
+filterButton: {
+  height: 35,
+  minWidth: 80,
+  borderWidth: 1,
+  borderColor: "#00a99d",
+  borderRadius: 50,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: 12,
+},
+filterButtonText: {
+  color: '#00a99d',
+  fontSize: 14,
+},
+
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -266,30 +313,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   topSection: {
-    backgroundColor: 'white',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: 'rgba(0,128,128,1)',
+    padding: "4%",
+    marginBottom: "5%",
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20
   },
   greetText: {
-    fontSize: 23,
+    fontSize: 21,
     fontWeight: 'bold',
-    color: 'black',
-    marginBottom: 5,
+    color: 'white',
+    marginBottom: "4%",
+    textAlign: 'center'
   },
-  name: {
-    fontSize: 23,
-    fontWeight: 'bold',
-    color: '#00A99D',
-    marginBottom: 10,
-  },
+
   personal: {
     marginTop: 13,
   },
   personalText: {
-    fontSize: 18,
-    color: '#555',
-    top: -15
+    fontSize: 16,
+    color: 'white',
+    top: -15,
+    textAlign: 'center'
   },
   onlineSwitchContainer: {
     flexDirection: 'row',
@@ -300,7 +345,7 @@ const styles = StyleSheet.create({
   onlineInfoText: {
     flex: 1,
     fontSize: 14,
-    color: '#555',
+    color: 'white',
     fontWeight: '600',
     marginRight: 10,
     top: -10
@@ -319,9 +364,9 @@ const styles = StyleSheet.create({
   ShiftCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#00A99D',
-    padding: 15,
-    borderRadius: 18,
+    padding: "1%",
+    margin: "2%",
+    borderRadius: 15,
     marginBottom: 10,
   },
   calendarImage: {
@@ -330,12 +375,12 @@ const styles = StyleSheet.create({
   },
   shiftTitle: {
     fontSize: 17,
-    color: 'black',
+    color: 'white',
     fontWeight: 'bold',
   },
   shiftTime: {
     fontSize: 16,
-    color: 'black',
+    color: 'white',
     marginTop: 4,
   },
   shiftButton: {
@@ -343,39 +388,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 5,
   },
-  banner: {
-    flexDirection: 'row',
-    backgroundColor: '#00A99D',
-    padding: 15,
-    borderRadius: 18,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  bannerTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'black',
-  },
-  bannerButton: {
-    marginTop: 9,
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  bannerImage: {
-    width: 80,
-    height: 80,
-    marginLeft: 10,
-  },
+
+
   sectionTitle: {
-    backgroundColor: '#f8f8f8',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
+     borderRadius: 15 ,
+    margin: '5%',
   },
   sectionTitleText: {
+
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: 'black',
   },
   earningsOrdersContainer: {
     flexDirection: 'row',

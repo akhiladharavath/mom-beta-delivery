@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 import { View, Text, Image, StyleSheet, FlatList, ScrollView, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 //import MangeProfiles from './Profile/ManageProfiles';//
-import ProfileItem from './ProfileItems';
+import ProfileItem from '../profile/ProfileItems';
 import { Entypo, Feather, FontAwesome, FontAwesome5, FontAwesome6, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 //import { AuthContext } from '@/context/authContext';
 
