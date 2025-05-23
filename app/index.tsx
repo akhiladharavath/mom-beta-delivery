@@ -2,7 +2,6 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, StatusBar } from "reac
 import { router } from "expo-router";
 import React from 'react';
 
-
 export default function Index() {
   return (
     <View style={styles.container}>
@@ -19,7 +18,7 @@ export default function Index() {
 
     <Text style={styles.tagline}>Beyond pills - We deliver Life in Minutes</Text>
 
-    <TouchableOpacity style={styles.button} onPress={()=>router.replace("./home")}>
+    <TouchableOpacity style={styles.button} onPress={()=>router.replace("./tabs")}>
       <Text style={styles.buttonText}>Get Started</Text>
     </TouchableOpacity>
     

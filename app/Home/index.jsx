@@ -1,22 +1,17 @@
-
 import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Switch, SafeAreaView, Modal } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import * as Location from 'expo-location';
 import * as ImagePicker from 'expo-image-picker';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import Fetch from "./fetch"
-import { router, useLocalSearchParams } from 'expo-router';
 
 const HomeScreen = () => {
   const [isOnline, setIsOnline] = useState(false);
   const [locationName, setLocationName] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  const [earning, setEarning] = useState(0)
   const navigation = useNavigation();
-  const {regId}=useLocalSearchParams();
-  
 
   const toggleSwitch = () => {
     const newState = !isOnline;
@@ -48,6 +43,7 @@ const HomeScreen = () => {
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       console.log('Photo URI:', uri);
+      // Handle the image (e.g., display or upload)
     }
     console.log(result)
   }
@@ -94,18 +90,6 @@ const HomeScreen = () => {
     greet = "Good Evening,";
   }
 
-
-  const earnings=async() =>{
-    const response = await fetch("http://localhost:3000/earning/681a0e53f32e786edf2e4503");
-    const data = await response.json();
-    console.log(data)
-    setEarning(data)
-  }
-  useEffect(()=>{
-    earnings()
-
-  },[])
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={{ paddingBottom: 150, padding: 10 }}>
@@ -122,15 +106,14 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity style={styles.helpButton}>
-         
-            <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
-     
+            <Ionicons name="help-circle-outline" size={20} color="#00A99D" />
+            <Text style={styles.helpText}>Help</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.topSection}>
           <Text style={styles.greetText}>{greet}</Text>
-          <Text style={styles.name}></Text>
+          <Text style={styles.name}>Srinivas</Text>
           <View style={styles.personal}>
             <Text style={styles.personalText}>Stay safe on the road, and have a great day!</Text>
           </View>
@@ -155,7 +138,7 @@ const HomeScreen = () => {
         </View>
 
         <View style={styles.ShiftCard}>
-        {/*  <Image source={require('../../assets/images/calendar.png')} style={styles.calendarImage} resizeMode="contain" />*/}
+          <Image source={require('../../assets/images/calendar.png')} style={styles.calendarImage} resizeMode="contain" />
           <View style={{ flex: 1, marginLeft: 10 }}>
             <Text style={styles.shiftTitle}>Upcoming Shift</Text>
             <Text style={styles.shiftTime}>9:00 AM - 01:00 PM</Text>
@@ -167,9 +150,14 @@ const HomeScreen = () => {
 
         <View style={styles.banner}>
           <View style={{ flex: 1 }}>
-            <Fetch />
+            <Text style={styles.bannerTitle}>
+              Get Bonuses for Timely Deliveries & Customer Ratings!
+            </Text>
+            <TouchableOpacity>
+              <Text style={styles.bannerButton}>Book Shift & Start Earning →</Text>
+            </TouchableOpacity>
           </View>
-         {/* <Image source={require('../../assets/images/scooter.png')} style={styles.bannerImage} resizeMode="contain" />*/}
+          <Image source={require('../../assets/images/scooter.png')} style={styles.bannerImage} resizeMode="contain" />
         </View>
 
         <View style={styles.sectionTitle}>
@@ -179,11 +167,11 @@ const HomeScreen = () => {
         <View style={styles.earningsOrdersContainer}>
           <View style={styles.earningsCard}>
             <Text style={styles.earningsTitle}>Earnings</Text>
-            <Text style={styles.earningsValue}>{earning.current_balance}</Text>
+            <Text style={styles.earningsValue}>₹5,200</Text>
           </View>
           <View style={styles.ordersCard}>
             <Text style={styles.earningsTitle}>Orders</Text>
-            <Text style={styles.earningsValue}>{earning.total_orders}</Text>
+            <Text style={styles.earningsValue}>24</Text>
           </View>
         </View>
 
