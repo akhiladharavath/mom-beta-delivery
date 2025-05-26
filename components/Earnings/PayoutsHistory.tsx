@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View, Image, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native';
 import React from 'react';
 import Svg, { Line } from 'react-native-svg';
-
+import { router } from 'expo-router';
+import PayoutHistoryScreen from '@/app/Earnings/payouthistory';
 const { width } = Dimensions.get('window');
 
 const PayoutHistory = () => {
@@ -21,8 +22,9 @@ const PayoutHistory = () => {
       <Svg height="2" width={width * 0.9} style={styles.divider}>
         <Line x1="0" y1="1" x2={width * 0.9} y2="1" stroke="grey" strokeWidth="2" />
       </Svg>
-
+      <TouchableOpacity onPress={()=>router.push('/Earnings/payouthistory')}>
       <Text style={styles.historytxt}>Check Payouts History {'>'}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
