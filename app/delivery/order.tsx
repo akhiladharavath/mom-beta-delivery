@@ -1,5 +1,6 @@
 
 import Help from '@/components/help/Help';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
   View,
@@ -37,7 +38,7 @@ const App = () => {
         {/* Profile Section */}
         <View style={styles.profileSection}>
           <Image
-            source={require('../assets/images/prof.png')}
+            source={require('../../assets/images/prof.png')}
             style={styles.profileImage}
           />
           <View>
@@ -115,7 +116,7 @@ const App = () => {
         </View>
 
         {/* Delivery Complete */}
-        <TouchableOpacity style={styles.completeButton}>
+        <TouchableOpacity style={styles.completeButton} onPress={()=>router.push('../Tabs/home')}>
           <Text style={styles.completeText}>Delivery Complete</Text>
         </TouchableOpacity>
 
