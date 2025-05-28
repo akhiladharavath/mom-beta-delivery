@@ -11,6 +11,7 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
+import { router } from "expo-router";
 const screenWidth = Dimensions.get("window").width;
 
 const Orders = () => {
@@ -52,6 +53,7 @@ const Orders = () => {
             ]}
             onPress={() => {
               setSelectedAction("ACCEPT");
+              router.push('/delivery/pickup')
               console.log("Accepted");
             }}
           >

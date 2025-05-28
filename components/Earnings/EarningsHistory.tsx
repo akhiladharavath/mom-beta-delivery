@@ -25,7 +25,7 @@ const EarningsHistory = () => (
       <Line x1="0" y1="1" x2={width * 0.9} y2="1" stroke="white" strokeWidth="2" />
     </Svg>
 
-    <TouchableOpacity style={styles.footer}>
+    <TouchableOpacity style={styles.footer} onPress={()=> router.push('/Earnings/weekearnings')}>
       <Text style={styles.register}>See Earnings History {'>'}</Text>
     </TouchableOpacity>
   </View>

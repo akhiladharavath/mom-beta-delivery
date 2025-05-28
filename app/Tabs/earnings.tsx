@@ -17,9 +17,7 @@ const EarningsScreen = () => {
                 <View style={styles.section}>
                     <EarningsHistory />
                 </View>
-                <View style={styles.section}>
-                    <RateCard />
-                </View>
+                
                 <View style={styles.section}>
                     <PayoutHistory />
                 </View>
@@ -36,11 +34,6 @@ const styles = StyleSheet.create({
         paddingHorizontal,
         paddingVertical: 10,
     },
-    // heading: {
-    //     fontSize: 25,
-    //     fontWeight: 'bold',
-    //     marginBottom: 20,
-    // },
     section: {
         marginBottom: 30, 
     },
