@@ -1,5 +1,6 @@
 // src/utils/dateUtils.js
 
+import apiClient from "@/utils/apiClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 async function getToken(){
@@ -52,6 +53,3 @@ export function last8Weeks(){
         return weeks;
 }
 
-function useEarnings(){
-    
-}      
