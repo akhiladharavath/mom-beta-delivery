@@ -1,4 +1,6 @@
-import React from 'react';
+import { useOrders } from '@/context/orderContext';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,17 +10,92 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
+  Alert,
+  Linking,
 } from 'react-native';
+import * as Location from 'expo-location';
 
 const { width } = Dimensions.get('window');
 
 export default function Pickup() {
+
+
+ const { acceptedOrderDetails } = useOrders()
+const [currentLocation, setCurrentLocation] = useState(null);
+  const [distance, setDistance] = useState(null);
+
+  const customerLocation = {
+    latitude: acceptedOrderDetails.address_id.currentLocation?.latitude,
+    longitude: acceptedOrderDetails.address_id.currentLocation?.longitude,
+  };
+
+ 
+
+  const handleMaps = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Location permission is required to open maps.');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const originCoords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setCurrentLocation(originCoords);
+
+      await fetchDistance(originCoords);
+
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${originCoords.latitude},${originCoords.longitude}&destination=${customerLocation.latitude},${customerLocation.longitude}&travelmode=driving`;
+      Linking.openURL(url);
+    } catch (error) {
+      console.error('Error opening maps:', error);
+      Alert.alert('Error', 'Unable to open maps.');
+    }
+  };
+
+  const fetchDistance = async (originCoords) => {
+    try {
+      if (!originCoords || !originCoords.latitude || !originCoords.longitude) {
+        console.error('Invalid origin coordinates:', originCoords);
+        Alert.alert('Error', 'Invalid origin coordinates.');
+        return;
+      }
+
+      const apiKey = ''; // 🔐 Replace this with your real key
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originCoords.latitude},${originCoords.longitude}&destination=${customerLocation.latitude},${customerLocation.longitude}&key=${apiKey}`;
+
+      const response = await fetch(url);
+      const res = await response.json();
+
+      if (res.status !== 'OK' || !res.routes?.length || !res.routes[0].legs?.length) {
+        console.error('No routes found', res);
+        Alert.alert('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
+        return;
+      }
+
+      const distanceText = res.routes[0].legs[0].distance.text;
+      setDistance(distanceText);
+      console.log('Distance:', distanceText);
+    } catch (error) {
+      console.error('Error fetching distance:', error);
+      Alert.alert('Error', 'Could not calculate distance.');
+    }
+  };
+
+
+
+
+
+  
+
+ 
   const handleBackPress = () => {
-    console.log('Back pressed');
+   router.back()
   };
-  const handleMaps = () => {
-    console.log('Maps pressed');
-  };
+ 
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -79,8 +156,8 @@ export default function Pickup() {
 
           <View style={styles.infoRow}>
   <View style={styles.nameIdContainer}>
-    <Text style={styles.Name}>Rushikesh Dattaray</Text>
-    <Text style={styles.id}>20715072782 7153</Text>
+    <Text style={styles.Name}>{acceptedOrderDetails.user_id.name}</Text>
+    <Text style={styles.id}>{acceptedOrderDetails.user_id.mobileNo}</Text>
   </View>
 
   <TouchableOpacity style={styles.mapsbutton} onPress={handleMaps}>
@@ -92,15 +169,14 @@ export default function Pickup() {
           <View style={styles.separator} />
 
           <Text style={styles.pharmacyAddress}>
-            201/secondFloor{'\n'}
-            Naveena's Enclave {'\n'}
-            Naveena's Enclave SBI Officers {'\n'}
-            Colony, Siddi Vinayak Nagar,{'\n'}
-            Madhapur, Hyderabad,Telangana{'\n'}
-            500081, India(2-58/1/171)
+            
+                {acceptedOrderDetails.address_id.street},
+                {acceptedOrderDetails.address_id.city},
+                {acceptedOrderDetails.address_id.state},
+                {acceptedOrderDetails.address_id.pincode}
           </Text>
 
-          <TouchableOpacity style={styles.bottomButton}>
+          <TouchableOpacity style={styles.bottomButton} onPress={()=>{router.push('./order')}}>
             <Text style={styles.bottomButtonText}>
               Reached Customer location
             </Text>

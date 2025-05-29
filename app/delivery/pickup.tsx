@@ -64,7 +64,7 @@ export default function Pickup() {
           <Text style={styles.mapsText}>Maps</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={()=>router.push('./order')} style={styles.bottomButton}>
+        <TouchableOpacity onPress={()=>router.push('./deliver')} style={styles.bottomButton}>
           <Text style={styles.bottomButtonText}>Reached pickup location</Text>
         </TouchableOpacity>
       </View>
