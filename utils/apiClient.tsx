@@ -1,0 +1,15 @@
+import {BACKEND_URL} from '@env'
+
+async function apiClient(path , options){
+    const response  = await fetch(`${BACKEND_URL}/${path}` , options)
+    const data = await response.json()
+    if(response.ok){
+        console.log(data)
+        return data
+    }else{
+        console.log(response)
+        return null
+    }
+}
+
+export default apiClient

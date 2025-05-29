@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -15,8 +15,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-// import { userAuth } from "../../Context/authContext";
-// import { sendSmsOtp } from "../../lib/otp";
+import userDeliveryAuth, { DeliveryBoyAuthContext } from "@/context/authContext";
 
 const slides = [
   require("../../assets/images/1image.png"),
@@ -26,15 +25,42 @@ const slides = [
 
 export default function OtpScreen() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [timer, setTimer] = useState(30);
-  const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<Array<TextInput | null>>([]);
   const flatListRef = useRef<FlatList>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-//   const { verifyOtp, postData } = userAuth();
+
+  const { verifyOtp } = userDeliveryAuth();
   const params = useLocalSearchParams();
-  const user = params.user ;
-  const isRegistration = params.isRegistration === "true"
+  const user = params.deliveryBoy as string;
+
+  const handleSubmit = async () => {
+    const code = otp.join("");
+    if (code.length !== 6) {
+      Alert.alert("Invalid OTP", "Please enter a valid 6-digit OTP.");
+      return;
+    }
+
+    const success = await verifyOtp(code, user);
+    if (success) {
+      router.replace("/");
+    }
+  };
+
+  const handleChange = (text: string, index: number) => {
+    const newOtp = [...otp];
+    newOtp[index] = text;
+    setOtp(newOtp);
+
+    if (text && index < otp.length - 1) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyPress = (e: any, index: number) => {
+    if (e.nativeEvent.key === "Backspace" && otp[index] === "") {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -84,40 +110,19 @@ export default function OtpScreen() {
                 {otp.map((digit, index) => (
                   <TextInput
                     key={index}
-                    ref={(ref) => {
-                      inputRefs.current[index] = ref;
-                    }}
+                    ref={(ref) => (inputRefs.current[index] = ref)}
                     style={styles.otpBox}
                     keyboardType="numeric"
                     maxLength={1}
                     value={digit}
-                    // onChangeText={(text) => handleChange(text, index)}
-                    // onKeyPress={(e) => handleKeyPress(e, index)}
+                    onChangeText={(text) => handleChange(text, index)}
+                    onKeyPress={(e) => handleKeyPress(e, index)}
                     autoFocus={index === 0}
                   />
                 ))}
               </View>
 
-              {/* <View style={styles.resendRow}>
-                <Text style={styles.resendText}>
-                  {canResend ? "" : `Wait for ${timer} seconds to `}
-                </Text>
-                <TouchableOpacity
-                  onPress={handleResendOtp}
-                  disabled={!canResend}
-                >
-                  <Text
-                    style={[styles.resendText, !canResend && { opacity: 0.5 }]}
-                  >
-                    Resend the OTP
-                  </Text>
-                </TouchableOpacity>
-              </View> */}
-
-              <TouchableOpacity
-                onPress={()=>router.push('/Tabs/home')}
-                style={styles.verifyButton}
-              >
+              <TouchableOpacity onPress={handleSubmit} style={styles.verifyButton}>
                 <Text style={styles.verifyButtonText}>Submit</Text>
               </TouchableOpacity>
             </View>
@@ -197,18 +202,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  resendRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    gap: 4,
-    flexWrap: "wrap",
-  },
-  resendText: {
-    fontSize: 14,
-    color: "#007AFF",
   },
   verifyButton: {
     backgroundColor: "#007E71",

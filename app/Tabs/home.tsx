@@ -7,6 +7,7 @@ import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import userDeliveryAuth from "@/context/authContext";
 
 const HomeScreen = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -23,6 +24,9 @@ const HomeScreen = () => {
       setModalVisible(true);
     }
   };
+
+
+  const {deliveryBoyDetails} = userDeliveryAuth()
 
   const hasPermissions = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -123,7 +127,7 @@ const HomeScreen = () => {
         </View>
 
         <View style={styles.topSection}>
-          <Text style={styles.greetText}>{greet} Akhila</Text>
+          <Text style={styles.greetText}>{greet}{deliveryBoyDetails?deliveryBoyDetails.name:""}</Text>
           <View style={styles.personal}>
             <Text style={styles.personalText}>Stay safe on the road, and have a great day!</Text>
           </View>

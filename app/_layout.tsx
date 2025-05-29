@@ -1,13 +1,13 @@
-import { DeliveryAuthProvider  } from "@/context/Auth2Context";
+import { DeliveryBoyAuthProvider  } from "@/context/authContext";
 import { Stack } from "expo-router";
 import React from "react";
 
 export default function RootLayout() {
   return (
     
-       <DeliveryAuthProvider>
+       <DeliveryBoyAuthProvider>
         <Stack screenOptions={{
         headerShown: false}}/>
-       </DeliveryAuthProvider>
+       </DeliveryBoyAuthProvider>
   )
 }
