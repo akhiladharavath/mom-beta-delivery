@@ -7,79 +7,48 @@ import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { useLocation } from '@/context/locatonContext';
+const token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWxpdmVyeUJveUlkIjoiNjgzNTU2ZTc2NjA1M2VjYTg5ZTBlZTQwIiwiaWF0IjoxNzQ4NDIyMTkxfQ.lQkEEDttODY8-xL8OI_vao3TMFi2K1j-YeuVwAOKacg"
 const HomeScreen = () => {
   const [isOnline, setIsOnline] = useState(false);
-  const [locationName, setLocationName] = useState('');
+  
   const [modalVisible, setModalVisible] = useState(false);
   const [earning, setEarning] = useState(0);
   const navigation = useNavigation();
   const { regId } = useLocalSearchParams();
 
-  const toggleSwitch = () => {
+  const toggleSwitch = async () => {
     const newState = !isOnline;
     setIsOnline(newState);
-    if (newState) {
-      setModalVisible(true);
+    await updateOnlineStatus(newState?'Online':'Offline')
+    };
+
+  const updateOnlineStatus = async (status) => {
+    try{
+     const response=await fetch(`http://192.168.1.100:3000/delivery/update`,{
+      method:"PUT",
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${token}`
+      },
+      body:JSON.stringify({status}),
+     }) ;
+     if(!response.ok){
+      throw new Error('Failed to update status');
+     }
+
+     const data=await response.json();
+     console.log('Status update to:', data.status);
+    } catch (error){
+      console.error('status update error', error.message);
     }
+      
+
   };
 
-  const hasPermissions = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (!status) {
-      alert("Camera permission needed");
-      return false;
-    }
-    return true;
-  };
+  const { locationName, refreshLocation } = useLocation();
 
-  const handleCameraOpen = async () => {
-    const permission = await hasPermissions();
-    if (!permission) return;
-
-    const result = await ImagePicker.launchCameraAsync({
-      preferredCameraType: "black",
-      quality: 1,
-      allowsEditing: false
-    });
-
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      console.log('Photo URI:', uri);
-    }
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-    setIsOnline(false);
-  };
-
-  const getUserLocation = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setLocationName('Permission denied');
-        return;
-      }
-      const { coords } = await Location.getCurrentPositionAsync({});
-      const { latitude, longitude } = coords;
-
-      const geoCode = await Location.reverseGeocodeAsync({ latitude, longitude });
-
-      if (geoCode.length > 0) {
-        const place = geoCode[0];
-        const fullAddress = place.name ?? place.city ?? place.region ?? place.country ?? 'Unknown';
-        setLocationName(fullAddress);
-      }
-    } catch (error) {
-      console.error('Error getting location:', error);
-      setLocationName('Location Error');
-    }
-  };
-
-  useEffect(() => {
-    getUserLocation();
-  }, []);
+  
 
   const getCurrentHour = new Date().getHours();
   let greet;
@@ -107,7 +76,7 @@ const HomeScreen = () => {
 
         <View style={styles.headerSection}>
           <View style={styles.leftSection}>
-            <TouchableOpacity onPress={getUserLocation}>
+            <TouchableOpacity onPress={ refreshLocation}>
               <View style={styles.row}>
                 <FontAwesome6 name="location-dot" size={24} color="white" />
                 <Text style={styles.locationText} numberOfLines={1} ellipsizeMode="tail">
@@ -131,7 +100,7 @@ const HomeScreen = () => {
             <Text style={styles.onlineInfoText}>Go online on time and earn bonuses!</Text>
             <View style={styles.statusSwitch}>
               <Text style={[styles.statusText, { color: isOnline ? '#00A99D' : 'gray' }]}>
-                {isOnline ? 'Online' : 'Offline'}
+                {isOnline ?  'Online':'Offline'}
               </Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#00A99D" }}
@@ -212,19 +181,7 @@ const HomeScreen = () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Use your camera to go online!</Text>
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity style={styles.modalButton} onPress={handleCameraOpen}>
-                <Text style={styles.modalButtonText}>Open Camera</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={handleCancel}>
-                <Text style={styles.modalButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
+        
       </Modal>
     </SafeAreaView>
   );

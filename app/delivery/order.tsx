@@ -1,5 +1,5 @@
-
 import Help from '@/components/help/Help';
+import { useOrders } from '@/context/orderContext';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -12,6 +12,8 @@ import {
   Pressable,
   ScrollView,
   Image,
+  Alert,
+  Linking,
 } from 'react-native';
 
 const App = () => {
@@ -19,11 +21,38 @@ const App = () => {
   const [deliveryDetailsVisible, setDeliveryDetailsVisible] = useState(true);
   const [itemDetailsVisible, setItemDetailsVisible] = useState(true);
 
-  const items = [
-    { id: '1', name: 'Cadbury Dairy Milk Silk', qty: 1 },
-    { id: '2', name: 'Cadbury Dairy Milk Silk', qty: 1 },
-    { id: '3', name: 'Cadbury Dairy Milk Silk', qty: 1 },
-  ];
+
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWxpdmVyeUJveUlkIjoiNjgzNTU2ZTc2NjA1M2VjYTg5ZTBlZTQwIiwiaWF0IjoxNzQ4NDIyMTkxfQ.lQkEEDttODY8-xL8OI_vao3TMFi2K1j-YeuVwAOKacg';
+
+  const { acceptedOrderDetails } = useOrders()
+  console.log("orderid",acceptedOrderDetails._id)
+  const handleDelivery = async () => {
+    try {
+      const response = await fetch(`http://192.168.1.100:3000/api/delivered/${acceptedOrderDetails._id}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+       
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || 'Failed to update status');
+      }
+
+      const data = await response.json();
+      Alert.alert('Success', data.message || 'Status updated to Online');
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
+
+  const handleCall = (phone) =>{
+    let phoneNumber = `tel:${phone}`;
+  Linking.openURL(phoneNumber);
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -43,8 +72,8 @@ const App = () => {
           />
           <View>
             <Text style={styles.label}>Deliver to</Text>
-            <Text style={styles.name}>Rushikesh Dattaray</Text>
-            <Text style={styles.contact}>#20715072782 7153</Text>
+            <Text style={styles.name}>{acceptedOrderDetails.user_id.name}</Text>
+            <Text style={styles.contact}>{acceptedOrderDetails.user_id.mobileNo}</Text>
           </View>
         </View>
 
@@ -60,16 +89,17 @@ const App = () => {
           {deliveryDetailsVisible && (
             <>
               <Text style={styles.address}>
-                201/ Second Floor{'\n'}
-                Naveena's Enclave{'\n'}
-                SBI Officers Colony, Siddhi Vinayak Nagar,{'\n'}
-                Madhapur, Hyderabad, Telangana 500081, India (2-58/1/171)
+
+                {acceptedOrderDetails.address_id.street},
+                {acceptedOrderDetails.address_id.city},
+                {acceptedOrderDetails.address_id.state},
+                {acceptedOrderDetails.address_id.pincode}
               </Text>
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.mapButton}>
                   <Text style={styles.buttonText}>Maps</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.callButton}>
+                <TouchableOpacity style={styles.callButton} onPress={()=>{handleCall(acceptedOrderDetails.user_id.mobileNo)}}>
                   <Text style={styles.buttonText}>Call Customer</Text>
                 </TouchableOpacity>
               </View>
@@ -104,11 +134,11 @@ const App = () => {
           </TouchableOpacity>
           {itemDetailsVisible && (
             <FlatList
-              data={items}
+              data={acceptedOrderDetails.medicines}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <Text style={styles.item}>
-                  {item.name} x {item.qty}
+                  {item.name} x {item.quantity}
                 </Text>
               )}
             />
@@ -116,8 +146,8 @@ const App = () => {
         </View>
 
         {/* Delivery Complete */}
-        <TouchableOpacity style={styles.completeButton} onPress={()=>router.push('../Tabs/home')}>
-          <Text style={styles.completeText}>Delivery Complete</Text>
+        <TouchableOpacity style={styles.completeButton} onPress={handleDelivery}>
+          <Text style={styles.completeText} >Delivery Complete</Text>
         </TouchableOpacity>
 
         {/* COD Confirmation Modal */}
@@ -188,14 +218,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '800',
     color: '#00a99d',
-    
- 
+
+
   },
   contact: {
     fontSize: 16,
     color: '#444',
     marginBottom: 10,
-  
+
   },
   card: {
     backgroundColor: '#f9f9f9',
