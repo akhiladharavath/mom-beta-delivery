@@ -1,12 +1,27 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Svg, Line } from 'react-native-svg';
 import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import apiClient from '@/utils/apiClient';
+import useWeekEarnings from '@/Hooks/useWeekEarnings';
+import { last8Weeks } from '@/Hooks/earningHooks';
 
 const { width } = Dimensions.get('window');
 
-const EarningsHistory = () => (
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWxpdmVyeUJveUlkIjoiNjgzNTU2ZTc2NjA1M2VjYTg5ZTBlZTQwIiwiaWF0IjoxNzQ4NDIyMTkxfQ.lQkEEDttODY8-xL8OI_vao3TMFi2K1j-YeuVwAOKacg"
+
+
+
+const EarningsHistory = ({data ,totalEarning}) => {
+
+  const weeks = last8Weeks()
+  console.log(weeks[1])
+  const {weekEarnings} = useWeekEarnings({startingDate:weeks[1].start , endingDate:weeks[1].end})
+
+  
+  
+  return (
   <View style={styles.container}>
     <View style={styles.headerRow}>
       <Text style={styles.title}>This Week 20 Dec 2024</Text>
@@ -17,8 +32,8 @@ const EarningsHistory = () => (
     </View>
 
     <View style={styles.amountRow}>
-      <Text style={styles.amount}>₹ 0</Text>
-      <Text style={styles.lastWeek}>Last Week ₹ 0</Text>
+      <Text style={styles.amount}>₹ {data?data.total_earning:0}</Text>
+      <Text style={styles.lastWeek}>Last Week ₹ {weekEarnings??0}</Text>
     </View>
 
     <Svg height="2" width={width * 0.9} style={styles.divider}>
@@ -29,7 +44,7 @@ const EarningsHistory = () => (
       <Text style={styles.register}>See Earnings History {'>'}</Text>
     </TouchableOpacity>
   </View>
-);
+)};
 
 const styles = StyleSheet.create({
   container: {

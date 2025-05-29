@@ -1,29 +1,63 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView , Dimensions } from 'react-native';
 
 import { router } from 'expo-router';
 
-const weeks = [
-  { id: '21', label: 'Week 21', dateRange: '19 May - 25 May', current: true },
-  { id: '20', label: 'Week 20', dateRange: '12 May - 18 May' },
-  { id: '19', label: 'Week 19', dateRange: '05 May - 11 May' },
-  { id: '18', label: 'Week 18', dateRange: '28 Apr - 04 May' },
-  { id: '17', label: 'Week 17', dateRange: '21 Apr - 27 Apr' },
-  { id: '16', label: 'Week 16', dateRange: '14 Apr - 20 Apr' },
-  { id: '15', label: 'Week 15', dateRange: '07 Apr - 13 Apr' },
-  { id: '14', label: 'Week 14', dateRange: '31 Mar - 06 Apr' },
-];
 
 export default function App() {
-  const [selectedWeek, setSelectedWeek] = useState('21');
+
+  function getLast8Weeks() {
+        const weeks = [];
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Find Monday of this week
+        const day = today.getDay();
+        const diffToMonday = day === 0 ? -6 : 1 - day;
+        const thisMonday = new Date(today);
+        thisMonday.setDate(today.getDate() + diffToMonday);
+
+        // Loop 8 times for 8 weeks
+        for (let i = 0; i < 8; i++) {
+            const startOfWeek = new Date(thisMonday);
+            startOfWeek.setDate(thisMonday.getDate() - i * 7);
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            endOfWeek.setHours(23, 59, 59, 999);
+
+            weeks.push({
+                id:i+1 , 
+                label:`Last Week ${i+1}`,
+                start: new Date(startOfWeek).toISOString().split("T")[0],
+                end: new Date(endOfWeek).toISOString().split("T")[0],
+            });
+        }
+
+        return weeks;
+    }
+
+    const weeksArray = getLast8Weeks()
+
+  const [selectedWeek, setSelectedWeek] = useState(1);
+  const [WeekDetails , setWeekDetails] = useState({
+    startingDate:weeksArray[0].start , 
+    endingDate:weeksArray[0].end
+  })
+
+  console.log(WeekDetails)
+  
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.weekItem} onPress={() => setSelectedWeek(item.id)}>
+    <TouchableOpacity style={styles.weekItem} onPress={() =>{ setSelectedWeek(item.id) 
+      setWeekDetails({startingDate:item.start , endingDate:item.end})
+    }}>
       <View>
         <Text style={styles.weekLabel}>{item.label}</Text>
         <View style={styles.dateBadgeContainer}>
-          <Text style={styles.dateRange}>{item.dateRange}</Text>
-          {item.current && <Text style={styles.thisWeekBadge}>This Week</Text>}
+          <Text style={styles.dateRange}>{item.start}</Text>
+          {/* {item.current && <Text style={styles.thisWeekBadge}>This Week</Text>} */}
         </View>
       </View>
       <View style={styles.radioCircle}>
@@ -41,14 +75,14 @@ export default function App() {
         </View>
 
         <FlatList
-          data={weeks}
+          data={weeksArray}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 80 }}
         />
 
         <View style={styles.selectButtonContainer}>
-          <TouchableOpacity style={styles.selectButton} onPress={()=>router.push('/Earnings/dayearnings')}>
+          <TouchableOpacity style={styles.selectButton} onPress={()=>router.push({pathname:"/Earnings/dayearnings" , params:{start:WeekDetails.startingDate , end:WeekDetails.endingDate}})}>
             <Text style={styles.selectButtonText}>Select</Text>
           </TouchableOpacity>
         </View>

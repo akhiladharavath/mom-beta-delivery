@@ -1,228 +1,154 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { BlurView } from 'expo-blur';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import Home from '../Tabs/home' ;
+import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  Keyboard,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
-  StyleSheet,
+  View,
   Text,
   TextInput,
-  TouchableOpacity,
+  ScrollView,
   TouchableWithoutFeedback,
-  View,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
+  StyleSheet,
+  Alert,
 } from 'react-native';
-import { Button, Checkbox } from 'react-native-paper';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-
-const GENDER_OPTIONS = ['Male', 'Female', 'Non-binary', 'Prefer not to answer'];
-
-type GenderDropdownProps = {
-  selectedGender: string;
-  setSelectedGender: (gender: string) => void;
-};
-
-function GenderDropdown({ selectedGender, setSelectedGender }: GenderDropdownProps) {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const handleSelect = (option: string) => {
-    setSelectedGender(option);
-    setDropdownVisible(false);
-  };
-
-  return (
-    <View style={genderStyles.container}>
-      <Text style={genderStyles.heading}>Gender</Text>
-      <TouchableOpacity
-        style={genderStyles.dropdownField}
-        onPress={() => setDropdownVisible(true)}
-        activeOpacity={0.7}
-      >
-        <Text style={[genderStyles.selectedText, !selectedGender && { color: '#888' }]}>
-          {selectedGender || 'Select your gender'}
-        </Text>
-      </TouchableOpacity>
-
-      <Modal
-        visible={dropdownVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setDropdownVisible(false)}
-      >
-        <TouchableOpacity
-          style={genderStyles.modalOverlay}
-          activeOpacity={1}
-          onPressOut={() => setDropdownVisible(false)}
-        >
-          <View style={genderStyles.dropdownBox}>
-            {GENDER_OPTIONS.map((option) => (
-              <TouchableOpacity key={option} style={genderStyles.option} onPress={() => handleSelect(option)}>
-                <Text style={genderStyles.optionText}>{option}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </TouchableOpacity>
-      </Modal>
-    </View>
-  );
-}
+import { ActivityIndicator, Button } from 'react-native-paper';
+import { router, useRouter } from 'expo-router';
+import userDeliveryAuth from '@/context/authContext';
+import apiClient from '@/utils/apiClient';
 
 const SignUpScreen = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [dob, setDob] = useState('');
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
-  const [gender, setGender] = useState('');
+  const [name, setName] = useState('');
+  const [vehicleType, setVehicleType] = useState('');
+  const [aadhaar, setAadhaar] = useState('');
+  const [pan, setPan] = useState('');
+  const [drivingLicense, setDrivingLicense] = useState('');
+  const [registerLoading , setRegisterLoading] = useState(false)
+  const router = useRouter();
 
-  // const signupUser = async () => {
-  //   try {
-  //     const response = await fetch('https://example.com/api/register', {
-  //       method: 'POST',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ firstName, lastName, dob, gender }),
-  //     });
+  const {extractToken} = userDeliveryAuth()
 
-  //     if (response.ok) {
-  //       router.replace('/home');
-  //     } else {
-  //       Alert.alert('Error', 'Something went wrong. Try again.');
-  //     }
-  //   } catch (error) {
-  //     console.error('Signup error', error);
-  //   }
-  // };
+  async function signupUser() {
+    const AuthToken = await extractToken();
 
-  const handleSignUp = async () => {
-    if (!firstName.trim()) return Alert.alert('Validation Error', 'First name is required');
-    if (!lastName.trim()) return Alert.alert('Validation Error', 'Last name is required');
-    if (!dob.trim()) return Alert.alert('Validation Error', 'Date of birth is required');
-    if (!gender) return Alert.alert('Validation Error', 'Gender is required');
-    if (isChecked) {
-      // signupUser();
-    } else {
-      Alert.alert('Please accept the terms and conditions');
+    try {
+      const options = {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${AuthToken}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name,
+          vehicleType,
+          aadhaar,
+          pan,
+          drivingLicense
+        })
+      }
+      setRegisterLoading(true)
+    const response = await apiClient("delivery/register", options);
+    setRegisterLoading(false)
+      if (response) {
+        await getdeliveryBoyDetails(AuthToken)
+        console.log(response);
+      } else {
+        router.replace("/Login/login");
+      }
+    } catch (e) {
+      console.log("Error in signing up", e)
     }
+  }
+
+  const handleSignUp = () => {
+    if (!name.trim()) return Alert.alert('Validation Error', 'Name is required');
+    if (!vehicleType.trim()) return Alert.alert('Validation Error', 'Vehicle type is required');
+    if (!aadhaar.trim()) return Alert.alert('Validation Error', 'Aadhaar number is required');
+    if (!pan.trim()) return Alert.alert('Validation Error', 'PAN card number is required');
+    if (!drivingLicense.trim()) return Alert.alert('Validation Error', 'Driving license is required');
+ signupUser();
+    router.push('/Tabs/home');
   };
+ 
 
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    if (event.type === 'set' && selectedDate) {
-      const formatted = selectedDate.toISOString().split('T')[0];
-      setDob(formatted);
-    }
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-  };
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <ScrollView contentContainerStyle={styles.outerContainer} keyboardShouldPersistTaps="handled">
-            <View style={styles.headerRow}>
-              <Text style={styles.header}>Sign Up</Text>
-            </View>
+          <ScrollView
+            contentContainerStyle={styles.container}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Text style={styles.header}>Sign Up</Text>
 
-            <Text style={styles.label}>First Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your first name"
-              placeholderTextColor="#888"
-              value={firstName}
-              onChangeText={setFirstName}
-            />
-
-            <Text style={styles.label}>Last Name</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your last name"
-              placeholderTextColor="#888"
-              value={lastName}
-              onChangeText={setLastName}
-            />
-
-            <Text style={styles.label}>Date of Birth</Text>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+            <View style={styles.inputWrapper}>
+              <Text style={styles.label}>Name</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Select your date of birth"
-                placeholderTextColor="#888"
-                value={dob}
-                editable={false}
-                pointerEvents="none"
+                placeholder="Enter your name"
+                value={name}
+                onChangeText={setName}
               />
-            </TouchableOpacity>
+            </View>
 
-            {showDatePicker && (
-              <DateTimePicker
-                value={dob ? new Date(dob) : new Date()}
-                mode="date"
-                display="default"
-                maximumDate={new Date()}
-                onChange={onDateChange}
+            <View style={styles.inputWrapper}>
+              <Text style={styles.label}>Vehicle Type</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter vehicle type"
+                value={vehicleType}
+                onChangeText={setVehicleType}
               />
-            )}
+            </View>
 
-            <GenderDropdown selectedGender={gender} setSelectedGender={setGender} />
+            <View style={styles.inputWrapper}>
+              <Text style={styles.label}>Aadhaar Number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter Aadhaar number"
+                value={aadhaar}
+                onChangeText={setAadhaar}
+                keyboardType="numeric"
+                maxLength={12}
+              />
+            </View>
 
-            <View style={styles.checkboxRow}>
-              <View style={styles.checkboxBorder}>
-                <Checkbox
-                  status={isChecked ? 'checked' : 'unchecked'}
-                  onPress={() => setIsChecked(!isChecked)}
-                  color="#007E71"
-                  uncheckedColor="#007E71"
-                />
-              </View>
-              <Text style={styles.checkboxText}>
-                By clicking, I accept the{' '}
-                <Text style={styles.link} onPress={() => router.push('./t_and_c')}>
-                  terms of services
-                </Text>{' '}
-                and{' '}
-                <Text style={styles.link} onPress={() => router.push('./privacy')}>
-                  privacy policy
-                </Text>
-              </Text>
+            <View style={styles.inputWrapper}>
+              <Text style={styles.label}>PAN Card Number</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter PAN card number"
+                value={pan}
+                onChangeText={setPan}
+                maxLength={10}
+              />
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <Text style={styles.label}>Driving License</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter driving license number"
+                value={drivingLicense}
+                onChangeText={setDrivingLicense}
+              />
             </View>
 
             <Button
               mode="contained"
               style={styles.signUpButton}
-              onPress={()=> router.push('/Tabs/home')}
-              disabled={!isChecked}
+              contentStyle={styles.signUpButtonContent}
+              onPress={handleSignUp}
+              disabled={registerLoading}
             >
-              <Text style={styles.signText}>Sign up</Text>
+              {registerLoading?<ActivityIndicator />:<Text style={styles.signUpText}>Sign Up</Text>}
             </Button>
           </ScrollView>
         </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-
-      <Modal
-        animationType="slide"
-        transparent
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={{ flex: 1 }}>
-          <BlurView intensity={90} tint="light" style={styles.blurContainer}>
-            <View style={styles.modalContent}>
-              {/* <WelcomeCard /> */}
-            </View>
-          </BlurView>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -230,38 +156,32 @@ const SignUpScreen = () => {
 export default SignUpScreen;
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    flexGrow: 1,
-    backgroundColor: 'white',
+  container: {
     paddingTop: 60,
-    alignItems: 'center',
+    paddingBottom: 40,
     paddingHorizontal: 24,
-  },
-  headerRow: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
+    backgroundColor: 'white',
+    alignItems: 'center',
   },
   header: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '700',
-    color: '#00A99D',
-    top: 10,
-    left: 10,
+    color: '#007E71',
+    marginBottom: 30,
+  },
+  inputWrapper: {
+    width: '100%',
+    marginBottom: 18,
   },
   label: {
+    fontSize: 16,
     fontWeight: '600',
-    marginTop: 12,
-    marginBottom: 6,
-    color: '#000',
-    alignSelf: 'flex-start',
-    paddingLeft: 20,
-    fontSize: 20,
+    marginBottom: 8,
+    color: '#333',
+    paddingLeft: 10,
   },
   input: {
-    width: 326,
-    height: 52,
+    height: 50,
     backgroundColor: '#E8F1F0',
     borderRadius: 25,
     paddingHorizontal: 16,
@@ -269,115 +189,31 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   signUpButton: {
-    marginTop: 24,
-    width: 189,
-    height: 52,
-    borderRadius: 25,
+    marginTop: 30,
+    borderRadius: 30,
+    width: '80%',
+    alignSelf: 'center',
     backgroundColor: '#007E71',
-    justifyContent: 'center',
   },
-  signText: {
-    fontSize: 20,
+  signUpButtonContent: {
+    height: 50,
+  },
+  signUpText: {
+    color: 'white',
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'white',
-  },
-  checkboxRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 20,
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-  checkboxBorder: {
-    borderWidth: 1,
-    borderColor: '#007E71',
-    borderRadius: 4,
-  },
-  checkboxText: {
-    color: '#333',
-    flex: 1,
-    flexWrap: 'wrap',
-    marginLeft: 8,
-    fontSize: 14,
-  },
-  link: {
-    color: '#00A99D',
-    textDecorationLine: 'underline',
-  },
-  blurContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  modalContent: {
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 30,
-    alignItems: 'center',
-    width: '90%',
-    maxWidth: 350,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 5,
   },
 });
 
-const genderStyles = StyleSheet.create({
-  container: {
-    width: 326,
-    marginTop: 20,
-    marginBottom: 10,
-    alignSelf: 'center',
-  },
-  heading: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 8,
-    color: '#000',
-    paddingLeft: 2,
-  },
-  dropdownField: {
-    borderWidth: 1,
-    borderColor: '#bbb',
-    borderRadius: 25,
-    paddingVertical: Platform.OS === 'ios' ? 14 : 10,
-    paddingHorizontal: 16,
-    backgroundColor: '#E8F1F0',
-    justifyContent: 'center',
-    height: 52,
-  },
-  selectedText: {
-    fontSize: 16,
-    color: '#222',
-    fontWeight: 'bold',
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.15)',
-  },
-  dropdownBox: {
-    marginHorizontal: 32,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingVertical: 8,
-    elevation: 6,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 5,
-  },
-  option: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  optionText: {
-    fontSize: 16,
-    color: '#222',
-  },
-});
+
+
+ 
+
+function getdeliveryBoyDetails(AuthToken: any) {
+  throw new Error('Function not implemented.');
+}
+
+function ExtractParseToken() {
+  throw new Error('Function not implemented.');
+}

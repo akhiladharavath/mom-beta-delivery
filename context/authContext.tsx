@@ -1,7 +1,10 @@
+import React, { useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { createContext, useEffect, useState, useCallback } from "react";
 import { Alert } from "react-native";
+import apiClient from "@/utils/apiClient";
+
 
 export const DeliveryBoyAuthContext = createContext(null);
 
@@ -15,8 +18,8 @@ export const DeliveryBoyAuthProvider = ({ children }) => {
     try {
       if (!authToken) return;
       setLoading(true);
-
-      const response = await fetch('https://mom-beta-server.onrender.com/api/delivery/', {
+      console.log("this is from get details"  , authToken)
+      const response = await apiClient(`delivery/deliveryboy`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -24,11 +27,11 @@ export const DeliveryBoyAuthProvider = ({ children }) => {
         },
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setDeliveryBoyDetails(data.deliveryBoy);
+      if (response) {
+        setDeliveryBoyDetails(response);
+        setIsLoggedIn(true)
       } else {
-        console.error('Failed to fetch delivery boy details:', response.statusText);
+        console.error('Failed to fetch delivery boy details:', response);
       }
     } catch (error) {
       console.error('Error fetching delivery boy details:', error);
@@ -40,12 +43,14 @@ export const DeliveryBoyAuthProvider = ({ children }) => {
   useEffect(() => {
     const checkDeliveryBoy = async () => {
       try {
+        // await AsyncStorage.removeItem("deliveryBoy")
         const storedToken = await AsyncStorage.getItem('deliveryBoy');
         if (storedToken) {
           const parsedToken = JSON.parse(storedToken);
+          console.log("stored token" , parsedToken)
           setToken(parsedToken);
-          setIsLoggedIn(true);
           getDeliveryBoyDetails(parsedToken);
+          setIsLoggedIn(() => true);
         }
       } catch (error) {
         console.error('Error checking delivery boy:', error);
@@ -56,17 +61,20 @@ export const DeliveryBoyAuthProvider = ({ children }) => {
     checkDeliveryBoy();
   }, [getDeliveryBoyDetails]);
 
+
+  console.log("this is from auth delivery boy detais" , deliveryBoyDetails)
+
   const loginWithOtp = async (phoneNumber) => {
     try {
       setLoading(true);
-      const response = await fetch('https://mom-beta-server.onrender.com/api/delivery/login', {
+      const response = await apiClient('delivery/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber }),
+        body: JSON.stringify({ mobileNumber: phoneNumber }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response) {
+        const data = response;
         router.replace({ pathname: '/Login/otp', params: { deliveryBoy: phoneNumber } });
         console.log('Login initiated:', data);
       } else {
@@ -83,14 +91,14 @@ export const DeliveryBoyAuthProvider = ({ children }) => {
   const verifyOtp = async (otp, phoneNumber) => {
     try {
       setLoading(true);
-      const response = await fetch('https://mom-beta-server.onrender.com/api/deliveryBoy/verify-otp', {
+      const response = await apiClient('delivery/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ otp, phoneNumber }),
+        body: JSON.stringify({ otp, mobileNumber: phoneNumber }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response) {
+        const data = response
         await AsyncStorage.setItem('deliveryBoy', JSON.stringify(data.token));
         setToken(data.token);
         setIsLoggedIn(true);
@@ -122,6 +130,32 @@ export const DeliveryBoyAuthProvider = ({ children }) => {
     }
   };
 
+  async function extractToken() {
+    const token = await AsyncStorage.getItem("deliveryBoy")
+    const parsedToken = JSON.parse(token)
+    return parsedToken
+  }
+
+
+  async function registerUser(authToken , data){
+    try{
+      const options = {
+        method:"POST" ,
+        headers:{
+          "Authorization":`Bearer ${authToken}`,
+          'Content-Type':"application/json"
+        },
+        body:JSON.stringify(data)
+      }
+      const reponse = await apiClient("delivery/register" , options)
+      if(reponse) return true 
+      else return false 
+    }catch(err){
+      console.log("error in registering the delivery boy" , err)
+      return false
+    }
+  }
+
   return (
     <DeliveryBoyAuthContext.Provider
       value={{
@@ -132,9 +166,18 @@ export const DeliveryBoyAuthProvider = ({ children }) => {
         loading,
         deliveryBoyDetails,
         getDeliveryBoyDetails,
+        extractToken , 
+        registerUser
       }}
     >
       {children}
     </DeliveryBoyAuthContext.Provider>
   );
 };
+
+
+export default function userDeliveryAuth() {
+  const context = useContext(DeliveryBoyAuthContext)
+  if (!context) throw new Error("Context not defined")
+  return context
+}

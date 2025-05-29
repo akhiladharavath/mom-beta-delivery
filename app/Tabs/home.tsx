@@ -7,8 +7,10 @@ import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import userDeliveryAuth from "@/context/authContext";
 import { useLocation } from '@/context/locatonContext';
-const token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWxpdmVyeUJveUlkIjoiNjgzNTU2ZTc2NjA1M2VjYTg5ZTBlZTQwIiwiaWF0IjoxNzQ4NDIyMTkxfQ.lQkEEDttODY8-xL8OI_vao3TMFi2K1j-YeuVwAOKacg"
+
 const HomeScreen = () => {
   const [isOnline, setIsOnline] = useState(false);
   
@@ -20,8 +22,12 @@ const HomeScreen = () => {
   const toggleSwitch = async () => {
     const newState = !isOnline;
     setIsOnline(newState);
-    await updateOnlineStatus(newState?'Online':'Offline')
-    };
+     await updateOnlineStatus(newState?'Online':'Offline')
+  };
+
+
+  const {deliveryBoyDetails} = userDeliveryAuth()
+
 
   const updateOnlineStatus = async (status) => {
     try{
@@ -36,7 +42,6 @@ const HomeScreen = () => {
      if(!response.ok){
       throw new Error('Failed to update status');
      }
-
      const data=await response.json();
      console.log('Status update to:', data.status);
     } catch (error){
@@ -92,7 +97,7 @@ const HomeScreen = () => {
         </View>
 
         <View style={styles.topSection}>
-          <Text style={styles.greetText}>{greet} Akhila</Text>
+          <Text style={styles.greetText}>{greet}{deliveryBoyDetails?deliveryBoyDetails.name:""}</Text>
           <View style={styles.personal}>
             <Text style={styles.personalText}>Stay safe on the road, and have a great day!</Text>
           </View>

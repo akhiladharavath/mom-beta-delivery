@@ -1,38 +1,49 @@
 import { Text, View, StyleSheet, Image, TouchableOpacity, StatusBar } from "react-native";
 import { router } from "expo-router";
-import React from 'react';
+import React, { useEffect } from 'react';
+import userDeliveryAuth from "@/context/authContext";
+import LoadingScreen from "@/components/LoadingScreen";
 
 
 export default function Index() {
-  return (
-    <View style={styles.container}>
-    <StatusBar backgroundColor="#00bfa5" barStyle="light-content" />
 
-    <View style={styles.logoContainer}>
-      <Image
-        source={require('../assets/images/momlogo.jpeg')} 
-        style={styles.logo}
-        resizeMode="contain"
-      />
-      <Text style={styles.title}>Mom Pharmacy</Text>
-    </View>
+  const { isLoggedIn, loading, deliveryBoyDetails, extractToken, getDeliveryBoyDetails } = userDeliveryAuth()
 
-    <Text style={styles.tagline}>Beyond pills - We deliver Life in Minutes</Text>
+ 
 
-    <TouchableOpacity style={styles.button} onPress={()=>router.replace("./Login/login")}>
-      <Text style={styles.buttonText}>Get Started</Text>
-    </TouchableOpacity>
-    
-   
-  </View>
+  useEffect(() => {
+    const init = async () => {
+      const token = await extractToken();
+      if (token) {
+        await getDeliveryBoyDetails(); // wait for this to finish
+      } else {
+        router.replace("/Login/login");
+      }
+    };
+    init();
+  }, []);
 
-  );
+  useEffect(() => {
+    if (deliveryBoyDetails) {
+      if (deliveryBoyDetails.isRegistered) {
+        console.log("this is running")
+        router.replace("/Tabs/home");
+      } else {
+        router.replace("/Login/signup");
+      }
+    }
+  }, [deliveryBoyDetails]);
+
+
+  if (loading) return <LoadingScreen />
+
+  return null;
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#00bfa5', 
+    backgroundColor: '#00bfa5',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -40,18 +51,18 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
     marginBottom: 30,
-    backgroundColor:'white',
-    top:0,
-    marginTop:-280,
-    height:500,
-    width:'120%',
-    borderBottomEndRadius:100,
-    borderBottomLeftRadius:100
+    backgroundColor: 'white',
+    top: 0,
+    marginTop: -280,
+    height: 500,
+    width: '120%',
+    borderBottomEndRadius: 100,
+    borderBottomLeftRadius: 100
   },
   logo: {
     width: 180,
     height: 180,
-    marginTop:200
+    marginTop: 200
   },
   title: {
     fontSize: 24,
@@ -59,25 +70,25 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: 'bold',
     borderTopLeftRadius: 300,
-   
+
   },
   tagline: {
     fontSize: 20,
     color: '#ffffff',
     textAlign: 'center',
     marginBottom: 40,
-    marginTop:100,
+    marginTop: 100,
     paddingHorizontal: 10,
   },
   button: {
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#ffffff',
     paddingVertical: 15,
     paddingHorizontal: 40,
     borderRadius: 30,
-    elevation: 5, 
+    elevation: 5,
   },
   buttonText: {
-    color: '#00bfa5', 
+    color: '#00bfa5',
     fontSize: 16,
     fontWeight: 'bold',
   },

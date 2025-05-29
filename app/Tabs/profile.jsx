@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, Dimensions, Alert } from 'react-native';
 import ProfileItem from '../profile/ProfileItems';
 import * as ImagePicker from 'expo-image-picker';
+import userDeliveryAuth from "@/context/authContext";
 
 const options = [
   { 
@@ -49,11 +50,7 @@ const options = [
      icon: <Image source={require('@/assets/images/Profile/settings.png')} style={{ height: 30, width: 25}} />,
  
   },
-  { 
-    title: 'Logout',
-    icon: <Image source={require('@/assets/images/Profile/logout.png')} style={{ height: 30, width: 25}} />,
-
-   },
+  
 ];
 
 export default function MyProfile() {
@@ -81,6 +78,21 @@ export default function MyProfile() {
     }
   };
 
+  const {logout} = userDeliveryAuth()
+
+  function handleLogout(){
+      Alert.alert('Are you sure?', 'Come back soom we will miss you!', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {text: 'OK', onPress: () =>logout() },
+    ]);
+  }
+
+  const {deliveryBoyDetails} = userDeliveryAuth()
+
   
   return (
     <SafeAreaView style={styles.container}>
@@ -98,8 +110,8 @@ export default function MyProfile() {
     </TouchableOpacity>
 
     <View style={styles.nameContainer}>
-     <Text style={styles.name}>Adarsh</Text>
-     <Text style={styles.phone}>7671812449</Text>
+     <Text style={styles.name}>{deliveryBoyDetails?deliveryBoyDetails.name:"Login"}</Text>
+     <Text style={styles.phone}>{deliveryBoyDetails?deliveryBoyDetails.mobileNumber:""}</Text>
    </View>
     </View>
        
@@ -112,6 +124,9 @@ export default function MyProfile() {
            <Text style={styles.optionText}>{item.title}</Text>
           </TouchableOpacity>
         ))}
+        <TouchableOpacity onPress={handleLogout}  style={{flexDirection:"row" , width:"90%",justifyContent:"center" ,  margin:'auto', padding:10 ,marginTop:12 , backgroundColor:"#35a79c", marginBottom:40 , borderRadius:12}}>
+          <Text>Logout</Text>
+        </TouchableOpacity>
         </View> 
       </ScrollView>
     </SafeAreaView>
@@ -167,7 +182,8 @@ const styles = StyleSheet.create({
   },
   container: { 
     flex: 1,
-     backgroundColor: '#fff'
+     backgroundColor: '#fff',
+     marginBottom:30
    },
 
   profileHeader: {

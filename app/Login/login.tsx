@@ -1,4 +1,5 @@
 // import { userAuth } from '@/Context/authContext';
+import userDeliveryAuth from '@/context/authContext';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -35,7 +36,8 @@ export default function LoginScreen() {
   const flatListRef = useRef(null);
   const router = useRouter();
 
-//   const { loginWithOtp } = userAuth();
+//   const { loginWithOtp } = userAuth()
+const {loginWithOtp} = userDeliveryAuth()
 
   const taglineText = (
     <>
@@ -49,14 +51,10 @@ export default function LoginScreen() {
       return;
     }
 
-    // if (!isChecked) {
-    //   Alert.alert('Terms Not Accepted', 'You must accept the terms and privacy policy to continue.');
-    //   return;
-    // }
-
-    // setLoading(true);
-    // // await loginWithOtp(input);
-    // setLoading(false);
+    setLoading(true);
+    console.log(input)
+    await loginWithOtp(input);
+    setLoading(false);
   };
 
   const handleInputChange = (text: string) => {
@@ -136,7 +134,7 @@ export default function LoginScreen() {
 
             <TouchableOpacity
               style={styles.otpButton}
-              onPress={()=>router.push('/Login/otp')}
+              onPress={handleSendOtp}
               disabled={loading}
             >
               {loading ? (
@@ -165,7 +163,7 @@ export default function LoginScreen() {
                   privacy policy
                 </Text>
               </Text>
-            </View>*/}
+            </View> */}
           </View> 
 
           <View style={styles.signupContainer}>
