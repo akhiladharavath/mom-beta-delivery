@@ -27,13 +27,14 @@ const WeekEarnings = () => {
   </View>
 
 
-    const noOfOrders = data.orders.length
+    // const noOfOrders = data.earnings.length
+    console.log("this is from daily earning" , weekEarnings)
 
 
 
    const formatedOrderse = ()=>{
   const {orders} = data 
-  const formattedData = orders.map((item)=>{
+  const formattedData = data.map((item)=>{
     const dateObj = new Date(item.createdAt)
     return {
       date:`${convertDayToName(dateObj.getDay()).slice(0,3)},${dateObj.getDate()} ${covertMonthsToNames(dateObj.getMonth())}`,
@@ -58,11 +59,11 @@ const WeekEarnings = () => {
 
       <View style={styles.earningsCard}>
         <Text style={styles.earnedText}>You’ve earned</Text>
-        <Text style={styles.amount}>₹{weekEarnings}</Text>
+        <Text style={styles.amount}>₹{weekEarnings?weekEarnings:0}</Text>
         <View style={styles.summaryRow}>
           <View style={styles.summaryItem}>
             <Text style={styles.label}>Orders Completed</Text>
-            <Text style={styles.value}>{noOfOrders}</Text>
+            <Text style={styles.value}>{data?data.length:0}</Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.label}>Daily Average</Text>

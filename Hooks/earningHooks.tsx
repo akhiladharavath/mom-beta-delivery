@@ -2,6 +2,7 @@
 
 import apiClient from "@/utils/apiClient";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 
 async function getToken(){
   const token = await AsyncStorage.getItem("deliveryBoy")
@@ -51,5 +52,36 @@ export function last8Weeks(){
         }
 
         return weeks;
+}
+
+export function useEarnings(){
+  const [earnings, setEarnings] = useState([]);
+
+  useEffect(()=>{
+    async function fetchEarnings(){
+      const token = await AsyncStorage.getItem("deliveryBoy")
+      const paredToken = JSON.parse(token)
+      console.log("this is from hook" , token)
+      try{
+        const options = {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization':`Bearer ${paredToken}`
+          }
+        }
+        const response =  await apiClient("earning/getEarnings" , options)
+        console.log(response)
+        if(response){
+          setEarnings(response)
+        }
+      }catch(e){
+        console.log("Error in fetching earning in hook" , e)
+      }
+    }
+    fetchEarnings()
+  } , [])
+
+  return {getEarnings:earnings.earning}
 }
 

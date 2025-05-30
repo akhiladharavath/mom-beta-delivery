@@ -64,7 +64,7 @@ const [currentLocation, setCurrentLocation] = useState(null);
         return;
       }
 
-      const apiKey = ''; // 🔐 Replace this with your real key
+      const apiKey = ''; 
       const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originCoords.latitude},${originCoords.longitude}&destination=${customerLocation.latitude},${customerLocation.longitude}&key=${apiKey}`;
 
       const response = await fetch(url);

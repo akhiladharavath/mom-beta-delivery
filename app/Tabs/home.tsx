@@ -7,9 +7,10 @@ import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import apiClient from "@/utils/apiClient";
 import userDeliveryAuth from "@/context/authContext";
 import { useLocation } from '@/context/locatonContext';
+import { useEarnings } from '@/Hooks/earningHooks';
 
 const HomeScreen = () => {
   const [isOnline, setIsOnline] = useState(false);
@@ -18,7 +19,7 @@ const HomeScreen = () => {
   const [earning, setEarning] = useState(0);
   const navigation = useNavigation();
   const { regId } = useLocalSearchParams();
-
+ const { extractToken } = userDeliveryAuth();
   const toggleSwitch = async () => {
     const newState = !isOnline;
     setIsOnline(newState);
@@ -30,8 +31,9 @@ const HomeScreen = () => {
 
 
   const updateOnlineStatus = async (status) => {
+    const token = await extractToken()
     try{
-     const response=await fetch(`http://192.168.1.100:3000/delivery/update`,{
+     const response=await apiClient(`delivery/update`,{
       method:"PUT",
       headers:{
         'Content-Type':'application/json',
@@ -39,11 +41,11 @@ const HomeScreen = () => {
       },
       body:JSON.stringify({status}),
      }) ;
-     if(!response.ok){
+     if(!response){
       throw new Error('Failed to update status');
      }
-     const data=await response.json();
-     console.log('Status update to:', data.status);
+     const data=response;
+     console.log('Status update to:');
     } catch (error){
       console.error('status update error', error.message);
     }
@@ -53,7 +55,9 @@ const HomeScreen = () => {
 
   const { locationName, refreshLocation } = useLocation();
 
-  
+  const {getEarnings} = useEarnings()
+
+  console.log("this is home earings" , getEarnings)
 
   const getCurrentHour = new Date().getHours();
   let greet;
@@ -152,21 +156,21 @@ const HomeScreen = () => {
                   <View style={styles.horizontalDivider} />
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>₹ 0</Text>
+                    <Text style={styles.statValue}>₹ {getEarnings?getEarnings.total_earning:0}</Text>
                     <Text style={styles.statLabel}>Earnings</Text>
                   </View>
 
                   <View style={styles.divider} />
 
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>0:00 hrs</Text>
+                    <Text style={styles.statValue}>12:00 hrs</Text>
                     <Text style={styles.statLabel}>Login hours</Text>
                   </View>
 
                   <View style={styles.divider} />
 
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>0</Text>
+                    <Text style={styles.statValue}>{getEarnings?getEarnings.orders.length:0}</Text>
                     <Text style={styles.statLabel}>Orders</Text>
                   </View>
                 </View>

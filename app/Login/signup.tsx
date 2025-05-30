@@ -51,6 +51,7 @@ const SignUpScreen = () => {
       if (response) {
         await getdeliveryBoyDetails(AuthToken)
         console.log(response);
+        router.replace('/')
       } else {
         router.replace("/Login/login");
       }
