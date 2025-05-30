@@ -32,7 +32,7 @@ const EarningsHistory = ({data ,totalEarning}) => {
     </View>
 
     <View style={styles.amountRow}>
-      <Text style={styles.amount}>₹ {data?data.total_earning:0}</Text>
+      <Text style={styles.amount}>₹ {totalEarning?totalEarning:0}</Text>
       <Text style={styles.lastWeek}>Last Week ₹ {weekEarnings??0}</Text>
     </View>
 

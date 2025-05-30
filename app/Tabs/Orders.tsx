@@ -72,8 +72,8 @@ const DeliveryDashboard = () => {
     if (item.status !== 'confirmed' || item.deliveryboy_id) return null;
     
 const customerLocation = item.address_id?.currentLocation;
-console.log('Customer Location:', customerLocation);
-  console.log('Delivery Boy Location:', locationCoords);
+// console.log('Customer Location:', customerLocation);
+//   console.log('Delivery Boy Location:', locationCoords);
 
   const distance = customerLocation && locationCoords
     ? getDistance(

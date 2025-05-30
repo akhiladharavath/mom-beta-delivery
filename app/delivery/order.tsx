@@ -1,7 +1,9 @@
 import Help from '@/components/help/Help';
 import { useOrders } from '@/context/orderContext';
+import userDeliveryAuth from "@/context/authContext";
 import { router } from 'expo-router';
 import React, { useState } from 'react';
+import apiClient from "@/utils/apiClient";
 import {
   View,
   Text,
@@ -16,37 +18,70 @@ import {
   Linking,
 } from 'react-native';
 
+
 const App = () => {
   const [showCODModal, setShowCODModal] = useState(false);
   const [deliveryDetailsVisible, setDeliveryDetailsVisible] = useState(true);
   const [itemDetailsVisible, setItemDetailsVisible] = useState(true);
+ const { extractToken } = userDeliveryAuth();
+ const { acceptedOrderDetails } = useOrders()
 
+ 
+ async function addEarnings(){
+  const token = await extractToken()
+  try{
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+       },
+       body: JSON.stringify({ orderId:acceptedOrderDetails._id, base_earning:20, bonus:0, deduction:0, ETA:12, total_earning:20 }),
+    }
+    const response = await apiClient("earning/create" ,options)
+    console.log(response)
+    if(response){
+      return true
+    }else{
+      return false
+    }
+  }
+  catch(err){
+    console.log("Error in adding earnings" , err)
+    return false
+  }
+ }
 
-  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWxpdmVyeUJveUlkIjoiNjgzNTU2ZTc2NjA1M2VjYTg5ZTBlZTQwIiwiaWF0IjoxNzQ4NDIyMTkxfQ.lQkEEDttODY8-xL8OI_vao3TMFi2K1j-YeuVwAOKacg';
-
-  const { acceptedOrderDetails } = useOrders()
+ 
   console.log("orderid",acceptedOrderDetails._id)
   const handleDelivery = async () => {
+    const token = await extractToken();
+    console.log("token",token)
     try {
-      const response = await fetch(`http://192.168.1.100:3000/api/delivered/${acceptedOrderDetails._id}`, {
+      const response = await apiClient(`api/delivered/${acceptedOrderDetails._id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-       
       });
 
-      if (!response.ok) {
-        const errData = await response.json();
+      const deliveryEarnings = await addEarnings()
+      
+
+      if (!response) {
+        const errData = response;
         throw new Error(errData.message || 'Failed to update status');
       }
-
-      const data = await response.json();
-      Alert.alert('Success', data.message || 'Status updated to Online');
+      if(deliveryEarnings){
+        const data = response
+      }else{
+        Alert.alert("Earning is not added" , "Please check you earnigs is not added")
+      }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert('Error');
     }
+    router.push('/Tabs/Orders')
   };
 
   const handleCall = (phone) =>{
