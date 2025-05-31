@@ -8,14 +8,13 @@ import LoadingScreen from "@/components/LoadingScreen";
 export default function Index() {
 
   const { isLoggedIn, loading, deliveryBoyDetails, extractToken, getDeliveryBoyDetails } = userDeliveryAuth()
-
  
 
   useEffect(() => {
     const init = async () => {
       const token = await extractToken();
       if (token) {
-        await getDeliveryBoyDetails(); // wait for this to finish
+        await getDeliveryBoyDetails(); 
       } else {
         router.replace("/Login/login");
       }
