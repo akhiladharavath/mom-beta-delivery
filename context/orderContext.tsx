@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import apiClient from "@/utils/apiClient";
 import userDeliveryAuth from "./authContext";
 
-const OrderContext = createContext();
+const OrderContext = createContext(null);
 
 // const token =  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWxpdmVyeUJveUlkIjoiNjgzNTU2ZTc2NjA1M2VjYTg5ZTBlZTQwIiwiaWF0IjoxNzQ4NDIyMTkxfQ.lQkEEDttODY8-xL8OI_vao3TMFi2K1j-YeuVwAOKacg';
 

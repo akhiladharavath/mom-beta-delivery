@@ -34,7 +34,7 @@ const WeekEarnings = () => {
 
    const formatedOrderse = ()=>{
   const {orders} = data 
-  const formattedData = data.map((item)=>{
+  const formattedData = orders.map((item)=>{
     const dateObj = new Date(item.createdAt)
     return {
       date:`${convertDayToName(dateObj.getDay()).slice(0,3)},${dateObj.getDate()} ${covertMonthsToNames(dateObj.getMonth())}`,

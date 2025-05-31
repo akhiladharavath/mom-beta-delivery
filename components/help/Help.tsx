@@ -1,12 +1,13 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
+import { Colors } from 'react-native/Libraries/NewAppScreen'
 
 export default function Help() {
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 10 , gap: 10 }}>
-        <Image source={require('../../assets/images/help1.jpg')} size={15} color='black' />
+    <TouchableOpacity onPress={()=>console.log("pressed on hlep")} style={{ flexDirection: 'row', alignItems: 'center', padding: 10 , gap: 4 }}>
+        <Ionicons name='help-circle' size={24} color={Colors.primary}/>
       <Text>Help</Text>
-    </View>
+    </TouchableOpacity>
   )
 }
