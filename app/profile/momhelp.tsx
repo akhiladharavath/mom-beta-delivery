@@ -1,15 +1,16 @@
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  SafeAreaView,
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Linking,
-  Modal,
+    Linking,
+    Modal,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 const HelpSupportScreen = () => {
   const [expandedIndex, setExpandedIndex] = useState(null);
@@ -58,20 +59,20 @@ const HelpSupportScreen = () => {
   };
 
   const openWhatsApp = () => {
-    Linking.openURL('https://wa.me/919701259069?text=Hello,%20I%20need%20help%20as%20a%20delivery%20partner.');
+    Linking.openURL('https://wa.me/917702068334?text=Hello,%20I%20need%20help%20as%20a%20delivery%20partner.');
   };
 
   const callSupport = () => {
-    Linking.openURL('tel:1800123456');
+    Linking.openURL('tel:7702068334');
   };
 
   const startChatBot = () => {
-    // You can navigate to chatbot screen or show a toast for now
-    alert('Chat Bot feature coming soon!');
+    router.push('/comingsoon/momai');
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      <MaterialIcons name="arrow-back" size={24} color="#00A99D" style={styles.MaterialIcons} onPress={()=>router.back()} />
       <Text style={styles.header}>Help & Support</Text>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {faqData.map((item, index) => (
@@ -98,8 +99,6 @@ const HelpSupportScreen = () => {
           <Text style={styles.contactText}>Contact Partner Support</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      {/* Support Options Modal */}
       <Modal visible={showModal} transparent animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -112,7 +111,7 @@ const HelpSupportScreen = () => {
 
             <TouchableOpacity style={styles.modalButton} onPress={callSupport}>
               <Ionicons name="call" size={20} color="#4CAF50" />
-              <Text style={styles.modalText}>Call Toll-Free: 1800-123-456</Text>
+              <Text style={styles.modalText}>Call Toll-Free: mom-helpline</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.modalButton} onPress={startChatBot}>
@@ -143,7 +142,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#00a99d',
     marginBottom: 20,
+    marginTop: -30,
+    marginLeft : 20
   },
+      MaterialIcons: {
+      marginLeft: -10,
+      marginTop: 10,
+    },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,

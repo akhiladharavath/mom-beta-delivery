@@ -1,3 +1,5 @@
+import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 
@@ -5,8 +7,10 @@ const TermsAndConditionsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
+      <View style={styles.headerRow}>
+        <MaterialIcons name="arrow-back" size={24} color="#00A99D" style={styles.MaterialIcons} onPress={()=>router.back()} />
         <Text style={styles.title}>Terms & Conditions for Delivery Partners</Text>
-        <Text style={styles.date}>Effective Date: 01/05/2025</Text>
+        </View>
 
         <Text style={styles.heading}>1. Eligibility</Text>
         <Text style={styles.paragraph}>
@@ -71,9 +75,6 @@ const TermsAndConditionsScreen = () => {
           • Terms may change. Continued use implies acceptance of updated terms
         </Text>
 
-        <Text style={styles.footer}>
-          By continuing to use the platform, you agree to these Terms and Conditions.
-        </Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -86,11 +87,23 @@ const styles = StyleSheet.create({
     contentContainer: {
       padding: 20,
     },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+  
+      justifyContent: 'flex-start',
+      marginBottom: 10,
+    },
+    MaterialIcons: {
+      marginLeft: -10,
+      marginTop: 10,
+    },
     title: {
-      fontSize: 22,
+      fontSize: 18,
       fontWeight: '700',
       color: '#00a99d',
       marginBottom: 10,
+      marginTop: 17,
     },
     date: {
       fontSize: 14,
