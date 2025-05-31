@@ -13,7 +13,9 @@ export default function RootLayout() {
         <LocationProvider>
         <OrderProvider>
         <Stack screenOptions={{
-        headerShown: false}}/>
+        headerShown: false}}>
+          <Stack/>
+        </Stack>
         </OrderProvider>
         </LocationProvider>
        </DeliveryBoyAuthProvider>
