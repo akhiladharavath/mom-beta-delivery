@@ -63,7 +63,6 @@ const options = [
   {
     title: 'Settings',
     icon: <Image source={require('@/assets/images/Profile/settings.png')} style={{ height: 30, width: 25 }} />,
-
   },
 
 ];
