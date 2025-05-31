@@ -57,7 +57,6 @@ const HomeScreen = () => {
 
   const {getEarnings} = useEarnings()
 
-  console.log("this is home earings" , getEarnings)
 
   const getCurrentHour = new Date().getHours();
   let greet;

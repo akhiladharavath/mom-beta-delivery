@@ -48,7 +48,6 @@ const EarningsScreen = () => {
    
    
          const { data, weekEarnings , loading } = useWeekEarnings({ startingDate: startingWeek, endingDate: endingWeek });
-         console.log("this from earnings" , weekEarnings)
 
          
 

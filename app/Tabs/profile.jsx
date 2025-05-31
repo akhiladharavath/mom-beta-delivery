@@ -111,6 +111,7 @@ export default function MyProfile() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
+        <View style={styles.box}>
         <View style={styles.header}>
 
           <View >
@@ -126,12 +127,18 @@ export default function MyProfile() {
           <View style={styles.nameContainer}>
             <Text style={styles.name}>{deliveryBoyDetails ? deliveryBoyDetails.name : "Login"}</Text>
             <Text style={styles.phone}>{deliveryBoyDetails ? deliveryBoyDetails.mobileNumber : ""}</Text>
+            <View style={styles.detailsBox}>
+              <TouchableOpacity style={styles.details} onPress={() => { router.push('/profile/details') }}>
+                <Text style={styles.detailstext}>View Details  </Text>
+                <AntDesign name="arrowright" size={20} color="#00a99d" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-
+</View>
         <View style={styles.optionsContainer}>
           {options.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.option} onPress={() => { item.Link ? router.push(item.Link) : console.log("Pressed") }}>
+            <TouchableOpacity key={index} style={styles.option}>
               <View style={styles.iconWrapper}>
                 {item.icon}
               </View>
@@ -156,6 +163,11 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
+    height:180,
+    width:'100%',
+  },
+  box:{
+    padding:10
   },
   profileImage: {
     width: 100,
@@ -184,7 +196,7 @@ const styles = StyleSheet.create({
 
   },
   nameContainer: {
-    marginTop: 20,
+    marginTop: 50,
     marginHorizontal: 50
   },
   name: {
@@ -196,6 +208,29 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
     marginTop: 5,
+  },
+  detailsBox:{
+  marginTop:29,
+  
+    
+  },
+  details: {
+    
+    height: 40,
+    width: 160,
+    borderBottomRightRadius:20,
+    borderTopLeftRadius:20,
+    
+    backgroundColor: "#fff",
+    flexDirection:'row',
+     alignItems: 'center',
+     justifyContent:'center'
+
+  },
+  detailstext:{
+  fontSize:19,
+  fontWeight:500,
+  color:'#00a99d'
   },
   container: {
     flex: 1,

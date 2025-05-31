@@ -87,7 +87,7 @@ const customerLocation = item.address_id?.currentLocation;
     return (
       <View style={styles.orderCard}>
         <Text style={styles.orderText}>Order ID: {item._id}</Text>
-       <Text style={styles.orderText}>Total: ${item.total_amount}</Text>
+       <Text style={styles.orderText}>Total: ₹{item.total_amount}</Text>
        
       {distance && (
         <Text style={styles.orderText}>Distance: {distance} km</Text>

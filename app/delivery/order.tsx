@@ -39,7 +39,7 @@ const App = () => {
        body: JSON.stringify({ orderId:acceptedOrderDetails._id, base_earning:20, bonus:0, deduction:0, ETA:12, total_earning:20 }),
     }
     const response = await apiClient("earning/create" ,options)
-    console.log(response)
+    
     if(response){
       return true
     }else{
