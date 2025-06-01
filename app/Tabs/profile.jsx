@@ -3,25 +3,21 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaVi
 import ProfileItem from '../profile/ProfileItems';
 import * as ImagePicker from 'expo-image-picker';
 import userDeliveryAuth from "@/context/authContext";
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import {COLORS} from '@/constants/COLORS'
 
 const options = [
   {
-    title: 'Ways to Earn',
-    icon: <Image source={require('@/assets/images/Profile/money-flow.png')} style={{ height: 30, width: 30 }} />,
-
-  },
-  {
     title: 'Refer & Earn',
     icon: <Image source={require('@/assets/images/Profile/refer.png')} style={{ height: 30, width: 25 }} />,
+    Link:"/profile/refer&earn"
 
   },
   {
     title: 'Wrong Action',
     icon: <Image source={require('@/assets/images/Profile/wrong.png')} style={{ height: 30, width: 25 }} />,
-    Link: '/profile/WrongActions/WrongActions'
+    Link: '/profile/WrongActions/WrongActions',
 
   },
   {
@@ -31,38 +27,36 @@ const options = [
 
   },
   {
-    title: 'Partner Club',
-    icon: <Image source={require('@/assets/images/Profile/membership.png')} style={{ height: 30, width: 25 }} />,
-
-  },
-  {
     title: 'Help & Support',
     icon: <Image source={require('@/assets/images/Profile/help.png')} style={{ height: 30, width: 25 }} />,
+    Link:'/profile/momhelp'
 
   },
   {
     title: 'Store',
     icon: <Image source={require('@/assets/images/Profile/store.png')} style={{ height: 30, width: 25 }} />,
-
+    Link:'/profile/mystorelocation'
   },
-  {
-    title: 'Reusable Bags',
-    icon: <Image source={require('@/assets/images/Profile/bag.png')} style={{ height: 30, width: 25 }} />,
-
-  },
-  {
-    title: 'Message Center',
-    icon: <Image source={require('@/assets/images/Profile/email.png')} style={{ height: 30, width: 25 }} />,
-
-  },
+  // {
+  //   title: 'Message Center',
+  //   icon: <Image source={require('@/assets/images/Profile/email.png')} style={{ height: 30, width: 25 }} />,
+  //   Link:'/profile/'
+  // },
   {
     title: 'Terms and Condition',
     icon: <AntDesign name='form' size={24}/>,
+    Link:'/profile/terms'
 
   },
   {
     title: 'Settings',
     icon: <Image source={require('@/assets/images/Profile/settings.png')} style={{ height: 30, width: 25 }} />,
+    Link:'/profile/settings'
+  },
+  {
+    title: 'Order History',
+    icon: <SimpleLineIcons name="social-dropbox" size={24} color="black" style={{ height: 30, width: 25 }} />,
+    Link:'/profile/ordershistory'
   },
 
 ];
@@ -138,7 +132,7 @@ export default function MyProfile() {
 </View>
         <View style={styles.optionsContainer}>
           {options.map((item, index) => (
-            <TouchableOpacity key={index} style={styles.option}>
+            <TouchableOpacity key={index} style={styles.option} onPress={()=>{router.push(item.Link)}}>
               <View style={styles.iconWrapper}>
                 {item.icon}
               </View>
