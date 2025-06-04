@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,139 +7,179 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  SafeAreaView,
+  ActivityIndicator,
+  Platform,
+  Linking,
 } from 'react-native';
 import { Ionicons, Entypo } from '@expo/vector-icons';
+import * as Location from 'expo-location';
+import apiClient from '@/utils/apiClient';
 
 const { width, height } = Dimensions.get('window');
 const wp = (percentage: string) => (width * parseFloat(percentage)) / 100;
 const hp = (percentage: string) => (height * parseFloat(percentage)) / 100;
 
-const initialAddresses = [
-  {
-    id: '1',
-    title: 'Store 1',
-    details: 'Akshya Nagar 1st Block 1st Cross, Ramamurthy nagar, Bangalore–560016',
-  },
-  {
-    id: '2',
-    title: 'Store 2',
-    details: 'Sahithya, 18-63, beside HP petrol bunk, Yadav Nagar, Malkajgiri, Secunderabad',
-  },
-  {
-    id: '3',
-    title: 'Store 3',
-    details: 'Rohith Raj, 14-52, beside HP petrol bunk, Yadav Nagar, Malkajgiri, Secunderabad',
-  },
-  {
-    id: '4',
-    title: 'Store 4',
-    details: 'Sahithya, 18-63, beside HP petrol bunk, Yadav Nagar, Malkajgiri, Secunderabad',
-  },
-  {
-    id: '5',
-    title: 'Store 5',
-    details: 'Akshya Nagar 1st Block 1st Cross, Ramamurthy nagar, Bangalore–560016',
-  },
-];
-
 export default function AddressBook() {
-  const [addresses, setAddresses] = useState(initialAddresses);
-  const [primaryId, setPrimaryId] = useState<string>(initialAddresses[0].id);
+  const [addresses, setAddresses] = useState<any[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
   const [isPrimaryModalVisible, setIsPrimaryModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const getDistanceFromLatLonInKm = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ) => {
+    lat1 = parseFloat(String(lat1));
+    lon1 = parseFloat(String(lon1));
+    lat2 = parseFloat(String(lat2));
+    lon2 = parseFloat(String(lon2));
+
+    if ([lat1, lon1, lat2, lon2].some((v) => isNaN(v))) return 'N/A';
+
+    const toRad = (value: number) => (value * Math.PI) / 180;
+    const R = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return (R * c).toFixed(2);
+  };
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await apiClient('storeAddress/allStoreAddress');
+      const storeData = response.StoreAddress1;
+
+      if (Array.isArray(storeData)) {
+        await fetchLocationAndDistance(storeData);
+      } else {
+        setAddresses([]);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error fetching store addresses:', error);
+      setLoading(false);
+    }
+  };
+
+  const fetchLocationAndDistance = async (stores: any[]) => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Location permission denied');
+      setAddresses(stores.map((s) => ({ ...s, distance: 'N/A' })));
+      setLoading(false);
+      return;
+    }
+
+    const location = await Location.getCurrentPositionAsync({});
+    const userLat = location.coords.latitude;
+    const userLon = location.coords.longitude;
+
+    const withDistance = stores.map((store) => {
+      console.log('Store:', store); 
+
+      const lat = parseFloat(String(store.CurrentLocation.latitude));
+      const lon = parseFloat(String(store.CurrentLocation.longitude));
+
+      const dist = getDistanceFromLatLonInKm(userLat, userLon, lat, lon);
+      return { ...store, distance: isNaN(parseFloat(dist)) ? 'N/A' : `${dist} km` };
+    });
+
+    setAddresses(withDistance);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const handleNavigate = (store: any) => {
+    const url = Platform.select({
+      ios: `http://maps.apple.com/?daddr=${store.latitude},${store.longitude}`,
+      android: `google.navigation:q=${store.latitude},${store.longitude}`,
+    });
+
+    Linking.openURL(url);
+  };
 
   const handleSetPrimary = () => {
-    if (selectedAddress) {
-      const updatedList = addresses.filter(addr => addr.id !== selectedAddress.id);
-      setAddresses([selectedAddress, ...updatedList]);
-      setPrimaryId(selectedAddress.id);
-    }
     setIsPrimaryModalVisible(false);
   };
 
-  const primaryAddress = addresses.find(addr => addr.id === primaryId);
-  const otherAddresses = addresses.filter(addr => addr.id !== primaryId);
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: hp('10%') }}>
-      <View style={styles.header}>
-        <Ionicons name="arrow-back" size={30} color="#000" />
-        <Text style={styles.headerText}>My Store Location</Text>
-      </View>
+      <SafeAreaView>
+        <View style={styles.header}>
+          <Ionicons name="arrow-back" size={30} style={{marginTop: 20}}color="#000" />
+          <Text style={styles.headerText}>My Store Location</Text>
+        </View>
 
-      <Text style={styles.subHeader}>My Current Store Location</Text>
-      {primaryAddress && (
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: '#e0f2f1',
-              borderColor: '#00a99d',
-              borderWidth: 1,
-            },
-          ]}
+        <Text style={styles.subHeader}>Store Addresses</Text>
+
+        {addresses.map((item, index) => (
+          <View key={item._id || index} style={styles.card}>
+            <View style={styles.radioRow}>
+              <Text style={styles.cardTitle}>Address {index + 1}</Text>
+              <Entypo
+                name="dots-three-vertical"
+                size={20}
+                color="#444"
+                style={{ marginLeft: 'auto' }}
+                onPress={() => {
+                  setSelectedAddress(item);
+                  setIsPrimaryModalVisible(true);
+                }}
+              />
+            </View>
+            <Text style={styles.cardText}>
+              {item.Building}, {item.City}, {item.DoorNo}, {item.Street}, {item.Pincode}
+            </Text>
+            <Text style={styles.distanceText}>Distance: {item.distance || 'N/A'}</Text>
+
+            <TouchableOpacity onPress={() => handleNavigate(item)}>
+              <Text style={styles.navigationText}>Open in Maps</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+
+        <Modal
+          visible={isPrimaryModalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setIsPrimaryModalVisible(false)}
         >
-          <View style={styles.radioRow}>
-         
-            <Text style={styles.cardTitle}>{primaryAddress.title}</Text>
-            <Entypo
-              name="dots-three-vertical"
-              size={20}
-              color="#444"
-              style={{ marginLeft: 'auto' }}
-              onPress={() => {
-                setSelectedAddress(primaryAddress);
-                setIsPrimaryModalVisible(true);
-              }}
-            />
-          </View>
-          <Text style={styles.cardText}>{primaryAddress.details}</Text>
-        </View>
-      )}
-
-      {otherAddresses.length > 0 && (
-        <>
-          <Text style={[styles.subHeader, { marginTop: 30 }]}>
-            Other Stores in Your Location
-          </Text>
-          {otherAddresses.map(item => (
-            <View key={item.id} style={styles.card}>
-              <View style={styles.radioRow}>
-              
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Entypo
-                  name="dots-three-vertical"
-                  size={20}
-                  color="#444"
-                  style={{ marginLeft: 'auto' }}
-                  onPress={() => {
-                    setSelectedAddress(item);
-                    setIsPrimaryModalVisible(true);
-                  }}
-                />
+          <View style={styles.overlay}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>Set as primary address</Text>
+              <View style={styles.buttonRow}>
+                <TouchableOpacity style={styles.button} onPress={handleSetPrimary}>
+                  <Text style={styles.buttonText}>Yes</Text>
+                </TouchableOpacity>
+                <View style={styles.divider} />
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() => setIsPrimaryModalVisible(false)}
+                >
+                  <Text style={styles.buttonText}>No</Text>
+                </TouchableOpacity>
               </View>
-              <Text style={styles.cardText}>{item.details}</Text>
-            </View>
-          ))}
-        </>
-      )}
-
-      <Modal visible={isPrimaryModalVisible} transparent animationType="fade" onRequestClose={() => setIsPrimaryModalVisible(false)}>
-        <View style={styles.overlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalText}>Set as primary address</Text>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity style={styles.button} onPress={handleSetPrimary}>
-                <Text style={styles.buttonText}>Yes</Text>
-              </TouchableOpacity>
-              <View style={styles.divider} />
-              <TouchableOpacity style={styles.button} onPress={() => setIsPrimaryModalVisible(false)}>
-                <Text style={styles.buttonText}>No</Text>
-              </TouchableOpacity>
             </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
+      </SafeAreaView>
     </ScrollView>
   );
 }
@@ -148,7 +188,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#e0f2f1',
-    padding: 8
+    padding: 8,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -159,6 +204,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     marginLeft: 10,
+    marginTop: 20,
     color: '#000',
   },
   subHeader: {
@@ -172,7 +218,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
-    flexDirection: 'column',
   },
   radioRow: {
     flexDirection: 'row',
@@ -187,7 +232,17 @@ const styles = StyleSheet.create({
   cardText: {
     fontSize: 16,
     color: '#333',
-    marginLeft: -2,
+  },
+  distanceText: {
+    fontSize: 16,
+    color:'#FF0000',
+    marginTop: 5,
+  },
+  navigationText: {
+    fontSize: 14,
+    color: '#00a99d',
+    marginTop: 5,
+    textDecorationLine: 'underline',
   },
   overlay: {
     flex: 1,
@@ -196,20 +251,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    width: 800,
+    width: 350,
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: wp('5%'),
     alignItems: 'center',
   },
   modalText: {
-    fontSize: 10,
+    fontSize: 20,
     fontWeight: '600',
-    marginBottom: -100,
+    marginBottom: 10,
   },
   buttonRow: {
     flexDirection: 'row',
-    width: '100%',
+    width: '90%',
     borderTopWidth: 1,
     borderColor: '#ccc',
   },
