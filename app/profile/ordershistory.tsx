@@ -1,36 +1,97 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { router } from 'expo-router';
-import { Text, View, StyleSheet, SectionList, SafeAreaView, TouchableOpacity, Button } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  SectionList,
+  SafeAreaView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-export const data = [
-  {
-    title: '12th May',
-    data: [
+import userDeliveryAuth from "../../context/authContext";
 
-      { Time: '10:20 am', order_id: '#1234' , RTS:"On-time RTS" },
-      { Time: '11:00 am', order_id: '#1235', RTS:"Delayed RTS"}
-    ]
-  },
-  {
-    title: '13th May',
-    data: [
-      { Time: '10:20 am', order_id: '#1236',RTS:"On-time RTS" },
-      { Time: '11:15 am', order_id: '#1237',RTS:"On-time RTS" },
-      { Time: '12:00 am', order_id: '#1238', RTS:"On-time RTS" }
-    ]
-  }
-];
+
 export default function OrderHistoryScreen() {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { extractToken } = userDeliveryAuth();
+
+  const fetchOrders = async () => {
+    try {
+      const token = await extractToken();
+      console.log("Extracted Token:", token);
+
+      if (!token) {
+        console.error("No token found.");
+        Alert.alert("Authentication Error", "Login token is missing.");
+        setLoading(false);
+        return;
+      }
+
+      const response = await fetch('http://192.168.1.59:3000/api/getorderdeliveryboy', {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
+      });
+
+      console.log("Response Status:", response.status);
+      const result = await response.json();
+      console.log("Response Body:", result);
+
+      if (response.ok && result.success) {
+        const grouped = result.orders.reduce((acc, order) => {
+          const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'short',
+          });
+
+          const orderItem = {
+            Time: new Date(order.createdAt).toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+            order_id: order._id,
+            RTS: order.status === 'delivered' ? 'Delivered' : 'On-time RTS',
+          };
+
+          const section = acc.find(section => section.title === date);
+          if (section) {
+            section.data.push(orderItem);
+          } else {
+            acc.push({ title: date, data: [orderItem] });
+          }
+
+          return acc;
+        }, []);
+
+        setData(grouped);
+      } else {
+        console.error("Server error:", result.message || "Unknown error");
+        Alert.alert("Fetch Failed", result.message || "Something went wrong fetching orders.");
+      }
+    } catch (error) {
+      console.error('Network or fetch error:', error.message);
+      Alert.alert("Network Error", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
   return (
-    
-        
     <SafeAreaView style={styles.screen}>
-    <View>
-            <View style={{flexDirection:'row', gap:10,backgroundColor:'white',height:50}}>
-            <Ionicons name="chevron-back" size={24} color="black" onPress={()=>router.back()} />
-            <Text style={{fontSize:20}}>Order History</Text>
-            </View>
-        </View>
+      <View style={{ flexDirection: 'row', gap: 10, backgroundColor: 'white', height: 50, alignItems: 'center', paddingHorizontal: 10 }}>
+        <Ionicons name="chevron-back" size={24} color="black" onPress={() => router.back()} />
+        <Text style={{ fontSize: 20 }}>Order History</Text>
+      </View>
+
       <SectionList
         sections={data}
         keyExtractor={(item) => item.order_id}
@@ -40,26 +101,25 @@ export default function OrderHistoryScreen() {
         renderItem={({ item }) => (
           <View style={styles.timeBox}>
             <View style={styles.btn}>
-            <View style={styles.dataContainer}>
-              <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-              <Text style={styles.time}>{item.Time}</Text>
-              <Text style={{marginLeft:12, backgroundColor:'#00897B33',borderRadius:20,padding:2}}>{item.RTS}</Text>
+              <View style={styles.dataContainer}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={styles.time}>{item.Time}</Text>
+                  <Text style={styles.statusBadge}>{item.RTS}</Text>
+                </View>
+                <Text style={styles.orderDetails}>Order: {item.order_id}</Text>
+                <View style={styles.CODcontainer}>
+                  <Text style={styles.COD}>COD</Text>
+                  <Text style={styles.RTO}>RTO</Text>
+                </View>
               </View>
-              <Text style={styles.orderDetails}>Order: {item.order_id}</Text>
-              <View style={styles.CODcontainer}>
-              <Text style={styles.COD}>COD</Text>
-              <Text style={styles.RTO}>RTO</Text>
-              </View>
-            </View>
-            <TouchableOpacity onPress={()=>router.push('./orderDetails')}>
-            <Ionicons name="chevron-forward" size={30} color="#818181" />
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('./orderDetails')}>
+                <Ionicons name="chevron-forward" size={30} color="#818181" />
+              </TouchableOpacity>
             </View>
           </View>
         )}
       />
     </SafeAreaView>
-    
   );
 }
 
@@ -69,10 +129,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#D0E8E6',
     paddingHorizontal: 10,
   },
-  btn:{
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center'
+  btn: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   sectionHeader: {
     fontSize: 18,
@@ -96,20 +156,28 @@ const styles = StyleSheet.create({
     color: '#676767',
     fontWeight: '700',
   },
+  statusBadge: {
+    marginLeft: 12,
+    backgroundColor: '#00897B33',
+    borderRadius: 20,
+    padding: 4,
+    paddingHorizontal: 8,
+    fontSize: 12,
+    color: '#333'
+  },
   orderDetails: {
     fontWeight: '400',
     fontSize: 14,
     color: '#676767',
-    marginTop:8,
+    marginTop: 8,
   },
-  CODcontainer:{
-    flexDirection:'row',
-    gap:'10'
-
+  CODcontainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 7,
   },
   COD: {
-    fontWeight:700,
-    marginTop: 7,
+    fontWeight: '700',
     width: 40,
     height: 25,
     backgroundColor: '#8C8D8D33',
@@ -119,9 +187,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   RTO: {
-    fontWeight:700,
-    color:'red',
-    marginTop: 7,
+    fontWeight: '700',
+    color: 'red',
     width: 40,
     height: 25,
     backgroundColor: '#00897B33',
@@ -129,6 +196,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     fontSize: 12,
-    
   },
 });
