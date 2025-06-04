@@ -33,7 +33,7 @@ const HomeScreen = () => {
   const updateOnlineStatus = async (status) => {
     const token = await extractToken()
     try{
-     const response=await apiClient(`delivery/update`,{
+     const response=await apiClient(`delivery/loginhours`,{
       method:"PUT",
       headers:{
         'Content-Type':'application/json',
@@ -67,17 +67,6 @@ const HomeScreen = () => {
   } else {
     greet = "Good Evening,";
   }
-
-  const earnings = async () => {
-    const response = await fetch("http://localhost:3000/earning/681a0e53f32e786edf2e4503");
-    const data = await response.json();
-    setEarning(data);
-  };
-
-  useEffect(() => {
-    earnings();
-  }, []);
-
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView>
@@ -100,7 +89,7 @@ const HomeScreen = () => {
         </View>
 
         <View style={styles.topSection}>
-          <Text style={styles.greetText}>{greet}{deliveryBoyDetails?deliveryBoyDetails.name:""}</Text>
+          <Text style={styles.greetText}>{greet+" "}{deliveryBoyDetails?deliveryBoyDetails.name: " "}</Text>
           <View style={styles.personal}>
             <Text style={styles.personalText}>Stay safe on the road, and have a great day!</Text>
           </View>
@@ -162,9 +151,19 @@ const HomeScreen = () => {
                   <View style={styles.divider} />
 
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>12:00 hrs</Text>
-                    <Text style={styles.statLabel}>Login hours</Text>
-                  </View>
+  <Text style={styles.statValue}>
+    {deliveryBoyDetails?.totalOnlineTimeInMs
+      ? (() => {
+          const totalMinutes = Math.floor(deliveryBoyDetails.totalOnlineTimeInMs / 60000);
+          const hours = Math.floor(totalMinutes / 60);
+          const minutes = totalMinutes % 60;
+          return `${hours}:${minutes.toString().padStart(2, '0')}`;
+        })()
+      : "0:00"}
+  </Text>
+  <Text style={styles.statLabel}>Login Time</Text>
+</View>
+
 
                   <View style={styles.divider} />
 
