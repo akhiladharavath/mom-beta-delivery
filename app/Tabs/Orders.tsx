@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,24 @@ const DeliveryDashboard = () => {
     acceptOrder,
     rejectedOrderIds,
     rejectOrder,
+    fetchOrders,
   } = useOrders();
+  
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      console.log('Orders page mounted - starting auto-refresh');
+      isInitialMount.current = false;
+    }
+    
+    fetchOrders();
+    
+    const intervalId = setInterval(() => {
+      fetchOrders();
+    }, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const { locationCoords } = useLocation();
 
