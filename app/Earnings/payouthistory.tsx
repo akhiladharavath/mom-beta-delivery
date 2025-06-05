@@ -1,52 +1,63 @@
 import { router } from 'expo-router';
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const PayoutHistoryScreen = ({ }) => {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container1}>
+      <View style={styles.container}>
 
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Icon name="arrow-back" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Payouts History</Text>
-        <TouchableOpacity>
-          <Icon name="help-circle-outline" size={24} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.weekContainer}>
-        <View style={styles.weekTextWrapper}>
-          <Text style={styles.weekText}>Week xx</Text>
-          <View style={styles.thisWeekBadge}>
-            <Text style={styles.thisWeekText}>This Week</Text>
-          </View>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()}>
+            <Icon name="arrow-back" size={24} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Payouts History</Text>
+          <TouchableOpacity>
+            <Icon name="help-circle-outline" size={24} />
+          </TouchableOpacity>
         </View>
-        <Text style={styles.dateText}>day month - day month</Text>
-        <Icon name="chevron-down" size={20} color="#555" />
-      </View>
 
-      <View style={styles.content}>
-        <Image
-          source={require('../../assets/images/Earnings/payout.png')} 
-        />
-        <Text style={styles.infoText}>
-          Payout for this week will be{'\n'}credited by next Wednesday
-        </Text>
+        <View style={styles.weekContainer}>
+          <View style={{ flexDirection: 'column' }}>
+            <View style={styles.weekTextWrapper}>
+              <Text style={styles.weekText}>Week 01</Text>
+              <View style={styles.thisWeekBadge}>
+                <Text style={styles.thisWeekText}>This Week</Text>
+              </View>
+            </View>
 
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Check Earnings</Text>
-        </TouchableOpacity>
+            <View style={styles.weekContent}>
+              <Text style={styles.dateText}>day month - day month</Text>
+            </View>
+          </View>
+          <TouchableOpacity onPress={() => { router.push('./payoutweekly') }}>
+            <Icon name="chevron-down" size={20} color="#555" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.content}>
+          <Image
+            source={require('../../assets/images/Earnings/payout.png')}
+          />
+          <Text style={styles.infoText}>
+            Payout for this week will be{'\n'}credited by next Wednesday
+          </Text>
+
+          <TouchableOpacity style={styles.button} onPress={() => { router.push('./weekearnings') }}>
+            <Text style={styles.buttonText}>Check Earnings</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default PayoutHistoryScreen;
 
 const styles = StyleSheet.create({
+  container1: { flex: 1, backgroundColor: '#E5F4F3' },
   container: {
     flex: 1,
     padding: 16,
@@ -73,6 +84,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderWidth: 1,
   },
+
   weekTextWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -100,8 +112,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 24,
     borderRadius: 12,
-    height:600,
-    justifyContent:"center",
+    height: 600,
+    justifyContent: "center",
 
   },
   image: {

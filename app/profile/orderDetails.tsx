@@ -1,42 +1,34 @@
 import React from "react";
-import { Text, View, StyleSheet, SectionList, SafeAreaView, TouchableOpacity, Button, FlatList } from 'react-native';
+import { Text, View, StyleSheet,  ScrollView } from 'react-native';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import Activity from "@/components/orders/orderActivity";
-import { router } from "expo-router";
-export const data = [
-  {
-    
-    data: [
-
-      { Time: '10:20 am', order_id: '#1234' , RTS:"On-time RTS" },
-    ]
-  }
-];
+import { router, useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 export default function OrderHistoryScreen() {
+
+  
+const {orderId,createdAt,status} = useLocalSearchParams();
+ 
   return (
     <SafeAreaView style={styles.screen}>
+      <View style={{backgroundColor:'#D0E8E6',height:"100%"}}>
         <View>
-            <View style={{flexDirection:'row', gap:10,backgroundColor:'white',height:50}}>
+            <View style={{flexDirection:'row', gap:10,backgroundColor:'white',padding:10}}>
             <Ionicons name="chevron-back" size={24} color="black" onPress={()=>router.back()} />
             <Text style={{fontSize:20}}>Order Details</Text>
             </View>
         </View>
-      <SectionList
-        sections={data}
-        keyExtractor={(item) => item.order_id}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.sectionHeader}>{title}</Text>
-        )}
-        renderItem={({ item }) => (
+        <ScrollView >
+          <Text style={{margin:15,fontSize:14,fontWeight:600}}>Ordered at {createdAt}</Text>
           <View style={styles.timeBox}>
             
             <View style={styles.dataContainer}>
               <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-              <Text style={styles.time}>{item.Time}</Text>
-              <Text style={{marginLeft:12, backgroundColor:'#00897B33',borderRadius:20,padding:2}}>{item.RTS}</Text>
+              <Text style={styles.time}>{createdAt}</Text>
+              <Text style={{marginLeft:12, backgroundColor:'#00897B33',borderRadius:20,padding:2}}>{status}</Text>
               </View>
-              <Text style={styles.orderDetails}>Order: {item.order_id}</Text>
+              <Text style={styles.orderDetails}>Order: {orderId}</Text>
               <View style={styles.CODcontainer}>
               <Text style={styles.COD}>COD</Text>
               <Text style={styles.RTO}>RTO</Text>
@@ -45,15 +37,16 @@ export default function OrderHistoryScreen() {
             <View>
             </View>
           </View>
-        )}
-      />
+       
       <Text style={{padding:20, fontWeight:'700', color:'#676767',fontSize:16,justifyContent:'center'}}>Order Activity</Text>
-      <Activity/>
-      <View style={{height:43,borderRadius:20,borderWidth:1,borderColor:"red",marginBottom:50, backgroundColor:'white',marginTop:10,alignItems:'center',justifyContent:'center',flexDirection:'row',gap:'10'}}>
+      <Activity createdAt={createdAt}/>
+      <View style={{height:43,borderRadius:20,borderWidth:1,borderColor:"red", backgroundColor:'white',marginTop:50,alignItems:'center',justifyContent:'center',flexDirection:'row',gap:'10',margin:15}}>
       <Entypo name="help-with-circle" size={24} color="red" />
       <Text style={{justifyContent:'center',textAlign:'center',paddingVertical:6}}>
       
       Help?</Text>
+      </View>
+      </ScrollView>
       </View>
     </SafeAreaView>
   );
@@ -62,8 +55,8 @@ export default function OrderHistoryScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#D0E8E6',
-    paddingHorizontal: 10,
+    backgroundColor: '#fff',
+
   },
   btn:{
     flexDirection:'row',
@@ -84,8 +77,9 @@ const styles = StyleSheet.create({
   timeBox: {
     marginVertical: 10,
     backgroundColor: 'white',
-    padding: 7,
+    padding: 15,
     borderRadius: 8,
+    margin:10
   },
   time: {
     fontSize: 14,

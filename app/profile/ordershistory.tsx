@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import userDeliveryAuth from "../../context/authContext";
+import apiClient from "@/utils/apiClient";
 
 
 export default function OrderHistoryScreen() {
@@ -30,20 +31,16 @@ export default function OrderHistoryScreen() {
         return;
       }
 
-      const response = await fetch('http://192.168.1.59:3000/api/getorderdeliveryboy', {
+      const response = await apiClient('api/getorderdeliveryboy', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         }
       });
-
-      console.log("Response Status:", response.status);
-      const result = await response.json();
-      console.log("Response Body:", result);
-
-      if (response.ok && result.success) {
-        const grouped = result.orders.reduce((acc, order) => {
+console.log("Fetched response", response);
+      if (response) {
+        const grouped = response.orders?.reduce((acc, order) => {
           const date = new Date(order.createdAt).toLocaleDateString('en-GB', {
             day: '2-digit',
             month: 'short',
@@ -55,7 +52,7 @@ export default function OrderHistoryScreen() {
               minute: '2-digit',
             }),
             order_id: order._id,
-            RTS: order.status === 'delivered' ? 'Delivered' : 'On-time RTS',
+            RTS: order.status === 'delivered' ? 'delivered' : 'On-time RTS',
           };
 
           const section = acc.find(section => section.title === date);
@@ -69,9 +66,6 @@ export default function OrderHistoryScreen() {
         }, []);
 
         setData(grouped);
-      } else {
-        console.error("Server error:", result.message || "Unknown error");
-        Alert.alert("Fetch Failed", result.message || "Something went wrong fetching orders.");
       }
     } catch (error) {
       console.error('Network or fetch error:', error.message);
@@ -112,7 +106,11 @@ export default function OrderHistoryScreen() {
                   <Text style={styles.RTO}>RTO</Text>
                 </View>
               </View>
-              <TouchableOpacity onPress={() => router.push('./orderDetails')}>
+              <TouchableOpacity onPress={() => router.push({pathname:'./orderDetails',params:{
+                orderId:item.order_id,
+                createdAt:item.Time,
+                status:item.RTS
+              }})}>
                 <Ionicons name="chevron-forward" size={30} color="#818181" />
               </TouchableOpacity>
             </View>
