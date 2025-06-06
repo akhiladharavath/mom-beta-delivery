@@ -17,6 +17,7 @@ import {
   Alert,
   Linking,
 } from 'react-native';
+import { useOnlineStatus } from '@/context/deliveryBoyStatusContext';
 
 
 const App = () => {
@@ -25,6 +26,7 @@ const App = () => {
   const [itemDetailsVisible, setItemDetailsVisible] = useState(true);
  const { extractToken } = userDeliveryAuth();
  const { acceptedOrderDetails } = useOrders()
+  const { setIsOnline} = useOnlineStatus()
 
  
  async function addEarnings(){
@@ -67,6 +69,7 @@ const App = () => {
       });
 
       const deliveryEarnings = await addEarnings()
+      setIsOnline(true)
       
 
       if (!response) {

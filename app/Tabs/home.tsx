@@ -12,51 +12,51 @@ import userDeliveryAuth from "@/context/authContext";
 import { useLocation } from '@/context/locatonContext';
 import { useEarnings } from '@/Hooks/earningHooks';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import { useOnlineStatus } from '@/context/deliveryBoyStatusContext';
 
 const HomeScreen = () => {
-  const [isOnline, setIsOnline] = useState(false);
-  
+  // const [isOnline, setIsOnline] = useState(false);
+  const {isOnline, setIsOnline} = useOnlineStatus()
+
   const [modalVisible, setModalVisible] = useState(false);
   const [earning, setEarning] = useState(0);
   const navigation = useNavigation();
   const { regId } = useLocalSearchParams();
- const { extractToken } = userDeliveryAuth();
+  const { extractToken } = userDeliveryAuth();
   const toggleSwitch = async () => {
     const newState = !isOnline;
     setIsOnline(newState);
-     await updateOnlineStatus(newState?'Online':'Offline')
+    await updateOnlineStatus(newState ? 'Online' : 'Offline')
   };
 
 
-  const {deliveryBoyDetails} = userDeliveryAuth()
+  const { deliveryBoyDetails } = userDeliveryAuth()
 
 
   const updateOnlineStatus = async (status) => {
     const token = await extractToken()
-    try{
-     const response=await apiClient(`delivery/loginhours`,{
-      method:"PUT",
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':`Bearer ${token}`
-      },
-      body:JSON.stringify({status}),
-     }) ;
-     if(!response){
-      throw new Error('Failed to update status');
-     }
-     const data=response;
-     console.log('Status update to:');
-    } catch (error){
+    try {
+      const response = await apiClient(`delivery/loginhours`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status }),
+      });
+      if (!response) {
+        throw new Error('Failed to update status');
+      }
+      const data = response;
+      console.log('Status update to:');
+    } catch (error) {
       console.error('status update error', error.message);
     }
-      
-
   };
 
   const { locationName, refreshLocation } = useLocation();
 
-  const {getEarnings} = useEarnings()
+  const { getEarnings } = useEarnings()
 
 
   const getCurrentHour = new Date().getHours();
@@ -74,7 +74,7 @@ const HomeScreen = () => {
 
         <View style={styles.headerSection}>
           <View style={styles.leftSection}>
-            <TouchableOpacity onPress={ refreshLocation}>
+            <TouchableOpacity onPress={refreshLocation}>
               <View style={styles.row}>
                 <FontAwesome6 name="location-dot" size={24} color="white" />
                 <Text style={styles.locationText} numberOfLines={1} ellipsizeMode="tail">
@@ -87,13 +87,13 @@ const HomeScreen = () => {
           {/* <TouchableOpacity style={styles.helpButton}>
             <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
           </TouchableOpacity> */}
-          <TouchableOpacity style={styles.helpButton} onPress={()=> router.push('/profile/momhelp')}>
-            <Text style={{fontSize: 19}}> <SimpleLineIcons name="earphones-alt" color="#000" size={19} />{' '}Help</Text>
+          <TouchableOpacity style={styles.helpButton} onPress={() => router.push('/profile/momhelp')}>
+            <Text style={{ fontSize: 19 }}> <SimpleLineIcons name="earphones-alt" color="#000" size={19} />{' '}Help</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.topSection}>
-          <Text style={styles.greetText}>{greet+" "}{deliveryBoyDetails?deliveryBoyDetails.name: " "}</Text>
+          <Text style={styles.greetText}>{greet + " "}{deliveryBoyDetails ? deliveryBoyDetails.name : " "}</Text>
           <View style={styles.personal}>
             <Text style={styles.personalText}>Stay safe on the road, and have a great day!</Text>
           </View>
@@ -101,7 +101,7 @@ const HomeScreen = () => {
             <Text style={styles.onlineInfoText}>Go online on time and earn bonuses!</Text>
             <View style={styles.statusSwitch}>
               <Text style={[styles.statusText, { color: isOnline ? '#00A99D' : 'gray' }]}>
-                {isOnline ?  'Online':'Offline'}
+                {isOnline ? 'Online' : 'Offline'}
               </Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#00A99D" }}
@@ -123,7 +123,7 @@ const HomeScreen = () => {
           </View>
         </LinearGradient>
 
-  
+
         <View style={{ margin: "2%" }}>
           <LinearGradient
             colors={['#FFD900B3', '#FDDF34B3', '#FFE75CB3']}
@@ -145,34 +145,34 @@ const HomeScreen = () => {
               </View>
 
               <View style={{ margin: 15 }}>
-                  <View style={styles.horizontalDivider} />
+                <View style={styles.horizontalDivider} />
                 <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>₹ {getEarnings?getEarnings.total_earning:0}</Text>
+                    <Text style={styles.statValue}>₹ {getEarnings ? getEarnings.total_earning : 0}</Text>
                     <Text style={styles.statLabel}>Earnings</Text>
                   </View>
 
                   <View style={styles.divider} />
 
                   <View style={styles.statItem}>
-  <Text style={styles.statValue}>
-    {deliveryBoyDetails?.totalOnlineTimeInMs
-      ? (() => {
-          const totalMinutes = Math.floor(deliveryBoyDetails.totalOnlineTimeInMs / 60000);
-          const hours = Math.floor(totalMinutes / 60);
-          const minutes = totalMinutes % 60;
-          return `${hours}:${minutes.toString().padStart(2, '0')}`;
-        })()
-      : "0:00"}
-  </Text>
-  <Text style={styles.statLabel}>Login Time</Text>
-</View>
+                    <Text style={styles.statValue}>
+                      {deliveryBoyDetails?.totalOnlineTimeInMs
+                        ? (() => {
+                          const totalMinutes = Math.floor(deliveryBoyDetails.totalOnlineTimeInMs / 60000);
+                          const hours = Math.floor(totalMinutes / 60);
+                          const minutes = totalMinutes % 60;
+                          return `${hours}:${minutes.toString().padStart(2, '0')}`;
+                        })()
+                        : "0:00"}
+                    </Text>
+                    <Text style={styles.statLabel}>Login Time</Text>
+                  </View>
 
 
                   <View style={styles.divider} />
 
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>{getEarnings?getEarnings.orders.length:0}</Text>
+                    <Text style={styles.statValue}>{getEarnings ? getEarnings.orders.length : 0}</Text>
                     <Text style={styles.statLabel}>Orders</Text>
                   </View>
                 </View>
@@ -192,7 +192,7 @@ const HomeScreen = () => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        
+
       </Modal>
     </SafeAreaView>
   );
@@ -216,44 +216,44 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   statItem: {
-  flex: 1,
-  alignItems: 'center',
-},
-statValue: {
-  fontSize: 18,
-  fontWeight: 'bold',
-  marginBottom: 5,
-},
-statLabel: {
-  fontSize: 16,
-  textAlign: 'center',
-},
-divider: {
-  width: 1,
-  backgroundColor: '#A9A9A9',
-  height: '120%',
-},
-horizontalDivider: {
-  height: 1,
-  backgroundColor: '#A9A9A9',
-  marginBottom: 15,
-  marginTop: 5,
-},
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  statLabel: {
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  divider: {
+    width: 1,
+    backgroundColor: '#A9A9A9',
+    height: '120%',
+  },
+  horizontalDivider: {
+    height: 1,
+    backgroundColor: '#A9A9A9',
+    marginBottom: 15,
+    marginTop: 5,
+  },
 
-filterButton: {
-  height: 35,
-  minWidth: 80,
-  borderWidth: 1,
-  borderColor: "#00a99d",
-  borderRadius: 50,
-  justifyContent: 'center',
-  alignItems: 'center',
-  paddingHorizontal: 12,
-},
-filterButtonText: {
-  color: '#00a99d',
-  fontSize: 14,
-},
+  filterButton: {
+    height: 35,
+    minWidth: 80,
+    borderWidth: 1,
+    borderColor: "#00a99d",
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  filterButtonText: {
+    color: '#00a99d',
+    fontSize: 14,
+  },
 
   row: {
     flexDirection: "row",
@@ -359,7 +359,7 @@ filterButtonText: {
 
 
   sectionTitle: {
-     borderRadius: 15 ,
+    borderRadius: 15,
     margin: '5%',
   },
   sectionTitleText: {
