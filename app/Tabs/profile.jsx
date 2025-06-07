@@ -10,52 +10,53 @@ import {COLORS} from '@/constants/COLORS'
 const options = [
   {
     title: 'Refer & Earn',
-    icon: <Image source={require('@/assets/images/Profile/refer.png')} style={{ height: 30, width: 25 }} />,
+    icon: <Image source={require('@/assets/images/Profile/RefernEarns.png')} style={{ height: 20, width: 20,}} />,
     Link:"/profile/refer&earn"
 
   },
   {
     title: 'Wrong Action',
-    icon: <Image source={require('@/assets/images/Profile/wrong.png')} style={{ height: 30, width: 25 }} />,
+    icon: <Image source={require('@/assets/images/Profile/wrongactions.png')} style={{ height: 20, width: 20 }} />,
     Link: '/profile/WrongActions/WrongActions',
 
   },
   {
     title: 'Cash Balance',
-    icon: <Ionicons name='cash-outline' size={24}/>,
+     icon: <Image source={require('@/assets/images/Profile/cashbalance.png')} style={{ height: 20, width: 20,}} />,
     Link: '/profile/CashBalance/'
 
   },
   {
     title: 'Help & Support',
-    icon: <Image source={require('@/assets/images/Profile/help.png')} style={{ height: 30, width: 25 }} />,
+    icon: <Image source={require('@/assets/images/Profile/healp.png')} style={{ height: 20, width: 20}} />,
     Link:'/profile/momhelp'
 
   },
   {
     title: 'Store',
-    icon: <Image source={require('@/assets/images/Profile/store.png')} style={{ height: 30, width: 25 }} />,
+    icon: <Image source={require('@/assets/images/Profile/store.png')} style={{ height: 20, width: 20,}} />,
     Link:'/profile/mystorelocation'
   },
   // {
   //   title: 'Message Center',
-  //   icon: <Image source={require('@/assets/images/Profile/email.png')} style={{ height: 30, width: 25 }} />,
+  //   icon: <Image source={require('@/assets/images/Profile/email.png')} style={{ height: 20, width: 20,}} />,
   //   Link:'/profile/'
   // },
   {
     title: 'Terms and Condition',
-    icon: <AntDesign name='form' size={24}/>,
+     icon: <Image source={require('@/assets/images/Profile/TnC.png')} style={{ height: 20, width: 20,}} />,
     Link:'/profile/terms'
 
   },
   {
     title: 'Settings',
-    icon: <Image source={require('@/assets/images/Profile/settings.png')} style={{ height: 30, width: 25 }} />,
+    icon: <Image source={require('@/assets/images/Profile/Setting.png')} style={{ height: 20, width: 20,}} />,
     Link:'/profile/settings'
   },
   {
     title: 'Order History',
-    icon: <SimpleLineIcons name="social-dropbox" size={24} color="black" style={{ height: 30, width: 25 }} />,
+        icon: <Image source={require('@/assets/images/Profile/Orderhistory.png')} style={{ height: 20, width: 20,}} />,
+
     Link:'/profile/ordershistory'
   },
 
@@ -63,9 +64,7 @@ const options = [
 
 export default function MyProfile() {
 
-  const [imageUri, setImageUri] = useState(
-
-  );
+  const [imageUri, setImageUri] = useState();
 
   const openCamera = async () => {
     const permission = await ImagePicker.requestCameraPermissionsAsync();
@@ -139,7 +138,7 @@ export default function MyProfile() {
               <Text style={styles.optionText}>{item.title}</Text>
             </TouchableOpacity>
           ))}
-          <TouchableOpacity onPress={handleLogout} style={{ flexDirection: "row", width: "90%", justifyContent: "center", margin: 'auto', padding: 10, marginTop: 12, backgroundColor: "#35a79c", marginBottom: 40, borderRadius: 12 }}>
+          <TouchableOpacity onPress={handleLogout} style={{ flexDirection: "row", width: "100%", justifyContent: "center", margin: 'auto', padding: 10, marginTop: 12, backgroundColor: "#35a79c", marginBottom: 40, borderRadius: 12 }}>
             <Text style={styles.logoutBtnText}>Logout</Text>
           </TouchableOpacity>
         </View>
@@ -151,9 +150,9 @@ export default function MyProfile() {
 const styles = StyleSheet.create({
   header: {
     padding: 50,
-    backgroundColor: '#008080CC',
+    backgroundColor: '#00A99B',
     // borderBottomEndRadius: 20,
-    // borderBottomStartRadius: 20,\
+    // borderBottomStartRadius: 20,
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -218,7 +217,9 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection:'row',
      alignItems: 'center',
-     justifyContent:'center'
+     justifyContent:'center',
+    
+
 
   },
   detailstext:{
@@ -232,23 +233,29 @@ const styles = StyleSheet.create({
     marginBottom: 30
   },
 
-  profileHeader: {
+  profileHeader: 
+  {
     backgroundColor: '#35a79c',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     alignItems: 'center',
     padding: 90,
   },
-  iconWrapper: {
+  iconWrapper: 
+  {
     padding: 12,
+    height:'auto',
+    
     paddingHorizontal: 14,
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#D9EDEB',
     borderRadius: 40
   },
-  profileImageWrapper: {
+  profileImageWrapper: 
+  {
     position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
+    
   },
   profileImage: {
     width: 100,
@@ -282,10 +289,24 @@ const styles = StyleSheet.create({
     marginRight: 16,
 
   },
+  optionsContainer:
+  {
+     padding:10,
+     gap:6,
+     height:'auto'
+     
+  },
   option: {
     flexDirection: 'row',
     padding: 10,
-    alignItems: "center"
+    gap:20,
+    alignItems: "center",
+    borderWidth:1,
+    borderColor:'#00A99B',
+    borderRadius:17,
+    backgroundColor:'#007E710D', //box 
+    height:60
+
   },
   optionText: {
     fontSize: 16,
@@ -293,7 +314,6 @@ const styles = StyleSheet.create({
     color: '#333',
     //  marginTop: -20,
     //  marginLeft: 50,
-    padding: 15,
   },
   authButtons: {
     marginTop: 30,
