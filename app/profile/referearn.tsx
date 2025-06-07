@@ -51,10 +51,10 @@ const ReferralScreen = () => {
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
-      <MaterialIcons name="arrow-back" size={24} color="#fff" style={styles.MaterialIcons} onPress={()=>router.back()} />
+        <MaterialIcons name="arrow-back" size={24} color="#fff" style={styles.MaterialIcons} onPress={() => router.back()} />
         <Text style={styles.headerTitle1}>Refer & Earn</Text>
         <Image
-          source={require('../../assets/images/Profile/refer&earn.png')} style={styles.image}/>
+          source={require('../../assets/images/Profile/refer&earn.png')} style={styles.image} />
         <Text style={styles.headerTitle}>
           Invite your friends and earn up to 1500rs friend
         </Text>
@@ -112,8 +112,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#00a99d',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 0,
+
     padding: 60,
     marginHorizontal: -16,
     marginTop: -20,
@@ -141,7 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D5ECE9',
     borderColor: '#00a99d',
     borderRadius: 12,
-    borderWidth:1,
+    borderWidth: 1,
     padding: 16,
     flex: 1,
     alignItems: 'center',
@@ -190,7 +189,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   footer: {
-    marginTop: 200,
+    marginTop: 230,
     paddingTop: 10,
     borderTopWidth: 1,
     borderColor: '#A0C4C4',
@@ -203,6 +202,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 8,
+    gap: 200
   },
   referralCode: {
     fontSize: 20,
@@ -221,12 +221,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 12,
-    
+
   },
   referButtonText: {
     color: '#fff',
     fontSize: 16,
-    marginTop : -20,
+    marginTop: -20,
     marginLeft: 20
   },
   image: {

@@ -188,12 +188,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#D0E8E6',
     flex: 1,
     padding: 5,
+    marginTop:20,
   },
   currentText: {
     fontSize: 20,
     fontWeight: '500',
     marginTop: 0,
     marginLeft: 20,
+    
   },
   orderCard: {
     padding: 15,
@@ -243,9 +245,9 @@ const styles = StyleSheet.create({
   },
   pastOrders: {
     backgroundColor: 'white',
-    height: 451,
+    height: 'auto',
     width: 395,
-    marginTop: 180,
+    marginTop:20,
     alignSelf: 'center',
     borderRadius: 30,
     paddingHorizontal: 10,

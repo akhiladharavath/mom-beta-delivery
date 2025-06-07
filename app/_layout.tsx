@@ -10,7 +10,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RootLayout() {
   return (
-    <SafeAreaView style={{flex:1}}>
+   
     <DeliveryBoyAuthProvider>
       <LocationProvider>
         <StatusProvider>
@@ -24,7 +24,7 @@ export default function RootLayout() {
         </StatusProvider>
       </LocationProvider>
     </DeliveryBoyAuthProvider>
-    </SafeAreaView>
+    
 
   )
 }

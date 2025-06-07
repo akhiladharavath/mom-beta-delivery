@@ -11,7 +11,7 @@ const options = [
   {
     title: 'Refer & Earn',
     icon: <Image source={require('@/assets/images/Profile/RefernEarns.png')} style={{ height: 20, width: 20,}} />,
-    Link:"/profile/refer&earn"
+    Link:"/profile/referearn"
 
   },
   {
@@ -22,7 +22,7 @@ const options = [
   },
   {
     title: 'Cash Balance',
-     icon: <Image source={require('@/assets/images/Profile/cashbalance.png')} style={{ height: 20, width: 20,}} />,
+     icon: <Image source={require('@/assets/images/cashbalance.jpeg')} style={{ height: 20, width: 20,}} />,
     Link: '/profile/CashBalance/'
 
   },
