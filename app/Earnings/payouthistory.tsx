@@ -1,56 +1,59 @@
 import { router } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const PayoutHistoryScreen = ({ }) => {
   return (
-    <SafeAreaView style={styles.container1}>
-      <View style={styles.container}>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      <SafeAreaView style={styles.container1}>
+        <View style={styles.container}>
 
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <Icon name="arrow-back" size={24} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Payouts History</Text>
-          <TouchableOpacity>
-            <Icon name="help-circle-outline" size={24} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.weekContainer}>
-          <View style={{ flexDirection: 'column' }}>
-            <View style={styles.weekTextWrapper}>
-              <Text style={styles.weekText}>Week 01</Text>
-              <View style={styles.thisWeekBadge}>
-                <Text style={styles.thisWeekText}>This Week</Text>
-              </View>
-            </View>
-
-            <View style={styles.weekContent}>
-              <Text style={styles.dateText}>day month - day month</Text>
-            </View>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Icon name="arrow-back" size={24} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Payouts History</Text>
+            <TouchableOpacity onPress={() => router.push('/profile/momhelp')}>
+              <Icon name="help-circle-outline" size={24} />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={() => { router.push('./payoutweekly') }}>
-            <Icon name="chevron-down" size={20} color="#555" />
-          </TouchableOpacity>
-        </View>
+          <TouchableOpacity onPress={() => { router.push('/Earnings/weekearnings') }}>
+            <View style={styles.weekContainer}>
+              <View style={{ flexDirection: 'column' }}>
+                <View style={styles.weekTextWrapper}>
+                  <Text style={styles.weekText}>Week 01</Text>
+                  <View style={styles.thisWeekBadge}>
+                    <Text style={styles.thisWeekText}>This Week</Text>
+                  </View>
+                </View>
 
-        <View style={styles.content}>
-          <Image
-            source={require('../../assets/images/Earnings/payout.png')}
-          />
-          <Text style={styles.infoText}>
-            Payout for this week will be{'\n'}credited by next Wednesday
-          </Text>
-
-          <TouchableOpacity style={styles.button} onPress={() => { router.push('./weekearnings') }}>
-            <Text style={styles.buttonText}>Check Earnings</Text>
+                <View style={styles.weekContent}>
+                  <Text style={styles.dateText}>day month - day month</Text>
+                </View>
+              </View>
+              {/* <TouchableOpacity onPress={() => { router.push('./payoutweekly') }}> */}
+              <Icon name="chevron-down" size={20} color="#555" />
+            </View>
           </TouchableOpacity>
+
+          <View style={styles.content}>
+            <Image style={{ width: 100, height: 100, marginBottom: 20 }}
+              source={require('../../assets/images/Earnings/payout.png')}
+            />
+            <Text style={styles.infoText}>
+              Your weekly earnings will be processed and{'\n'}transferred to your account by next Wednesday
+            </Text>
+
+            <TouchableOpacity style={styles.button} onPress={() => { router.push('./weekearnings') }}>
+              <Text style={styles.buttonText}>Check Earnings</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </SafeAreaView>
+      </SafeAreaView >
+    </>
   );
 };
 
@@ -89,6 +92,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  weekContent: {
+    marginTop: 4,
+  },
   weekText: {
     fontSize: 16,
     fontWeight: '600',
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 24,
-    borderRadius: 12,
+    borderRadius: 18,
     height: 600,
     justifyContent: "center",
 
@@ -127,7 +133,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: '#087F7F',
+    backgroundColor: '#00A99D',
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,

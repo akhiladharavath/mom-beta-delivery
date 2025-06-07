@@ -8,6 +8,7 @@ import useWeekEarnings from '@/Hooks/useWeekEarnings';
 import { last8Weeks } from '@/Hooks/earningHooks';
 
 const { width } = Dimensions.get('window');
+const {height} = Dimensions.get('window');
 
 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZWxpdmVyeUJveUlkIjoiNjgzNTU2ZTc2NjA1M2VjYTg5ZTBlZTQwIiwiaWF0IjoxNzQ4NDIyMTkxfQ.lQkEEDttODY8-xL8OI_vao3TMFi2K1j-YeuVwAOKacg"
 
@@ -26,7 +27,7 @@ const EarningsHistory = ({data ,totalEarning}) => {
     <View style={styles.headerRow}>
       <Text style={styles.title}>This Week 20 Dec 2024</Text>
       <Image
-        source={require('../../assets/images/Earnings/earning.png')}
+        source={require('../../assets/images/Earnings/coin.png')}
         style={styles.image}
       />
     </View>
@@ -37,7 +38,7 @@ const EarningsHistory = ({data ,totalEarning}) => {
     </View>
 
     <Svg height="2" width={width * 0.9} style={styles.divider}>
-      <Line x1="0" y1="1" x2={width * 0.9} y2="1" stroke="white" strokeWidth="2" />
+      <Line x1="0" y1="1" x2={width * 0.9} y2="1" stroke="grey" strokeWidth="2" />
     </Svg>
 
     <TouchableOpacity style={styles.footer} onPress={()=> router.push('/Earnings/weekearnings')}>
@@ -49,10 +50,11 @@ const EarningsHistory = ({data ,totalEarning}) => {
 const styles = StyleSheet.create({
   container: {
     width: width * 0.95,
-    borderRadius: 10,
-    backgroundColor: '#00897B',
+    borderRadius: 20,
+    backgroundColor: '#ACD9D4',
     padding: 20,
     alignSelf: 'center',
+    height: height * 0.27
   },
   headerRow: {
     flexDirection: 'row',
@@ -62,11 +64,13 @@ const styles = StyleSheet.create({
   image: {
     width: 50,
     height: 50,
+    color: 'black',
+
   },
   title: {
     fontWeight: '500',
-    fontSize: 16,
-    color: '#fff',
+    fontSize: 22,
+    color: 'grey',
   },
   amountRow: {
     marginTop: 10,
@@ -74,12 +78,12 @@ const styles = StyleSheet.create({
   amount: {
     fontWeight: '600',
     fontSize: 24,
-    color: '#fff',
+    color: '#007E71',
   },
   lastWeek: {
     fontWeight: '400',
     fontSize: 16,
-    color: '#fff',
+    color: '#007E71',
     marginTop: 4,
   },
   divider: {
@@ -91,7 +95,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   register: {
-    color: '#fff',
+    color: '#00A99D',
     fontWeight: '600',
     fontSize: 16,
   },
