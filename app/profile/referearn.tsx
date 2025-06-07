@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   footer: {
-    marginTop: 230,
+    marginTop: 23  0,
     paddingTop: 10,
     borderTopWidth: 1,
     borderColor: '#A0C4C4',
