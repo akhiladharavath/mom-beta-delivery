@@ -1,4 +1,3 @@
-
 import {  MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
@@ -77,7 +76,7 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.screen}>
       <View style={[styles.container, { backgroundColor: darkTheme ? '#1e1e1e' : '#fff' }]}>
         <View style={styles.headerRow}>
-        <MaterialIcons name="arrow-back" size={24} color="#00A99D" style={styles.MaterialIcons} onPress={()=>router.back()} />
+        <MaterialIcons name="arrow-back" size={30} color="#00A99D" style={styles.MaterialIcons} onPress={()=>router.back()} />
 
           <Text style={styles.header}>Settings</Text>
         </View>
@@ -118,28 +117,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    // marginHorizontal: 3,
   },
   headerRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-
     justifyContent: 'flex-start',
-    marginBottom: 10,
+    marginVertical: 10,
+    gap: 10,
+    alignItems:'flex-start',
   },
   header: {
-    fontSize: 30,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#00A99D',
-    marginLeft: 100,
+
   },
-  MaterialIcons: {
-    marginLeft: -10,
-  },
+  
   settingItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 15,
+    marginHorizontal: 12,
   },
   label: {
     fontSize: 16,
@@ -152,17 +151,23 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingVertical: 12,
     alignItems: 'center',
+    borderWidth: 0.1,
+    // borderColor: '#FF6666'
   },
   DeleteText: {
-    color: '#000',
+    color: 'black',
     fontSize: 16,
     fontWeight: '800',
-    marginRight: -10
+    // marginRight: -10
+    paddingHorizontal: 10,
   },
   screen: {
     flex: 1,
     backgroundColor: '#fff',
   },
+  MaterialIcons:{
+    marginRight: 5
+  }
 });
 
 function DeleteAccount() {

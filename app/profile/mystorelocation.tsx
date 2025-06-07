@@ -15,6 +15,7 @@ import {
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import * as Location from 'expo-location';
 import apiClient from '@/utils/apiClient';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const { width, height } = Dimensions.get('window');
 const wp = (percentage: string) => (width * parseFloat(percentage)) / 100;
@@ -123,15 +124,17 @@ export default function AddressBook() {
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: hp('10%') }}>
       <SafeAreaView>
         <View style={styles.header}>
-          <Ionicons name="arrow-back" size={30} style={{marginTop: 20}}color="#000" />
+          <Ionicons name="arrow-back" size={24} color="#00A99D" marginVertical='20' />
           <Text style={styles.headerText}>My Store Location</Text>
         </View>
-
+        <View style={styles.head}>
         <Text style={styles.subHeader}>Store Addresses</Text>
+        </View>
 
         {addresses.map((item, index) => (
           <View key={item._id || index} style={styles.card}>
             <View style={styles.radioRow}>
+              <FontAwesome name="home" size={24} color="#007E71" />
               <Text style={styles.cardTitle}>Address {index + 1}</Text>
               <Entypo
                 name="dots-three-vertical"
@@ -150,7 +153,9 @@ export default function AddressBook() {
             <Text style={styles.distanceText}>Distance: {item.distance || 'N/A'}</Text>
 
             <TouchableOpacity onPress={() => handleNavigate(item)}>
+    
               <Text style={styles.navigationText}>Open in Maps</Text>
+        
             </TouchableOpacity>
           </View>
         ))}
@@ -187,8 +192,9 @@ export default function AddressBook() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e0f2f1',
+    backgroundColor: '#fff',
     padding: 8,
+    // marginHorizontal: 12,
   },
   loader: {
     flex: 1,
@@ -198,31 +204,53 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 25,
+    // marginBottom: 25,
+    marginVertical: 20,
+  
   },
   headerText: {
     fontSize: 24,
     fontWeight: '700',
     marginLeft: 10,
-    marginTop: 20,
-    color: '#000',
+    // marginTop: 20,
+    color: '#00A99D',
   },
-  subHeader: {
+  head: {
     fontSize: 20,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: 15,
     color: '#000',
+    backgroundColor:'#ACD9D4',
+    borderRadius: 20,
+    borderColor: '#00A99D',
+    borderWidth: 0.5,
+    marginHorizontal: 4
+    
+  },
+  subHeader:{
+    marginLeft: 20,
+    fontSize: 20,
+    fontWeight: 'bold',
+    padding: 10,
+
   },
   card: {
-    backgroundColor: '#fff',
+    
     padding: 15,
     borderRadius: 12,
     marginBottom: 10,
+    backgroundColor: "#D5ECE9",
+    borderColor: '#00A99D',
+    borderWidth: 1,
+    marginHorizontal: 4
+
   },
   radioRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
+    gap: 8,
+    // backgroundColor: "#E8F1F0",
   },
   cardTitle: {
     fontSize: 20,
@@ -238,11 +266,15 @@ const styles = StyleSheet.create({
     color:'#FF0000',
     marginTop: 5,
   },
+  // navigationContainer:{
+  //   backgroundColor: 'white',
+  // },
   navigationText: {
     fontSize: 14,
     color: '#00a99d',
     marginTop: 5,
     textDecorationLine: 'underline',
+   
   },
   overlay: {
     flex: 1,

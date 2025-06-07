@@ -72,8 +72,10 @@ const HelpSupportScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.top}>
       <MaterialIcons name="arrow-back" size={24} color="#00A99D" style={styles.MaterialIcons} onPress={()=>router.back()} />
       <Text style={styles.header}>Help & Support</Text>
+      </View>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {faqData.map((item, index) => (
           <View key={index} style={styles.card}>
@@ -136,25 +138,32 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#eef7f6',
     padding: 20,
+    marginHorizontal: 5,
   },
+  top:{
+    flexDirection:'row',
+    marginVertical: 30,
+  },
+
   header: {
     fontSize: 24,
     fontWeight: '700',
     color: '#00a99d',
-    marginBottom: 20,
-    marginTop: -30,
+    // marginBottom: 20,
+    // marginVertical: 5,
     marginLeft : 20
   },
       MaterialIcons: {
-      marginLeft: -10,
-      marginTop: 10,
+      // marginLeft: -10,
+      // marginTop: 10,
     },
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 15,
+    padding: 10,
     marginBottom: 12,
     elevation: 3,
+    // marginHorizontal: 12,
   },
   questionRow: {
     flexDirection: 'row',
@@ -179,9 +188,10 @@ const styles = StyleSheet.create({
     marginTop: 30,
     backgroundColor: '#00a99d',
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    // marginHorizontal: 12,
   },
   contactText: {
     color: '#fff',
