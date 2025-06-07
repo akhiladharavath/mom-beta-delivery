@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import userDeliveryAuth from "../../context/authContext";
 import apiClient from "@/utils/apiClient";
 
@@ -81,9 +81,9 @@ console.log("Fetched response", response);
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={{ flexDirection: 'row', gap: 10, backgroundColor: 'white', height: 50, alignItems: 'center', paddingHorizontal: 10 }}>
-        <Ionicons name="chevron-back" size={24} color="black" onPress={() => router.back()} />
-        <Text style={{ fontSize: 20 }}>Order History</Text>
+      <View style={{ flexDirection: 'row', gap: 10, backgroundColor: 'white',  alignItems: 'center', paddingHorizontal: 10 }}>
+        <MaterialIcons name="arrow-back" size={24} color="#fff" style={styles.MaterialIcons} onPress={()=>router.back()} />
+        <Text style={{ fontSize: 20, color:'#00a99d' }}>Order History</Text>
       </View>
 
       <SectionList
@@ -124,9 +124,15 @@ console.log("Fetched response", response);
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#D0E8E6',
+    backgroundColor: '#fff',
     paddingHorizontal: 10,
   },
+   MaterialIcons: {
+    marginVertical:50,
+     color: '#00a99d',
+
+  },
+
   btn: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -145,14 +151,16 @@ const styles = StyleSheet.create({
   },
   timeBox: {
     marginVertical: 10,
-    backgroundColor: 'white',
+    backgroundColor: '#D5ECE9',
     padding: 7,
-    borderRadius: 8,
+    borderRadius: 12,
+    borderWidth:1,
+    borderColor:'#00a99d',
   },
   time: {
     fontSize: 14,
-    color: '#676767',
-    fontWeight: '700',
+    color: 'black',
+    fontWeight: '200',
   },
   statusBadge: {
     marginLeft: 12,
