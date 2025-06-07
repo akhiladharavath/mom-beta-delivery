@@ -1,8 +1,5 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Switch, SafeAreaView, Modal } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import * as Location from 'expo-location';
-import * as ImagePicker from 'expo-image-picker';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Switch, SafeAreaView, Modal, Dimensions } from 'react-native';
+import React, { useState } from 'react';
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -11,12 +8,17 @@ import apiClient from "@/utils/apiClient";
 import userDeliveryAuth from "@/context/authContext";
 import { useLocation } from '@/context/locatonContext';
 import { useEarnings } from '@/Hooks/earningHooks';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { useOnlineStatus } from '@/context/deliveryBoyStatusContext';
 import BannerCarousel from '@/components/banner';
+import LocationIcon from '../../assets/images/location';
+import Help from '@/assets/images/helpsupport';
+import  FooterComponent  from '@/components/footer';
+
+const { width, height } = Dimensions.get('window');
+
 const HomeScreen = () => {
   // const [isOnline, setIsOnline] = useState(false);
-  const {isOnline, setIsOnline} = useOnlineStatus()
+  const { isOnline, setIsOnline } = useOnlineStatus()
 
   const [modalVisible, setModalVisible] = useState(false);
   const [earning, setEarning] = useState(0);
@@ -69,31 +71,33 @@ const HomeScreen = () => {
     greet = "Good Evening,";
   }
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-     
-      <ScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor:'#E5F2F1' }}>
+      <View style={styles.topnavbar}>
+      <Text style={styles.txt}>medicine on minutes</Text>
+      <View style={styles.headerSection}>
 
-        <View style={styles.headerSection}>
-          <View style={styles.leftSection}>
-            <TouchableOpacity onPress={refreshLocation}>
-              <View style={styles.row}>
-                <FontAwesome6 name="location-dot" size={24} color="white" />
-                <Text style={styles.locationText} numberOfLines={1} ellipsizeMode="tail">
-                  {locationName || "Fetching Location..."}
-                </Text>
-                <Entypo style={{ marginTop: 2, marginLeft: 5 }} name="chevron-down" size={20} color="white" />
-              </View>
-            </TouchableOpacity>
-          </View>
-          {/* <TouchableOpacity style={styles.helpButton}>
-            <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
-          </TouchableOpacity> */}
-          <TouchableOpacity style={styles.helpButton} onPress={() => router.push('/profile/momhelp')}>
-            <Text style={{ fontSize: 19 }}> <SimpleLineIcons name="earphones-alt" color="#000" size={19} />{' '}Help</Text>
+        <View style={styles.leftSection}>
+          <TouchableOpacity onPress={refreshLocation}>
+            <View style={styles.row}>
+              <LocationIcon />
+              <Text style={styles.locationText} numberOfLines={1} ellipsizeMode="tail">
+                {locationName || "Fetching Location..."}
+              </Text>
+              <Entypo style={{ marginTop: 2, marginLeft: 5 }} name="chevron-down" size={20} color="black" />
+            </View>
           </TouchableOpacity>
         </View>
 
-        
+        {/* <TouchableOpacity style={styles.helpButton}>
+            <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
+          </TouchableOpacity> */}
+        <TouchableOpacity style={styles.helpButton} onPress={() => router.push('/profile/momhelp')}>
+         <Help height={35} width={35}/>
+        </TouchableOpacity>
+      </View>
+      </View>
+
+      <ScrollView>
 
         <View style={styles.topSection}>
           <Text style={styles.greetText}>{greet + " "}{deliveryBoyDetails ? deliveryBoyDetails.name : " "}</Text>
@@ -112,21 +116,15 @@ const HomeScreen = () => {
                 ios_backgroundColor="#3e3e3e"
                 onValueChange={toggleSwitch}
                 value={isOnline}
+                style={{ transform: [{ scaleX: 1.4 }, { scaleY: 1.3 }] }}
               />
             </View>
           </View>
         </View>
 
-         <BannerCarousel/>
+        
 
-        <LinearGradient colors={['#008080', '#979797']} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={styles.ShiftCard}>
-          <View style={styles.ShiftCard}>
-            <View style={{ flex: 1, marginLeft: 10 }}>
-              <Text style={styles.shiftTitle}>Get Bonuses for Timely Deliverires and Customer Ratings!</Text>
-            </View>
-            <Image source={require('@/assets/images/fast.png')} alt="image" style={{ height: 70, width: 70 }} />
-          </View>
-        </LinearGradient>
+       <BannerCarousel />
 
 
         <View style={{ margin: "2%" }}>
@@ -189,6 +187,8 @@ const HomeScreen = () => {
             </View>
           </LinearGradient>
         </View>
+        
+      <FooterComponent />
       </ScrollView>
 
       <Modal
@@ -199,6 +199,8 @@ const HomeScreen = () => {
       >
 
       </Modal>
+
+    
     </SafeAreaView>
   );
 };
@@ -207,12 +209,28 @@ export default HomeScreen;
 
 
 const styles = StyleSheet.create({
+  topnavbar:{
+   height: height * 0.13,
+    width: width,
+    backgroundColor:'#e5f2f1' ,
+    paddingHorizontal: 20,
+    paddingTop: 5,
+    marginTop: -10, 
+
+  },
+  txt: {
+    color: '#00a99d',
+    fontSize: 24,
+    fontWeight: '700',
+    textAlign: 'center',
+    flex: 1,
+    padding: 10
+  },
   headerSection: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "rgba(0, 128, 128, 1)",
-    paddingVertical: '4%',
+    // paddingVertical: '4%',
     paddingHorizontal: "3%",
     marginBottom: 2,
   },
@@ -267,37 +285,30 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   locationText: {
-    color: "white",
-    fontSize: 20,
-    marginLeft: 3,
+    color: "black",
+    fontSize: 18,
+    marginLeft: 10,
     textAlign: "left",
     maxWidth: 180,
   },
   helpButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "white",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 50,
+  
+  
   },
-  helpText: {
-    marginLeft: 5,
-    color: "#00A99D",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
+  
   topSection: {
-    backgroundColor: 'rgba(0,128,128,1)',
+    backgroundColor: '#fff',
     padding: "4%",
     marginBottom: "5%",
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20
+    // borderBottomLeftRadius: 20,
+    // borderBottomRightRadius: 20
+    margin:15,
+    borderRadius:20
   },
   greetText: {
     fontSize: 21,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'Black',
     marginBottom: "4%",
     textAlign: 'center'
   },
@@ -307,7 +318,7 @@ const styles = StyleSheet.create({
   },
   personalText: {
     fontSize: 16,
-    color: 'white',
+    color: 'Black',
     top: -15,
     textAlign: 'center'
   },
@@ -320,7 +331,7 @@ const styles = StyleSheet.create({
   onlineInfoText: {
     flex: 1,
     fontSize: 14,
-    color: 'white',
+    color: 'Black',
     fontWeight: '600',
     marginRight: 10,
     top: -10
@@ -343,6 +354,7 @@ const styles = StyleSheet.create({
     margin: "2%",
     borderRadius: 15,
     marginBottom: 10,
+    backgroundColor:'#e5f2f1'
   },
   calendarImage: {
     width: 45,
@@ -350,7 +362,7 @@ const styles = StyleSheet.create({
   },
   shiftTitle: {
     fontSize: 17,
-    color: 'white',
+    color: 'black',
     fontWeight: 'bold',
   },
   shiftTime: {

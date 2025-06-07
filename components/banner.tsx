@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   card: {
-    backgroundColor: '#f2f9f9',
+    backgroundColor: '#fff',
     borderRadius: 16,
     padding: 9,
     flexDirection: 'row',
