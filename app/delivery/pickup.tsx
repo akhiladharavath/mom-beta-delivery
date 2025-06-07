@@ -10,17 +10,6 @@ export default function Pickup() {
   return (
 <ScrollView style={styles.container}>
     <View style={styles.container}>
-      <View style={styles.topBar}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-          <Text style={styles.backArrow}>‹</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.helpContainer}>
-          <Image source={require('../../assets/images/447.png')} style={styles.helpIcon} />
-          <Text style={styles.iconTitle}>Help</Text>
-        </TouchableOpacity>
-      </View>
-
       <Text style={styles.headerTitle}>Nearby store</Text>
 
       <View style={styles.pinContainer}>
@@ -76,7 +65,7 @@ export default function Pickup() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding:15,
     backgroundColor: '#fff',
   },
 

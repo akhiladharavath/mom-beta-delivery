@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useOrders } from '../../context/orderContext';
 import { useLocation } from '@/context/locatonContext';
+import { COLORS } from '@/constants/COLORS';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -117,10 +118,10 @@ const DeliveryDashboard = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.button}
+            style={styles.declineButton}
             onPress={() => rejectOrder(item._id)}
           >
-            <Text style={styles.textBtn}>Decline</Text>
+            <Text style={{color:'black',fontWeight:400}}>Decline</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -186,7 +187,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#D0E8E6',
     flex: 1,
-    padding: 10,
+    padding: 5,
   },
   currentText: {
     fontSize: 20,
@@ -208,18 +209,27 @@ const styles = StyleSheet.create({
   },
   btns: {
     flexDirection: 'row',
-    gap: 60,
+    gap: '15%',
     justifyContent: 'center',
-    padding: 5,
+    padding: 10,
   },
   button: {
-    backgroundColor: '#00808088',
+    backgroundColor: COLORS.main,
     paddingVertical: 10,
     paddingHorizontal: 25,
-    borderRadius: 25,
+    borderRadius: 15,
+  },
+  declineButton:{
+    backgroundColor: "white",
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    borderRadius: 15,
+    borderWidth:1,
+    borderColor:COLORS.main
   },
   textBtn: {
     color: 'white',
+    fontWeight:500,
   },
   errorText: {
     color: 'red',
