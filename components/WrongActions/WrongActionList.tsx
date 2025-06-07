@@ -41,13 +41,13 @@ const styles = StyleSheet.create({
         flex:1 , 
         backgroundColor:"white",
         alignItems:"center",
-        padding:20,
-        marginTop:20
+        padding:30,
+        marginTop:1
     },
     wrongActionListHeading:{
         fontWeight:"bold",
         fontSize:20,
-        fontFamily:"Plus Jakarta Sans",
+        fontFamily:"dm sans",
         marginBottom:20
     },
     wrongActionItem:{
