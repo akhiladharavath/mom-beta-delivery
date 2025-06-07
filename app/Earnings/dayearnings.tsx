@@ -3,67 +3,63 @@ import { convertDayToName, covertMonthsToNames } from '@/Hooks/earningHooks';
 import useWeekEarnings from '@/Hooks/useWeekEarnings';
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
-
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, SafeAreaView } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 const WeekEarnings = () => {
+  const { start, end } = useLocalSearchParams();
+  console.log("this is earnings", start, end);
 
-  const {start , end} = useLocalSearchParams()
-  console.log("this is earnings" , start,  end)
+  const { weekEarnings, data, loading } = useWeekEarnings({ startingDate: start, endingDate: end });
+  const AverageEarnings = weekEarnings / 7;
 
-  const handleHelp = () => console.log('Help pressed');
-  const handleWeekDropdown = () => console.log('Week dropdown pressed');
-  
-  const {weekEarnings, data, loading, error } = useWeekEarnings({startingDate:start , endingDate:end})
-  
-  const AverageEarnings = weekEarnings/7
+  if (loading) return <LoadingScreen />;
 
- 
-
-  if(loading) return <LoadingScreen/>
-
-  if(!data) return <View style={{flex:1 , justifyContent:"center" , alignItems:"center"}}>
-    <Text style={{fontWeight:"bold" , fontSize:24 , textAlign:"center" , color:"gray"}}>No Earning this week</Text>
-  </View>
-
-
-    // const noOfOrders = data.earnings.length
-    console.log("this is from daily earning" , weekEarnings)
-
-
-
-   const formatedOrderse = ()=>{
-  const {orders} = data 
-  const formattedData = orders.map((item)=>{
-    const dateObj = new Date(item.createdAt)
-    return {
-      date:`${convertDayToName(dateObj.getDay()).slice(0,3)},${dateObj.getDate()} ${covertMonthsToNames(dateObj.getMonth())}`,
-      amount:item.total_earning
-    }
-  })
-  return formattedData
-}
-
-  
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        {/* <View style={ styles.head}> */}
-        <Text style={styles.headerText}>Week 19</Text>
-        <Text style={styles.dateRange}>05 May – 11 May</Text>
+  if (!data)
+    return (
+      <SafeAreaView style={styles.noEarningsContainer}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <MaterialIcons name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
         </View>
-        {/* <TouchableOpacity onPress={handleWeekDropdown}>
-          <Text style={styles.dropdownIcon}>▼</Text>
-        </TouchableOpacity> */}
-      {/* </View> */}
+        <View style={styles.centered}>
+          <Text style={styles.noEarningText}>No Earning this week</Text>
+        </View>
+      </SafeAreaView>
+    );
+
+  const formatedOrders = () => {
+    const { orders } = data;
+    return orders.map((item) => {
+      const dateObj = new Date(item.createdAt);
+      return {
+        date: `${convertDayToName(dateObj.getDay()).slice(0, 3)}, ${dateObj.getDate()} ${covertMonthsToNames(dateObj.getMonth())}`,
+        amount: item.total_earning,
+      };
+    });
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <MaterialIcons name="arrow-back" size={24} color="#000" />
+        </TouchableOpacity>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.weekText}>Weekly Earnings</Text>
+          <Text style={styles.dateText}>{start} – {end}</Text>
+        </View>
+      </View>
 
       <View style={styles.earningsCard}>
         <Text style={styles.earnedText}>You’ve earned</Text>
-        <Text style={styles.amount}>₹{weekEarnings?weekEarnings:0}</Text>
+        <Text style={styles.amount}>₹{weekEarnings ?? 0}</Text>
         <View style={styles.summaryRow}>
           <View style={styles.summaryItem}>
             <Text style={styles.label}>Orders Completed</Text>
-            <Text style={styles.value}>{data?data.length:0}</Text>
+            <Text style={styles.value}>{data.orders?.length || 0}</Text>
           </View>
           <View style={styles.summaryItem}>
             <Text style={styles.label}>Daily Average</Text>
@@ -71,27 +67,24 @@ const WeekEarnings = () => {
           </View>
         </View>
         <Image
-          source={require('../../assets/images/Earnings/earning.png')}
+          source={require('../../assets/images/Earnings/rupee.jpeg')}
           style={styles.earnImage}
         />
       </View>
 
       <Text style={styles.earningsTitle}>Earnings</Text>
-
       <FlatList
-        data={formatedOrderse()}
+        data={formatedOrders()}
         keyExtractor={(_, index) => index.toString()}
+        contentContainerStyle={styles.earningsListContainer}
         renderItem={({ item }) => (
           <View style={styles.earningItem}>
-            <View>
-              <Text style={styles.date}>{item.date}</Text>
-              {/* <Text style={styles.orders}>{item.orders} Orders</Text> */}
-            </View>
+            <Text style={styles.date}>{item.date}</Text>
             <Text style={styles.amountText}>₹{item.amount.toFixed(1)}</Text>
           </View>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -100,37 +93,44 @@ export default WeekEarnings;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#D0E8E6',
-    padding: 16,
+    backgroundColor: '#D5ECE9',
   },
   header: {
-    backgroundColor: '#fff',
     padding: 16,
-    borderRadius: 12,
-    // flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
+    paddingTop: 60,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
-  headerText: {
-    fontSize: 18,
+  backButton: {
+    marginBottom: 12,
+  },
+  headerTextContainer: {
+    marginLeft: 8,
+  },
+  weekText: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginHorizontal: 2,
+    marginBottom: 2,
+    color: '#333',
   },
-
-  dateRange: {
+  dateText: {
     fontSize: 14,
     color: '#666',
-  },
-  dropdownIcon: {
-    fontSize: 18,
-    color: '#666',
+    marginBottom: 12,
   },
   earningsCard: {
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 20,
-    marginTop: 16,
+    margin: 16,
+    marginTop: 8,
     position: 'relative',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
   earnedText: {
     fontSize: 16,
@@ -148,7 +148,6 @@ const styles = StyleSheet.create({
   },
   summaryItem: {
     alignItems: 'center',
-
   },
   label: {
     fontSize: 14,
@@ -169,32 +168,48 @@ const styles = StyleSheet.create({
   earningsTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 24,
-    marginBottom: 12,
+    marginTop: 12,
+    marginBottom: 8,
+    marginLeft: 16,
     color: '#565656',
   },
-  earningItem: {
+  earningsListContainer: {
+    paddingBottom: 20,
     backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: 20,
+  },
+  earningItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-   
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
   date: {
     fontSize: 16,
     fontWeight: '600',
     color: '#565656',
   },
-  orders: {
-    // color: '#666',
-    marginTop: 4,
-    color:'#4E4E4E',
-  },
   amountText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#424242',
+  },
+  noEarningsContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  noEarningText: {
+    fontWeight: 'bold',
+    fontSize: 24,
+    textAlign: 'center',
+    color: 'gray',
   },
 });

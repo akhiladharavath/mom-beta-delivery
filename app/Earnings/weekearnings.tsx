@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, SafeAreaView , Dimensions } from 'react-native';
-
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { router } from 'expo-router';
 
 
@@ -68,10 +68,16 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <MaterialIcons name="arrow-back" size={24} color="#000" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Select Week</Text>
+        <View style={{ width: 24 }} />
+      </View>
       <View style={styles.selectBox}>
         <View style={styles.selectHeader}>
-          <Text style={styles.selectHeaderText}>Select Week</Text>
-          
+          {/* <Text style={styles.selectHeaderText}>Select Week</Text> */}
         </View>
 
         <FlatList
@@ -93,21 +99,41 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f9f9f9' },
-  selectBox: { flex: 1, padding: 15, backgroundColor: '#fff' },
-  selectHeader: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
   },
-  selectHeaderText: { fontSize: 18, fontWeight: '600' },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  backButton: {
+    padding: 4,
+  },
+  selectBox: { flex: 1, padding: 15, backgroundColor: '#fff' },
+  selectHeader: {
+    // marginTop: 0,
+    // marginBottom: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  selectHeaderText: { fontSize: 18, fontWeight: '600', marginLeft: 10 },
   weekItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
+    padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#f0f0f0',
+    backgroundColor: '#fff',
+    marginBottom: 8,
+    borderRadius: 8,
+    elevation: 1,
   },
   weekLabel: { fontSize: 16, fontWeight: '500' },
   dateRange: { fontSize: 12, color: '#888' },

@@ -23,7 +23,8 @@ const WeekEarnings = () => {
 
   // if(loading) return <LoadingScreen/>
 
-  if(!data) return <View style={{flex:1 , justifyContent:"center" , alignItems:"center"}}>
+  if(!data) return
+   <View style={{flex:1 , justifyContent:"center" , alignItems:"center"}}>
     <Text style={{fontWeight:"bold" , fontSize:24 , textAlign:"center" , color:"gray"}}>No Earning this week</Text>
   </View>
 

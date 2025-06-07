@@ -4,6 +4,7 @@ import Svg, { Line } from 'react-native-svg';
 import { router } from 'expo-router';
 import PayoutHistoryScreen from '@/app/Earnings/payouthistory';
 const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 const PayoutHistory = () => {
   return (
@@ -11,19 +12,19 @@ const PayoutHistory = () => {
       <View style={styles.headerRow}>
         <Text style={styles.title}>Payouts</Text>
         <Image
-          source={require('../../assets/images/Earnings/payout.png')}
+          source={require('../../assets/images/Earnings/payoutsimage.jpeg')}
           style={styles.image}
           resizeMode="contain"
         />
       </View>
 
-      <Text style={styles.subtitle}>Get paid every weekend</Text>
+      <Text style={styles.subtitle}>Get paid every weekend & you can check your payouts here</Text>
 
       <Svg height="2" width={width * 0.9} style={styles.divider}>
         <Line x1="0" y1="1" x2={width * 0.9} y2="1" stroke="grey" strokeWidth="2" />
       </Svg>
-      <TouchableOpacity onPress={()=>router.push('/Earnings/payouthistory')}>
-      <Text style={styles.historytxt}>Check Payouts History {'>'}</Text>
+      <TouchableOpacity onPress={() => router.push('/Earnings/payouthistory')}>
+        <Text style={styles.historytxt}>Check Payouts History {'>'}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -34,12 +35,13 @@ export default PayoutHistory;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
-    borderRadius: 12,
-    borderColor: '#00A99D',
+    borderRadius: 20,
+    borderColor: '#ACD9D4',
     borderWidth: 1,
     padding: 16,
     alignSelf: 'center',
     width: width * 0.95,
+    height: height * 0.27
   },
   headerRow: {
     flexDirection: 'row',
@@ -47,15 +49,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 20,
+    fontSize: 25,
     fontWeight: 'bold',
     color: 'black',
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '500',
     color: 'grey',
-    marginTop: 8,
+    marginTop: 10,
   },
   historytxt: {
     fontSize: 16,
@@ -65,11 +67,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   image: {
-    width: 50,
-    height: 50,
+    width: 80,
+    height: 80,
   },
   divider: {
-    marginTop: 16,
+    marginTop: 18,
     alignSelf: 'center',
   },
 });
