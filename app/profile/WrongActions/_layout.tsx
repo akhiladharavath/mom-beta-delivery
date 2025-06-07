@@ -7,9 +7,10 @@ import {COLORS} from '@/constants/COLORS'
 
 export default function _layout() {
   return (
-    <Stack>
+    <Stack screenOptions={{headerShown:false}}>
         <Stack.Screen name='WrongActions' options={{title:"Wrong Action Details" , headerRight:()=><Help/> , headerLeft:()=><BackNavigation/> , contentStyle:{backgroundColor:COLORS.secondary}}}/>
         <Stack.Screen name='WrongActionDetails' options={{title:"Wrong Action Details" , headerRight:()=><Help/> , headerLeft:()=><BackNavigation/> , contentStyle:{backgroundColor:"white"}}}/>
     </Stack>
   )
 }
+
