@@ -13,7 +13,7 @@ import { useLocation } from '@/context/locatonContext';
 import { useEarnings } from '@/Hooks/earningHooks';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { useOnlineStatus } from '@/context/deliveryBoyStatusContext';
-
+import BannerCarousel from '@/components/banner';
 const HomeScreen = () => {
   // const [isOnline, setIsOnline] = useState(false);
   const {isOnline, setIsOnline} = useOnlineStatus()
@@ -70,6 +70,7 @@ const HomeScreen = () => {
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
+     
       <ScrollView>
 
         <View style={styles.headerSection}>
@@ -92,6 +93,8 @@ const HomeScreen = () => {
           </TouchableOpacity>
         </View>
 
+        
+
         <View style={styles.topSection}>
           <Text style={styles.greetText}>{greet + " "}{deliveryBoyDetails ? deliveryBoyDetails.name : " "}</Text>
           <View style={styles.personal}>
@@ -113,6 +116,8 @@ const HomeScreen = () => {
             </View>
           </View>
         </View>
+
+         <BannerCarousel/>
 
         <LinearGradient colors={['#008080', '#979797']} start={{ x: 0.5, y: 0 }} end={{ x: 0.5, y: 1 }} style={styles.ShiftCard}>
           <View style={styles.ShiftCard}>
