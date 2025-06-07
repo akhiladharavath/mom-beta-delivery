@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   footer: {
-    marginTop: 250,
+    marginTop: 200,
     paddingTop: 10,
     borderTopWidth: 1,
     borderColor: '#A0C4C4',
