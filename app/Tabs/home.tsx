@@ -126,23 +126,23 @@ const HomeScreen = () => {
 
         <View style={{ margin: "2%" }}>
           <LinearGradient
-            colors={['#FFD900B3', '#FDDF34B3', '#FFE75CB3']}
-            locations={[0.3254, 0.7896, 0.9992]}
-            start={{ x: 1, y: 0.5 }}
-            end={{ x: 0, y: 0.5 }}
+            colors={['#00a99d','#00dccc' ]}
+            locations={[0.4254, 0.9896]}
+            start={{ x: 0, y: 0.5 }}
+            end={{ x: 1, y: 0.5 }}
             style={{ borderRadius: 15 }}
           >
             <View style={styles.sectionTitle}>
               <Text style={styles.sectionTitleText}>My Progress</Text>
 
-              <View style={{ flexDirection: 'row', marginTop: '7%', marginBottom: '2%', gap: 20 }}>
+              {/* <View style={{ flexDirection: 'row', marginTop: '7%', marginBottom: '2%', gap: 20 }}>
                 <TouchableOpacity style={styles.filterButton}>
                   <Text style={styles.filterButtonText}>Start</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.filterButton}>
                   <Text style={styles.filterButtonText}>This week</Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
 
               <View style={{ margin: 15 }}>
                 <View style={styles.horizontalDivider} />
@@ -177,7 +177,7 @@ const HomeScreen = () => {
                   </View>
                 </View>
 
-                <Text style={{ color: '#00a99d', paddingTop: 10, fontSize: 15 }}>
+                <Text style={{ color: 'white', paddingTop: 25, fontSize: 15 }}>
                   Traffic advisor for your route.
                 </Text>
               </View>
@@ -223,19 +223,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
+    color:'white'
   },
   statLabel: {
     fontSize: 16,
     textAlign: 'center',
+    color:'white'
   },
   divider: {
     width: 1,
-    backgroundColor: '#A9A9A9',
+    backgroundColor: 'white',
     height: '120%',
   },
   horizontalDivider: {
     height: 1,
-    backgroundColor: '#A9A9A9',
+    backgroundColor: 'white',
     marginBottom: 15,
     marginTop: 5,
   },
@@ -366,7 +368,7 @@ const styles = StyleSheet.create({
 
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'black',
+    color: 'white',
   },
   earningsOrdersContainer: {
     flexDirection: 'row',
