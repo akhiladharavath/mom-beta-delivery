@@ -4,6 +4,7 @@ import userDeliveryAuth from "@/context/authContext";
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import apiClient from "@/utils/apiClient";
+import { MaterialIcons } from '@expo/vector-icons';
 import {
   View,
   Text,
@@ -18,15 +19,24 @@ import {
   Linking,
 } from 'react-native';
 import { useOnlineStatus } from '@/context/deliveryBoyStatusContext';
+import * as Location from 'expo-location';
 
 
 const App = () => {
   const [showCODModal, setShowCODModal] = useState(false);
+  const [ShowUpiModel, setShowUpiModal] = useState(false);
+  const [isCODConfirmed, setIsCODConfirmed] = useState(false);
   const [deliveryDetailsVisible, setDeliveryDetailsVisible] = useState(true);
   const [itemDetailsVisible, setItemDetailsVisible] = useState(true);
- const { extractToken } = userDeliveryAuth();
- const { acceptedOrderDetails } = useOrders()
+  const { extractToken } = userDeliveryAuth();
+  const { acceptedOrderDetails } = useOrders()
   const { setIsOnline} = useOnlineStatus()
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [distance, setDistance] = useState(null);
+  const customerLocation = {
+      latitude: acceptedOrderDetails.address_id.currentLocation?.latitude,
+      longitude: acceptedOrderDetails.address_id.currentLocation?.longitude,
+    };
 
  
  async function addEarnings(){
@@ -82,7 +92,7 @@ const App = () => {
         Alert.alert("Earning is not added" , "Please check you earnigs is not added")
       }
     } catch (error) {
-      Alert.alert('Error');
+      // console.error('error')
     }
     router.push('/Tabs/Orders')
   };
@@ -92,15 +102,64 @@ const App = () => {
   Linking.openURL(phoneNumber);
   }
 
+  const handleMaps = async () => {
+      try {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permission Denied', 'Location permission is required to open maps.');
+          return;
+        }
+  
+        const location = await Location.getCurrentPositionAsync({});
+        const originCoords = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setCurrentLocation(originCoords);
+  
+        await fetchDistance(originCoords);
+  
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${originCoords.latitude},${originCoords.longitude}&destination=${customerLocation.latitude},${customerLocation.longitude}&travelmode=driving`;
+        Linking.openURL(url);
+      } catch (error) {
+        console.error('Error opening maps:', error);
+        Alert.alert('Error', 'Unable to open maps.');
+      }
+    };
+  
+    const fetchDistance = async (originCoords) => {
+      try {
+        if (!originCoords || !originCoords.latitude || !originCoords.longitude) {
+          console.error('Invalid origin coordinates:', originCoords);
+          Alert.alert('Error', 'Invalid origin coordinates.');
+          return;
+        }
+  
+        const apiKey = ''; 
+        const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originCoords.latitude},${originCoords.longitude}&destination=${customerLocation.latitude},${customerLocation.longitude}&key=${apiKey}`;
+  
+        const response = await fetch(url);
+        const res = await response.json();
+  
+        if (res.status !== 'OK' || !res.routes?.length || !res.routes[0].legs?.length) {
+          console.error('No routes found', res);
+          Alert.alert('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
+          return;
+        }
+  
+        const distanceText = res.routes[0].legs[0].distance.text;
+        setDistance(distanceText);
+        console.log('Distance:', distanceText);
+      } catch (error) {
+        console.error('Error fetching distance:', error);
+        Alert.alert('Error', 'Could not calculate distance.');
+      }
+    };
+  
   return (
+    <View style= {{flex:1 , backgroundColor: "#fff"}}>
     <ScrollView style={styles.container}>
       <View style={styles.screen}>
-        <View style={styles.header}>
-          <TouchableOpacity>
-            <Text style={styles.backArrow}>{'<'}</Text>
-          </TouchableOpacity>
-          <Help />
-        </View>
 
         {/* Profile Section */}
         <View style={styles.profileSection}>
@@ -122,7 +181,7 @@ const App = () => {
             onPress={() => setDeliveryDetailsVisible(!deliveryDetailsVisible)}
           >
             <Text style={styles.label}>Delivery Details</Text>
-            <Text style={styles.arrow}>{deliveryDetailsVisible ? '▲' : '▼'}</Text>
+            <Text style={styles.arrow}>{deliveryDetailsVisible ?  <MaterialIcons name='keyboard-arrow-up' size={24} /> : <MaterialIcons name='keyboard-arrow-down' size={24} />}</Text>
           </TouchableOpacity>
           {deliveryDetailsVisible && (
             <>
@@ -134,7 +193,7 @@ const App = () => {
                 {acceptedOrderDetails.address_id.pincode}
               </Text>
               <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.mapButton}>
+                <TouchableOpacity style={styles.mapButton} onPress={handleMaps}>
                   <Text style={styles.buttonText}>Maps</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.callButton} onPress={()=>{handleCall(acceptedOrderDetails.user_id.mobileNo)}}>
@@ -155,7 +214,10 @@ const App = () => {
             >
               <Text style={styles.buttonText}>COD</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.upiButton}>
+            <TouchableOpacity 
+              style={styles.upiButton}
+              onPress={() => setShowUpiModal(true)}
+            >
               <Text style={styles.buttonText}>UPI</Text>
             </TouchableOpacity>
           </View>
@@ -168,7 +230,7 @@ const App = () => {
             onPress={() => setItemDetailsVisible(!itemDetailsVisible)}
           >
             <Text style={styles.label}>Item Details</Text>
-            <Text style={styles.arrow}>{itemDetailsVisible ? '▲' : '▼'}</Text>
+            <Text style={styles.arrow}>{itemDetailsVisible ? <MaterialIcons name='keyboard-arrow-up' size={24} /> : <MaterialIcons name='keyboard-arrow-down' size={24} />}</Text>
           </TouchableOpacity>
           {itemDetailsVisible && (
             <FlatList
@@ -184,19 +246,30 @@ const App = () => {
         </View>
 
         {/* Delivery Complete */}
-        <TouchableOpacity style={styles.completeButton} onPress={handleDelivery}>
-          <Text style={styles.completeText} >Delivery Complete</Text>
+        <TouchableOpacity
+        style={[
+          styles.completeButton,
+          { backgroundColor: isCODConfirmed ? '#00A99D' : '#ccc' } // Green if confirmed, grey if not
+        ]}
+        onPress={isCODConfirmed ? handleDelivery : null}
+        disabled={!isCODConfirmed}
+        >
+        <Text style={styles.completeText}>Delivery Complete</Text>
         </TouchableOpacity>
+
 
         {/* COD Confirmation Modal */}
         <Modal visible={showCODModal} transparent animationType="fade">
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              <Text style={styles.modalText}>Payment done by COD?</Text>
+              <Text style={styles.modalText}>Collected Cash From Customer?</Text>
               <View style={styles.modalButtonRow}>
                 <Pressable
                   style={styles.modalYesButton}
-                  onPress={() => setShowCODModal(false)}
+                  onPress={() => {
+                    setIsCODConfirmed(true);
+                    setShowCODModal(false)
+                  }}
                 >
                   <Text style={styles.modalButtonText}>Yes</Text>
                 </Pressable>
@@ -210,8 +283,31 @@ const App = () => {
             </View>
           </View>
         </Modal>
+
+        <Modal visible={ShowUpiModel} transparent animationType="fade">
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalText}>Coming soon!!</Text>
+              <View style={styles.modalButtonRow}>
+                {/* <Pressable
+                  style={styles.modalYesButton}
+                  onPress={() => setShowCODModal(false)}
+                >
+                  <Text style={styles.modalButtonText}>Yes</Text>
+                </Pressable> */}
+                <Pressable
+                  style={styles.modalNoButton}
+                  onPress={() => setShowUpiModal(false)}
+                >
+                  <Text style={styles.modalButtonText}>Cancel</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </ScrollView>
+    </View>
   );
 };
 
@@ -266,7 +362,7 @@ const styles = StyleSheet.create({
 
   },
   card: {
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#D5ECE9',
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
@@ -387,6 +483,3 @@ const styles = StyleSheet.create({
 });
 
 export default App;
-
-
-
