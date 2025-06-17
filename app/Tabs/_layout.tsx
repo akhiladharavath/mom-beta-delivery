@@ -12,9 +12,9 @@ export default function _layout() {
           tabBarInactiveTintColor: COLORS.primary,
           tabBarActiveTintColor: COLORS.primary,
           tabBarLabelStyle: { fontSize: 12 },
-          headerShown:true,
+          headerShown: true,
           tabBarStyle: {
-            backgroundColor: "white",
+            backgroundColor: COLORS.secondary,
             position: "absolute",
             bottom: 0,
             left: 0,
@@ -35,6 +35,7 @@ export default function _layout() {
                 color={COLORS.primary}
               />
             ),
+            headerShown: false,
           }}
         />
         <Tabs.Screen
@@ -63,7 +64,6 @@ export default function _layout() {
             tabBarIcon: () => (
               <AntDesign name="table" size={24} color={COLORS.primary} />
             ),
-           
           }}
         />
         <Tabs.Screen

@@ -1,24 +1,37 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Switch, SafeAreaView, Modal, Dimensions } from 'react-native';
-import React, { useState } from 'react';
-import { Entypo } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Switch,
+  // SafeAreaView,
+  Modal,
+  Dimensions,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Entypo } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { router, useLocalSearchParams } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import apiClient from "@/utils/apiClient";
 import userDeliveryAuth from "@/context/authContext";
-import { useLocation } from '@/context/locatonContext';
-import { useEarnings } from '@/Hooks/earningHooks';
-import { useOnlineStatus } from '@/context/deliveryBoyStatusContext';
-import BannerCarousel from '@/components/banner';
-import LocationIcon from '../../assets/images/location';
-import Help from '@/assets/images/helpsupport';
-import  FooterComponent  from '@/components/footer';
+import { useLocation } from "@/context/locatonContext";
+import { useEarnings } from "@/Hooks/earningHooks";
+import { useOnlineStatus } from "@/context/deliveryBoyStatusContext";
+import BannerCarousel from "@/components/banner";
+import LocationIcon from "../../assets/images/location";
+import Help from "@/assets/images/helpsupport";
+import FooterComponent from "@/components/footer";
+import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const HomeScreen = () => {
   // const [isOnline, setIsOnline] = useState(false);
-  const { isOnline, setIsOnline } = useOnlineStatus()
+  const { isOnline, setIsOnline } = useOnlineStatus();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [earning, setEarning] = useState(0);
@@ -28,38 +41,49 @@ const HomeScreen = () => {
   const toggleSwitch = async () => {
     const newState = !isOnline;
     setIsOnline(newState);
-    await updateOnlineStatus(newState ? 'Online' : 'Offline')
+    await updateOnlineStatus(newState ? "Online" : "Offline");
   };
+  useEffect(() => {
+    const fetchOnlineStatus = async () => {
+      try {
+        const storedStatus = await AsyncStorage.getItem("onlineStatus");
+        if (storedStatus) {
+          setIsOnline(storedStatus === "Online"); // true if 'Online'
+        }
+      } catch (error) {
+        console.error("Failed to load online status:", error);
+      }
+    };
 
+    fetchOnlineStatus();
+  }, []);
 
-  const { deliveryBoyDetails } = userDeliveryAuth()
-
+  const { deliveryBoyDetails } = userDeliveryAuth();
 
   const updateOnlineStatus = async (status) => {
-    const token = await extractToken()
+    const token = await extractToken();
     try {
       const response = await apiClient(`delivery/loginhours`, {
         method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ status }),
       });
       if (!response) {
-        throw new Error('Failed to update status');
+        throw new Error("Failed to update status");
       }
-      const data = response;
-      console.log('Status update to:');
+      await AsyncStorage.setItem("onlineStatus", status);
+      console.log("Status updated to:", status);
     } catch (error) {
-      console.error('status update error', error.message);
+      console.error("status update error", error.message);
     }
   };
 
-  const { locationName, refreshLocation } = useLocation();
+  const { locationName, refreshLocation, latitude, longitude } = useLocation();
 
-  const { getEarnings } = useEarnings()
-
+  const { getEarnings } = useEarnings();
 
   const getCurrentHour = new Date().getHours();
   let greet;
@@ -71,44 +95,79 @@ const HomeScreen = () => {
     greet = "Good Evening,";
   }
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor:'#E5F2F1' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#E5F2F1" }}>
       <View style={styles.topnavbar}>
-      <Text style={styles.txt}>medicine on minutes</Text>
-      <View style={styles.headerSection}>
+        <Text style={styles.txt}>medicine on minutes</Text>
+        <View style={styles.headerSection}>
+          <View style={styles.leftSection}>
+            <TouchableOpacity onPress={refreshLocation}>
+              <View style={styles.row}>
+                <LocationIcon />
+                <Text
+                  style={styles.locationText}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {locationName || "Fetching Location..."}
+                </Text>
+                {/* {
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: "gray",
+                      flexDirection: "column",
+                    }}
+                  >
+                    {latitude && longitude
+                      ? `${latitude}, ${longitude}`
+                      : "Loading..."}
+                  </Text>
+                } */}
+                <Entypo
+                  style={{ marginTop: 2, marginLeft: 5 }}
+                  name="chevron-down"
+                  size={20}
+                  color="black"
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.leftSection}>
-          <TouchableOpacity onPress={refreshLocation}>
-            <View style={styles.row}>
-              <LocationIcon />
-              <Text style={styles.locationText} numberOfLines={1} ellipsizeMode="tail">
-                {locationName || "Fetching Location..."}
-              </Text>
-              <Entypo style={{ marginTop: 2, marginLeft: 5 }} name="chevron-down" size={20} color="black" />
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* <TouchableOpacity style={styles.helpButton}>
+          {/* <TouchableOpacity style={styles.helpButton}>
             <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
           </TouchableOpacity> */}
-        <TouchableOpacity style={styles.helpButton} onPress={() => router.push('/profile/momhelp')}>
-         <Help height={35} width={35}/>
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.helpButton}
+            onPress={() => router.push("/profile/momhelp")}
+          >
+            <Help height={35} width={35} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView>
-
         <View style={styles.topSection}>
-          <Text style={styles.greetText}>{greet + " "}{deliveryBoyDetails ? deliveryBoyDetails.name : " "}</Text>
+          <Text style={styles.greetText}>
+            {greet + " "}
+            {deliveryBoyDetails ? deliveryBoyDetails.name : " "}
+          </Text>
           <View style={styles.personal}>
-            <Text style={styles.personalText}>Stay safe on the road, and have a great day!</Text>
+            <Text style={styles.personalText}>
+              Stay safe on the road, and have a great day!
+            </Text>
           </View>
           <View style={styles.onlineSwitchContainer}>
-            <Text style={styles.onlineInfoText}>Go online on time and earn bonuses!</Text>
+            <Text style={styles.onlineInfoText}>
+              Go online on time and earn bonuses!
+            </Text>
             <View style={styles.statusSwitch}>
-              <Text style={[styles.statusText, { color: isOnline ? '#00A99D' : 'gray' }]}>
-                {isOnline ? 'Online' : 'Offline'}
+              <Text
+                style={[
+                  styles.statusText,
+                  { color: isOnline ? "#00A99D" : "gray" },
+                ]}
+              >
+                {isOnline ? "Online" : "Offline"}
               </Text>
               <Switch
                 trackColor={{ false: "#767577", true: "#00A99D" }}
@@ -122,14 +181,11 @@ const HomeScreen = () => {
           </View>
         </View>
 
-        
-
-       <BannerCarousel />
-
+        <BannerCarousel />
 
         <View style={{ margin: "2%" }}>
           <LinearGradient
-            colors={['#00a99d','#00dccc' ]}
+            colors={["#00a99d", "#00dccc"]}
             locations={[0.4254, 0.9896]}
             start={{ x: 0, y: 0.5 }}
             end={{ x: 1, y: 0.5 }}
@@ -149,9 +205,17 @@ const HomeScreen = () => {
 
               <View style={{ margin: 15 }}>
                 <View style={styles.horizontalDivider} />
-                <View style={{ flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                  }}
+                >
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>₹ {getEarnings ? getEarnings.total_earning : 0}</Text>
+                    <Text style={styles.statValue}>
+                      ₹ {getEarnings ? getEarnings.total_earning : 0}
+                    </Text>
                     <Text style={styles.statLabel}>Earnings</Text>
                   </View>
 
@@ -161,34 +225,39 @@ const HomeScreen = () => {
                     <Text style={styles.statValue}>
                       {deliveryBoyDetails?.totalOnlineTimeInMs
                         ? (() => {
-                          const totalMinutes = Math.floor(deliveryBoyDetails.totalOnlineTimeInMs / 60000);
-                          const hours = Math.floor(totalMinutes / 60);
-                          const minutes = totalMinutes % 60;
-                          return `${hours}:${minutes.toString().padStart(2, '0')}`;
-                        })()
+                            const totalMinutes = Math.floor(
+                              deliveryBoyDetails.totalOnlineTimeInMs / 60000
+                            );
+                            const hours = Math.floor(totalMinutes / 60);
+                            const minutes = totalMinutes % 60;
+                            return `${hours}:${minutes
+                              .toString()
+                              .padStart(2, "0")}`;
+                          })()
                         : "0:00"}
                     </Text>
                     <Text style={styles.statLabel}>Login Time</Text>
                   </View>
 
-
                   <View style={styles.divider} />
 
                   <View style={styles.statItem}>
-                    <Text style={styles.statValue}>{getEarnings ? getEarnings.orders.length : 0}</Text>
+                    <Text style={styles.statValue}>
+                      {getEarnings ? getEarnings.orders.length : 0}
+                    </Text>
                     <Text style={styles.statLabel}>Orders</Text>
                   </View>
                 </View>
 
-                <Text style={{ color: 'white', paddingTop: 25, fontSize: 15 }}>
+                <Text style={{ color: "white", paddingTop: 25, fontSize: 15 }}>
                   Traffic advisor for your route.
                 </Text>
               </View>
             </View>
           </LinearGradient>
         </View>
-        
-      <FooterComponent />
+
+        <FooterComponent />
       </ScrollView>
 
       <Modal
@@ -196,35 +265,29 @@ const HomeScreen = () => {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
-      >
-
-      </Modal>
-
-    
+      ></Modal>
     </SafeAreaView>
   );
 };
 
 export default HomeScreen;
 
-
 const styles = StyleSheet.create({
-  topnavbar:{
-   height: height * 0.13,
+  topnavbar: {
+    height: height * 0.13,
     width: width,
-    backgroundColor:'#e5f2f1' ,
+    backgroundColor: "#e5f2f1",
     paddingHorizontal: 20,
     paddingTop: 5,
-    marginTop: -10, 
-
+    marginTop: -10,
   },
   txt: {
-    color: '#00a99d',
+    color: "#00a99d",
     fontSize: 24,
-    fontWeight: '700',
-    textAlign: 'center',
+    fontWeight: "700",
+    textAlign: "center",
     flex: 1,
-    padding: 10
+    padding: 10,
   },
   headerSection: {
     flexDirection: "row",
@@ -240,27 +303,27 @@ const styles = StyleSheet.create({
   },
   statItem: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   statValue: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 5,
-    color:'white'
+    color: "white",
   },
   statLabel: {
     fontSize: 16,
-    textAlign: 'center',
-    color:'white'
+    textAlign: "center",
+    color: "white",
   },
   divider: {
     width: 1,
-    backgroundColor: 'white',
-    height: '120%',
+    backgroundColor: "white",
+    height: "120%",
   },
   horizontalDivider: {
     height: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginBottom: 15,
     marginTop: 5,
   },
@@ -271,12 +334,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#00a99d",
     borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 12,
   },
   filterButtonText: {
-    color: '#00a99d',
+    color: "#00a99d",
     fontSize: 14,
   },
 
@@ -291,26 +354,23 @@ const styles = StyleSheet.create({
     textAlign: "left",
     maxWidth: 180,
   },
-  helpButton: {
-  
-  
-  },
-  
+  helpButton: {},
+
   topSection: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: "4%",
     marginBottom: "5%",
     // borderBottomLeftRadius: 20,
     // borderBottomRightRadius: 20
-    margin:15,
-    borderRadius:20
+    margin: 15,
+    borderRadius: 20,
   },
   greetText: {
     fontSize: 21,
-    fontWeight: 'bold',
-    color: 'Black',
+    fontWeight: "bold",
+    color: "Black",
     marginBottom: "4%",
-    textAlign: 'center'
+    textAlign: "center",
   },
 
   personal: {
@@ -318,43 +378,43 @@ const styles = StyleSheet.create({
   },
   personalText: {
     fontSize: 16,
-    color: 'Black',
+    color: "Black",
     top: -15,
-    textAlign: 'center'
+    textAlign: "center",
   },
   onlineSwitchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 20,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   onlineInfoText: {
     flex: 1,
     fontSize: 14,
-    color: 'Black',
-    fontWeight: '600',
+    color: "Black",
+    fontWeight: "600",
     marginRight: 10,
-    top: -10
+    top: -10,
   },
   statusSwitch: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
-    top: -10
+    top: -10,
   },
   statusText: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginRight: 5,
   },
   ShiftCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     padding: "1%",
     margin: "2%",
     borderRadius: 15,
     marginBottom: 10,
-    backgroundColor:'#e5f2f1'
+    backgroundColor: "#e5f2f1",
   },
   calendarImage: {
     width: 45,
@@ -362,125 +422,123 @@ const styles = StyleSheet.create({
   },
   shiftTitle: {
     fontSize: 17,
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
   },
   shiftTime: {
     fontSize: 16,
-    color: 'white',
+    color: "white",
     marginTop: 4,
   },
   shiftButton: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     marginTop: 5,
   },
 
-
   sectionTitle: {
     borderRadius: 15,
-    margin: '5%',
+    margin: "5%",
   },
   sectionTitleText: {
-
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
   },
   earningsOrdersContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 10,
   },
   earningsCard: {
-    backgroundColor: '#00A99D',
+    backgroundColor: "#00A99D",
     padding: 20,
     borderRadius: 12,
     flex: 1,
     marginRight: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   ordersCard: {
-    backgroundColor: '#00A99D',
+    backgroundColor: "#00A99D",
     padding: 20,
     borderRadius: 12,
     flex: 1,
     marginLeft: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   earningsTitle: {
     fontSize: 16,
-    color: 'black',
-    fontWeight: '600',
+    color: "black",
+    fontWeight: "600",
   },
   earningsValue: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
     marginTop: 5,
   },
   loginHoursCard: {
-    backgroundColor: '#00A99D',
+    backgroundColor: "#00A99D",
     padding: 20,
     borderRadius: 12,
     marginBottom: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   loginTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    color: 'black',
+    fontWeight: "600",
+    color: "black",
   },
   loginValue: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: "bold",
+    color: "white",
     marginTop: 5,
   },
   loginCaption: {
     marginTop: 5,
-    color: 'white',
+    color: "white",
     fontSize: 14,
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
-    width: '80%',
+    alignItems: "center",
+    width: "80%",
   },
   modalText: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   modalButtonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   modalButton: {
     flex: 1,
-    backgroundColor: '#00A99D',
+    backgroundColor: "#00A99D",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginHorizontal: 5,
   },
   cancelButton: {
-    backgroundColor: '#767577',
+    backgroundColor: "#767577",
   },
   modalButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
