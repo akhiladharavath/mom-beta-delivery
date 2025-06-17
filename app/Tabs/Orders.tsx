@@ -16,6 +16,18 @@ import { COLORS } from '@/constants/COLORS';
 
 const screenWidth = Dimensions.get('window').width;
 
+interface LocationCoords {
+  latitude: number;
+  longitude: number;
+}
+
+interface LocationContextType {
+  locationCoords: LocationCoords | null;
+  locationName: string;
+  locationError: string | null;
+  refreshLocation: () => Promise<void>;
+}
+
 const DeliveryDashboard = () => {
   const {
     orders,
@@ -44,10 +56,24 @@ const DeliveryDashboard = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  const { locationCoords } = useLocation();
+  // Debug logs
+  useEffect(() => {
+    console.log('Current orders:', orders);
+    if (orders.length > 0) {
+      console.log('First order details:', {
+        id: orders[0]._id,
+        status: orders[0].status,
+        createdAt: orders[0].createdAt,
+        deliveredAt: orders[0].deliveredAt,
+        updatedAt: orders[0].updatedAt
+      });
+    }
+  }, [orders]);
 
-  const getDistance = (lat1, lon1, lat2, lon2) => {
-    const toRad = (value) => (value * Math.PI) / 180;
+  const { locationCoords } = useLocation() as LocationContextType;
+
+  const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
+    const toRad = (value: number) => (value * Math.PI) / 180;
     const R = 6371;
 
     const dLat = toRad(lat2 - lat1);
@@ -72,16 +98,16 @@ const DeliveryDashboard = () => {
         !o.deliveryboy_id &&
         !rejectedOrderIds.includes(o._id)
     )
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 2);
 
-  const handleAccept = (id) => {
+  const handleAccept = (id: string) => {
     acceptOrder(id, () => {
       router.push('/delivery/pickup');
     });
   };
 
-  const renderItem = (item) => {
+  const renderItem = (item: any) => {
     if (item.status !== 'confirmed' || item.deliveryboy_id) return null;
 
     const customerLocation = item.address_id?.currentLocation;
@@ -145,36 +171,47 @@ const DeliveryDashboard = () => {
 
         <View style={styles.pastOrders}>
           <Text style={styles.pasttxt}>Past Orders</Text>
-          <Text style={styles.pasttxt2}>Last order 2 mins ago</Text>
+          {orders.length > 0 && (
+            <Text style={styles.pasttxt2}>
+              Last delivery {new Date(orders[0].deliveredAt || orders[0].updatedAt || orders[0].createdAt).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              })} ago
+            </Text>
+          )}
 
-          <View style={styles.pastCod}>
-            <Text style={styles.pastDetails}>01:10 am</Text>
-            <Text style={styles.pastCodetxt}>COD</Text>
-          </View>
-          <Text style={styles.pasttxt2}>Order ID: #DK3KBDKF550083S</Text>
-          <View style={styles.divider} />
-
-          <View style={styles.pastCod}>
-            <Text style={styles.pastDetails}>12:30 pm</Text>
-            <Text style={styles.pastCodetxt}>COD</Text>
-          </View>
-          <Text style={styles.pasttxt2}>Order ID: #DK3KBDKF550902</Text>
-          <View style={styles.divider} />
-
-          <View style={styles.pastCod}>
-            <Text style={styles.pastDetails}>9:10 pm</Text>
-            <Text style={styles.pastCodetxt}>COD</Text>
-          </View>
-          <Text style={styles.pasttxt2}>Order ID: #DKHSHDKF550083S</Text>
-          <View style={styles.divider} />
-
-          <View style={styles.pastCod}>
-            <Text style={styles.pastDetails}>11:10 am</Text>
-            <Text style={styles.pastCodetxt}>COD</Text>
-          </View>
-          <Text style={styles.pasttxt2}>Order ID: #DKHSHDKF550899S</Text>
-          <View style={styles.divider} />
-
+          {orders
+            .filter(order => {
+              const isCompleted = order.status === 'delivered' || order.status === 'completed';
+              const hasDeliveryBoy = !!order.deliveryboy_id;
+              return isCompleted && hasDeliveryBoy;
+            })
+            .sort((a, b) => {
+              const timeA = new Date(a.deliveredAt || a.updatedAt || a.createdAt).getTime();
+              const timeB = new Date(b.deliveredAt || b.updatedAt || b.createdAt).getTime();
+              return timeB - timeA;
+            })
+            .slice(0, 4)
+            .map((order) => {
+              const deliveryTime = new Date(order.deliveredAt || order.updatedAt || order.createdAt);
+              return (
+                <React.Fragment key={order._id}>
+                  <View style={styles.pastCod}>
+                    <Text style={styles.pastDetails}>
+                      {deliveryTime.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                      })}
+                    </Text>
+                    <Text style={styles.pastCodetxt}>COD</Text>
+                  </View>
+                  <Text style={styles.pasttxt2}>Order ID: #{order._id}</Text>
+                  <View style={styles.divider} />
+                </React.Fragment>
+              );
+            })}
         </View>
       </View>
     </ScrollView>
@@ -290,4 +327,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
     marginHorizontal: 22,
   },
+  acceptButtonDisabled: {
+    backgroundColor: '#00808088',
+  },
 });
