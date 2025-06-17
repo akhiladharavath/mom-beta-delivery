@@ -1,33 +1,95 @@
 import { router } from 'expo-router';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Linking, Alert } from 'react-native';
+import * as Location from 'expo-location';
 
 export default function Pickup() {
+    const PickUpLocation = {
+      latitude: 17.4572416,
+      longitude: 78.3806970,
+    };
+    const [currentLocation, setCurrentLocation] = useState(null);
+    const [distance, setDistance] = useState(null);
   const handleBackPress = () => {
     console.log('Back pressed');
   };
 
+  const handleMaps = async () => {
+        try {
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            Alert.alert('Permission Denied', 'Location permission is required to open maps.');
+            return;
+          }
+    
+          const location = await Location.getCurrentPositionAsync({});
+          const originCoords = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          };
+          setCurrentLocation(originCoords);
+    
+          await fetchDistance(originCoords);
+    
+          const url = `https://www.google.com/maps/dir/?api=1&origin=${originCoords.latitude},${originCoords.longitude}&destination=${PickUpLocation.latitude},${PickUpLocation.longitude}&travelmode=driving`;
+          Linking.openURL(url);
+        } catch (error) {
+          console.error('Error opening maps:', error);
+          Alert.alert('Error', 'Unable to open maps.');
+        }
+      };
+    
+      const fetchDistance = async (originCoords) => {
+        try {
+          if (!originCoords || !originCoords.latitude || !originCoords.longitude) {
+            console.error('Invalid origin coordinates:', originCoords);
+            Alert.alert('Error', 'Invalid origin coordinates.');
+            return;
+          }
+    
+          const apiKey = ''; 
+          const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originCoords.latitude},${originCoords.longitude}&destination=${PickUpLocation.latitude},${PickUpLocation.longitude}&key=${apiKey}`;
+    
+          const response = await fetch(url);
+          const res = await response.json();
+    
+          if (res.status !== 'OK' || !res.routes?.length || !res.routes[0].legs?.length) {
+            console.error('No routes found', res);
+            Alert.alert('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
+            return;
+          }
+    
+          const distanceText = res.routes[0].legs[0].distance.text;
+          setDistance(distanceText);
+          console.log('Distance:', distanceText);
+        } catch (error) {
+          console.error('Error fetching distance:', error);
+          Alert.alert('Error', 'Could not calculate distance.');
+        }
+      };
+
   return (
-<ScrollView style={styles.container}>
     <View style={styles.container}>
-      <Text style={styles.headerTitle}>Nearby store</Text>
+      <Text style={styles.headerTitle}>Pickup Store Location</Text>
+      <Text style={styles.tag}>#Deliver on time, Earn more coupons!</Text>
 
       <View style={styles.pinContainer}>
-        <Image source={require('../../assets/images/442.png')} style={styles.pinIcon} />
+        <Image source={require('../../assets/images/deliverymaps.png')} style={styles.pinIcon} />
       </View>
 
       <View style={styles.routeContainer}>
         <View style={styles.imagesRow}>
-          <Image source={require('../../assets/images/443.png')} style={styles.routeImage} />
+          <Image source={require('../../assets/images/scooter.png')} style={styles.routeImage} />
           <View style={styles.middleColumn}>
-            <Text style={styles.reachTime}>Reach by 7:20 PM</Text>
+            <Text style={styles.reachTime}>On the way to store</Text>
             <View style={styles.dottedLine} />
           </View>
           <Image source={require('../../assets/images/444.png')} style={styles.routeImage} />
         </View>
 
         <View style={styles.labelsRow}>
-          <Text style={styles.routeText}>1st cross</Text>
+          <Text style={styles.routeText}>Heal Porter</Text>
           <View style={{ flex: 1 }} />
           <Text style={styles.routeText}>Madhapur</Text>
         </View>
@@ -48,8 +110,8 @@ export default function Pickup() {
           S/7A, S/7B and 7C in survey No.11.7
         </Text>
 
-        <TouchableOpacity style={styles.mapsButton}>
-          <Image source={require('../../assets/images/448.png')} style={styles.mapsIcon} />
+        <TouchableOpacity style={styles.mapsButton} onPress={handleMaps}>
+          <Image source={require('../../assets/images/Orders/location1.png')} style={styles.mapsIcon} />
           <Text style={styles.mapsText}>Maps</Text>
         </TouchableOpacity>
 
@@ -58,7 +120,6 @@ export default function Pickup() {
         </TouchableOpacity>
       </View>
     </View>
-   </ScrollView> 
   );
 }
 
@@ -104,6 +165,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: 'bold',
+    color:'#00A99D',
     textAlign: 'center',
     marginVertical: 20,
   },
@@ -116,7 +178,6 @@ const styles = StyleSheet.create({
   pinIcon: {
     width: 300,
     height: 225,
-    resizeMode: 'contain',
   },
 
   routeContainer: {
@@ -133,6 +194,11 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
   },
+  tag: {
+    textAlign: 'center',
+    color: "grey",
+    bottom: 10,
+  },
 
   middleColumn: {
     flex: 1,
@@ -144,7 +210,7 @@ const styles = StyleSheet.create({
   reachTime: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#444',
+    color: '#00A99D',
     marginBottom: 4,
     textAlign: 'center',
   },
@@ -172,7 +238,7 @@ const styles = StyleSheet.create({
   },
 
   combinedCard: {
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    backgroundColor: '#D5ECE9',
     borderRadius: 10,
     padding: 20,
     position: 'relative',
@@ -234,7 +300,7 @@ const styles = StyleSheet.create({
 
   mapsIcon: {
     width: 20,
-    height: 15,
+    height: 20,
     marginBottom: 2,
     resizeMode: 'contain',
   },
@@ -248,7 +314,7 @@ const styles = StyleSheet.create({
   bottomButton: {
     backgroundColor: '#00A99D',
     paddingVertical: 15,
-    borderRadius: 10,
+    borderRadius: 20,
     alignItems: 'center',
     marginTop: 0,
   },
@@ -259,4 +325,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-

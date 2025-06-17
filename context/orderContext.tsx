@@ -15,6 +15,7 @@ export const OrderProvider = ({ children }) => {
   const [acceptedOrderDetails, setAcceptedOrderDetails] = useState(null);
   const [rejectedOrderIds, setRejectedOrderIds] = useState([]);
   const { extractToken } = userDeliveryAuth();
+  const [currentOrder, setCurrentOrder] = useState(null);
 
   const fetchOrders = async () => {
     setLoadingOrders(true);
@@ -24,7 +25,7 @@ export const OrderProvider = ({ children }) => {
       const response = await apiClient("api/allorders", {
         method: "GET",
         headers: {
-          Authorization:`Bearer ${token}`,
+          "Authorization":`Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -32,6 +33,7 @@ export const OrderProvider = ({ children }) => {
       if (!response) throw new Error("Failed to fetch orders");
 
       const data = response;
+      
       setOrders(data.orders || []);
     } catch (err) {
       setError(err.message || "Something went wrong");
@@ -40,10 +42,31 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  const fetchCurrentOrder = async () => {
+    setError(null);
+    const token = await extractToken();
+    try {
+      const response = await apiClient("delivery/getDeliveryBoyActiveOrders", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response) throw new Error("Failed to fetch current order");
+      console.log("this is from ordercontext",response)
+      setCurrentOrder(response || null);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    }
+  };
+
+
   const acceptOrder = async (orderId, onSuccess) => {
     setAcceptingOrderId(orderId);
     setError(null);
-    console.log("this is from ordercontext",orderId)
+    // console.log("this is from ordercontext",orderId)
     const token = await extractToken();
     try {
       const response = await apiClient(        
@@ -77,6 +100,7 @@ export const OrderProvider = ({ children }) => {
 
   useEffect(() => {
     fetchOrders();
+    fetchCurrentOrder();
   }, []);
 
   const rejectOrder = (orderId) => {
@@ -91,11 +115,13 @@ export const OrderProvider = ({ children }) => {
         loadingOrders,
         acceptingOrderId,
         error,
-        fetchOrders,
+        currentOrder,
         acceptOrder,
         acceptedOrderDetails,
         rejectedOrderIds,
         rejectOrder,
+        fetchCurrentOrder,
+        fetchOrders,
       }}
     >
       {children}

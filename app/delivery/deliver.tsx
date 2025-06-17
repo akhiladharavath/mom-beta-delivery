@@ -20,8 +20,8 @@ const { width } = Dimensions.get('window');
 export default function Pickup() {
 
 
- const { acceptedOrderDetails } = useOrders()
-const [currentLocation, setCurrentLocation] = useState(null);
+  const { acceptedOrderDetails } = useOrders()
+  const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setDistance] = useState(null);
 
   const customerLocation = {
@@ -29,7 +29,7 @@ const [currentLocation, setCurrentLocation] = useState(null);
     longitude: acceptedOrderDetails.address_id.currentLocation?.longitude,
   };
 
- 
+
 
   const handleMaps = async () => {
     try {
@@ -64,7 +64,7 @@ const [currentLocation, setCurrentLocation] = useState(null);
         return;
       }
 
-      const apiKey = ''; 
+      const apiKey = '';
       const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originCoords.latitude},${originCoords.longitude}&destination=${customerLocation.latitude},${customerLocation.longitude}&key=${apiKey}`;
 
       const response = await fetch(url);
@@ -85,121 +85,110 @@ const [currentLocation, setCurrentLocation] = useState(null);
     }
   };
 
-
-
-
-
-  
-
- 
   const handleBackPress = () => {
-   router.back()
+    router.back()
   };
- 
+
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.topBar}>
-          <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-            <Text style={styles.backArrow}>‹</Text>
-          </TouchableOpacity>
+    <View style={styles.viewcontainer}>
+      <Text style={styles.headerTitle}>Customer Location</Text>
+      <Text style={styles.tag}>#Earn more stars by on-time delivery</Text>
+      <View style={styles.pinContainer}>
+        <Image
+          source={require('../../assets/images/Orders/holdingmed.png')}
+          style={styles.pinIcon}
+        />
+      </View>
 
-          <TouchableOpacity style={styles.helpContainer}>
-            <Image
-              source={require('../../assets/images/447.png')}
-              style={styles.helpIcon}
-            />
-            <Text style={styles.iconTitle}>Help</Text>
-          </TouchableOpacity>
+      <View style={styles.routeContainer}>
+        <View style={styles.imagesRow}>
+          <Image source={require('../../assets/images/scooter.png')} style={styles.routeImage} />
+          <View style={styles.middleColumn}>
+            <Text style={styles.reachTime}>Reaching in 10 minutes</Text>
+            <View style={styles.dottedLine} />
+          </View>
+          <Image source={require('../../assets/images/01.png')} style={styles.routeImage} />
         </View>
 
-        <Text style={styles.headerTitle}>Deliver to</Text>
+        <View style={styles.labelsRow}>
+          <Text style={styles.routeText}>Heal Porter</Text>
+          <View style={{ flex: 1 }} />
+          <Text style={styles.routeText}>Madhapur</Text>
+        </View>
+      </View>
 
-        <View style={styles.pinContainer}>
+      <View style={styles.combinedCard}>
+        <View style={styles.pickupTitleRow}>
           <Image
-            source={require('../../assets/images/442.png')}
-            style={styles.pinIcon}
+            source={require('../../assets/images/prof.png')}
+            style={styles.orderIcon}
           />
+          <Text style={styles.pickupTitle}>Deliver to</Text>
         </View>
 
-        <View style={styles.routeContainer}>
-          <View style={styles.imagesRow}>
-            <Image
-              source={require('../../assets/images/443.png')}
-              style={styles.routeImage}
-            />
-            <View style={styles.middleColumn}>
-              <View style={styles.dottedLine} />
-            </View>
-            <Image
-              source={require('../../assets/images/01.png')}
-              style={styles.routeImage}
-            />
+        <View style={styles.infoRow}>
+          <View style={styles.nameIdContainer}>
+            <Text style={styles.Name}>{acceptedOrderDetails.user_id.name}</Text>
+            <Text style={styles.id}>{acceptedOrderDetails.user_id.mobileNo}</Text>
           </View>
 
-          <View style={styles.labelsRow}>
-            <Text style={styles.routeText}>Madhapur Rd</Text>
-            <View style={{ flex: 1 }} />
-            <Text style={styles.routeText}>Customer</Text>
-          </View>
-        </View>
-
-        <View style={styles.combinedCard}>
-          <View style={styles.pickupTitleRow}>
-            <Image
-              source={require('../../assets/images/prof.png')}
-              style={styles.orderIcon}
-            />
-            <Text style={styles.pickupTitle}>Deliver to</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-  <View style={styles.nameIdContainer}>
-    <Text style={styles.Name}>{acceptedOrderDetails.user_id.name}</Text>
-    <Text style={styles.id}>{acceptedOrderDetails.user_id.mobileNo}</Text>
-  </View>
-
-  <TouchableOpacity style={styles.mapsbutton} onPress={handleMaps}>
-     <Image source={require('../../assets/images/448.png')} style={styles.mapsIcon} />
-    <Text style={styles.mapsButtonText}>Maps</Text>
-  </TouchableOpacity>
-</View>
-
-          <View style={styles.separator} />
-
-          <Text style={styles.pharmacyAddress}>
-            
-                {acceptedOrderDetails.address_id.street},
-                {acceptedOrderDetails.address_id.city},
-                {acceptedOrderDetails.address_id.state},
-                {acceptedOrderDetails.address_id.pincode}
-          </Text>
-
-          <TouchableOpacity style={styles.bottomButton} onPress={()=>{router.push('./order')}}>
-            <Text style={styles.bottomButtonText}>
-              Reached Customer location
-            </Text>
+          <TouchableOpacity style={styles.mapsbutton} onPress={handleMaps}>
+            <Image source={require('../../assets/images/Orders/location1.png')} style={styles.mapsIcon} />
+            <Text style={styles.mapsButtonText}>Maps</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+
+        <View style={styles.separator} />
+
+        <Text style={styles.pharmacyAddress}>
+
+          {acceptedOrderDetails.address_id.street},
+          {acceptedOrderDetails.address_id.city},
+          {acceptedOrderDetails.address_id.state},
+          {acceptedOrderDetails.address_id.pincode}
+        </Text>
+
+        <TouchableOpacity style={styles.bottomButton} onPress={() => { router.push('./order') }}>
+          <Text style={styles.bottomButtonText}>
+            Reached Customer location
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  // safeArea: {
+  //   flex: 1,
+  //   backgroundColor: '#fff',
+  // },
+  viewcontainer: {
     flex: 1,
+    padding: 15,
     backgroundColor: '#fff',
   },
   scrollContainer: {
     padding: 20,
     paddingBottom: 30,
   },
+   reachTime: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#00A99D',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  tag: {
+    textAlign: 'center',
+    color: "grey",
+    bottom: 10,
   },
   backButton: {
     padding: 5,
@@ -227,18 +216,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
+    color: "#00A99D"
   },
   pinContainer: {
     alignItems: 'center',
     marginVertical: 20,
   },
   pinIcon: {
-    width: width * 0.9,
-    height: width * 0.7,
-    resizeMode: 'contain',
+    width: 300,
+    height: 225,
+    // resizeMode: 'contain',
+    borderRadius: 20,
   },
   routeContainer: {
-    marginBottom: 20,
+    marginBottom: 30,
   },
   imagesRow: {
     flexDirection: 'row',
@@ -267,17 +258,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 6,
     paddingHorizontal: 2,
-    alignItems: 'center',
   },
   routeText: {
     fontSize: 14,
     color: '#444',
     textAlign: 'center',
   },
-  combinedCard: {
-    backgroundColor: 'rgba(255,255,255,0.95)',
+   combinedCard: {
+    backgroundColor: '#D5ECE9',
     borderRadius: 10,
-    padding: 20,
+    padding: 5,
+    position: 'relative',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -315,7 +306,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
     marginBottom: 10,
-    marginTop: 5,
   },
   pharmacyAddress: {
     fontSize: 14,
@@ -326,22 +316,23 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00897B',
-    borderRadius: 20,
+    backgroundColor: '#00A99D',
+    borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginBottom: 15,
   },
   mapsButtonText: {
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: '800',
     color: 'white',
-    marginLeft: 6,
   },
   bottomButton: {
     backgroundColor: '#00A99D',
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
+    marginTop: 0,
   },
   bottomButtonText: {
     color: '#fff',
@@ -349,20 +340,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   infoRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 10,
-},
-mapsIcon: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  mapsIcon: {
     width: 20,
-    height: 15,
+    height: 20,
     marginBottom: 2,
     resizeMode: 'contain',
   },
 
-nameIdContainer: {
-  flex: 1,
-  marginRight: 10,
-},
+  nameIdContainer: {
+    flex: 1,
+    marginRight: 10,
+  },
 });

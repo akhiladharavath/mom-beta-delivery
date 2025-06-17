@@ -1,20 +1,20 @@
-import { Text, View, StyleSheet, Image, TouchableOpacity, StatusBar } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import userDeliveryAuth from "@/context/authContext";
 import LoadingScreen from "@/components/LoadingScreen";
-
+import { useOrders } from "@/context/orderContext";
 
 export default function Index() {
-
-  const { isLoggedIn, loading, deliveryBoyDetails, extractToken, getDeliveryBoyDetails } = userDeliveryAuth()
- 
+  const { loading, deliveryBoyDetails, extractToken, getDeliveryBoyDetails } = userDeliveryAuth();
+  const { currentOrder, fetchCurrentOrder } = useOrders();
 
   useEffect(() => {
     const init = async () => {
       const token = await extractToken();
       if (token) {
-        await getDeliveryBoyDetails(); 
+        await getDeliveryBoyDetails();
+        await fetchCurrentOrder();
       } else {
         router.replace("/Login/login");
       }
@@ -23,21 +23,39 @@ export default function Index() {
   }, []);
 
   useEffect(() => {
-    if (deliveryBoyDetails) {
-      if (deliveryBoyDetails.isRegistered) {
-        console.log("this is running")
-        router.replace("/Tabs/home");
-      } else {
+    if (deliveryBoyDetails !== null && currentOrder !== undefined) {
+      const isRegistered = deliveryBoyDetails?.isRegistered;
+      if (!isRegistered) {
         router.replace("/Login/signup");
+        return;
+      }
+
+      const status = currentOrder?.status || "none";
+      console.log("this is from index",status)
+
+      switch (status) {
+        case "accepted":
+          router.replace("/delivery/pickup");
+          break;
+        case "on the way":
+          router.replace("/delivery/deliver");
+          break;
+        case "delivered":
+          router.replace("/delivery/order");
+          break;
+        default:
+          router.replace("/Tabs/home");
       }
     }
-  }, [deliveryBoyDetails]);
+  }, [deliveryBoyDetails, currentOrder]);
 
-
-  if (loading) return <LoadingScreen />
+  if (loading || !deliveryBoyDetails || currentOrder === null) {
+    return <LoadingScreen />;
+  }
 
   return null;
 }
+
 
 const styles = StyleSheet.create({
   container: {
