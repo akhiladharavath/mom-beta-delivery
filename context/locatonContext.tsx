@@ -1,19 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import * as Location from 'expo-location';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import * as Location from "expo-location";
 
 const LocationContext = createContext();
 
 export const LocationProvider = ({ children }) => {
   const [locationCoords, setLocationCoords] = useState(null);
-  const [locationName, setLocationName] = useState('Fetching location...');
+  const [locationName, setLocationName] = useState("Fetching location...");
   const [locationError, setLocationError] = useState(null);
 
   const fetchLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setLocationName('Permission denied');
-        setLocationError('Location permission denied');
+      if (status !== "granted") {
+        setLocationName("Permission denied");
+        setLocationError("Location permission denied");
         return;
       }
 
@@ -27,13 +27,18 @@ export const LocationProvider = ({ children }) => {
 
       if (geoCode.length > 0) {
         const place = geoCode[0];
-        const fullAddress = place.name ?? place.city ?? place.region ?? place.country ?? 'Unknown';
+        const fullAddress =
+          place.name ??
+          place.city ??
+          place.region ??
+          place.country ??
+          "Unknown";
         setLocationName(fullAddress);
       }
     } catch (err) {
-      console.error('Location error:', err);
-      setLocationName('Location Error');
-      setLocationError(err.message || 'Unknown error');
+      console.error("Location error:", err);
+      setLocationName("Location Error");
+      setLocationError(err.message || "Unknown error");
     }
   };
 
@@ -48,6 +53,8 @@ export const LocationProvider = ({ children }) => {
         locationName,
         locationError,
         refreshLocation: fetchLocation,
+        latitude: locationCoords?.latitude || null,
+        longitude: locationCoords?.longitude || null,
       }}
     >
       {children}
