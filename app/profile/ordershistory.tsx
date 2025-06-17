@@ -31,7 +31,7 @@ export default function OrderHistoryScreen() {
         return;
       }
 
-      const response = await apiClient('api/getorderdeliveryboy', {
+      const response = await apiClient('api/getOrderHistory', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -103,7 +103,7 @@ console.log("Fetched response", response);
                 <Text style={styles.orderDetails}>Order: {item.order_id}</Text>
                 <View style={styles.CODcontainer}>
                   <Text style={styles.COD}>COD</Text>
-                  <Text style={styles.RTO}>RTO</Text>
+             
                 </View>
               </View>
               <TouchableOpacity onPress={() => router.push({pathname:'./orderDetails',params:{
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   timeBox: {
     marginVertical: 10,
     backgroundColor: '#D5ECE9',
-    padding: 7,
+    padding: 10,
     borderRadius: 12,
     borderWidth:1,
     borderColor:'#00a99d',
@@ -163,13 +163,13 @@ const styles = StyleSheet.create({
     fontWeight: '200',
   },
   statusBadge: {
-    marginLeft: 12,
-    backgroundColor: '#00897B33',
+    marginLeft: 200,
+    backgroundColor: '#fff',
     borderRadius: 20,
     padding: 4,
     paddingHorizontal: 8,
     fontSize: 12,
-    color: '#333'
+    color: '#00a99d'
   },
   orderDetails: {
     fontWeight: '400',
@@ -192,15 +192,5 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     fontSize: 12,
   },
-  RTO: {
-    fontWeight: '700',
-    color: 'red',
-    width: 40,
-    height: 25,
-    backgroundColor: '#00897B33',
-    borderRadius: 27,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontSize: 12,
-  },
+
 });

@@ -1,10 +1,11 @@
 import React from "react";
-import { Text, View, StyleSheet,  ScrollView } from 'react-native';
+import { Text, View, StyleSheet,  ScrollView, TouchableOpacity } from 'react-native';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 
 import Activity from "@/components/orders/orderActivity";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { navigate } from "expo-router/build/global-state/routing";
 export default function OrderHistoryScreen() {
 
   
@@ -26,12 +27,12 @@ const {orderId,createdAt,status} = useLocalSearchParams();
             <View style={styles.dataContainer}>
               <View style={{flexDirection:'row', justifyContent:'space-between'}}>
               <Text style={styles.time}>{createdAt}</Text>
-              <Text style={{marginLeft:12, backgroundColor:'#00897B33',borderRadius:20,padding:2}}>{status}</Text>
+              <Text style={{marginLeft:12, backgroundColor:'#00897B33',borderRadius:20,padding:5, color:"#00a99d"}}>{status}</Text>
               </View>
               <Text style={styles.orderDetails}>Order: {orderId}</Text>
               <View style={styles.CODcontainer}>
               <Text style={styles.COD}>COD</Text>
-              <Text style={styles.RTO}>RTO</Text>
+             
               </View>
             </View>
             <View>
@@ -40,12 +41,18 @@ const {orderId,createdAt,status} = useLocalSearchParams();
        
       <Text style={{padding:20, fontWeight:'700', color:'#676767',fontSize:16,justifyContent:'center'}}>Order Activity</Text>
       <Activity createdAt={createdAt}/>
+
+      <TouchableOpacity onPress={()=> router.push('./momhelp')}>
       <View style={{height:43,borderRadius:20,borderWidth:1,borderColor:"red", backgroundColor:'white',marginTop:50,alignItems:'center',justifyContent:'center',flexDirection:'row',gap:'10',margin:15}}>
       <Entypo name="help-with-circle" size={24} color="red" />
-      <Text style={{justifyContent:'center',textAlign:'center',paddingVertical:6}}>
+    
       
-      Help?</Text>
+        <Text style={{justifyContent:'center',textAlign:'center',paddingVertical:6}}>
+      
+      Help? </Text>
       </View>
+      
+      </TouchableOpacity>
       </ScrollView>
       </View>
     </SafeAreaView>
