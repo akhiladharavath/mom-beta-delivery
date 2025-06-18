@@ -34,8 +34,8 @@ const App = () => {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setDistance] = useState(null);
   const customerLocation = {
-      latitude: acceptedOrderDetails.address_id.currentLocation?.latitude,
-      longitude: acceptedOrderDetails.address_id.currentLocation?.longitude,
+      latitude: acceptedOrderDetails?.address_id.currentLocation?.latitude,
+      longitude: acceptedOrderDetails?.address_id.currentLocation?.longitude,
     };
 
  
@@ -48,7 +48,7 @@ const App = () => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
        },
-       body: JSON.stringify({ orderId:acceptedOrderDetails._id, base_earning:20, bonus:0, deduction:0, ETA:12, total_earning:20 }),
+       body: JSON.stringify({ orderId:acceptedOrderDetails?._id, base_earning:20, bonus:0, deduction:0, ETA:12, total_earning:20 }),
     }
     const response = await apiClient("earning/create" ,options)
     
@@ -65,12 +65,12 @@ const App = () => {
  }
 
  
-  console.log("orderid",acceptedOrderDetails._id)
+  console.log("orderid",acceptedOrderDetails?._id)
   const handleDelivery = async () => {
     const token = await extractToken();
     console.log("token",token)
     try {
-      const response = await apiClient(`api/delivered/${acceptedOrderDetails._id}`, {
+      const response = await apiClient(`api/delivered/${acceptedOrderDetails?._id}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -169,8 +169,8 @@ const App = () => {
           />
           <View>
             <Text style={styles.label}>Deliver to</Text>
-            <Text style={styles.name}>{acceptedOrderDetails.user_id.name}</Text>
-            <Text style={styles.contact}>{acceptedOrderDetails.user_id.mobileNo}</Text>
+            <Text style={styles.name}>{acceptedOrderDetails?.user_id.name}</Text>
+            <Text style={styles.contact}>{acceptedOrderDetails?.user_id.mobileNo}</Text>
           </View>
         </View>
 
@@ -187,16 +187,16 @@ const App = () => {
             <>
               <Text style={styles.address}>
 
-                {acceptedOrderDetails.address_id.street},
-                {acceptedOrderDetails.address_id.city},
-                {acceptedOrderDetails.address_id.state},
-                {acceptedOrderDetails.address_id.pincode}
+                {acceptedOrderDetails?.address_id.street},
+                {acceptedOrderDetails?.address_id.city},
+                {acceptedOrderDetails?.address_id.state},
+                {acceptedOrderDetails?.address_id.pincode}
               </Text>
               <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.mapButton} onPress={handleMaps}>
                   <Text style={styles.buttonText}>Maps</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.callButton} onPress={()=>{handleCall(acceptedOrderDetails.user_id.mobileNo)}}>
+                <TouchableOpacity style={styles.callButton} onPress={()=>{handleCall(acceptedOrderDetails?.user_id.mobileNo)}}>
                   <Text style={styles.buttonText}>Call Customer</Text>
                 </TouchableOpacity>
               </View>
@@ -234,7 +234,7 @@ const App = () => {
           </TouchableOpacity>
           {itemDetailsVisible && (
             <FlatList
-              data={acceptedOrderDetails.medicines}
+              data={acceptedOrderDetails?.medicines}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <Text style={styles.item}>

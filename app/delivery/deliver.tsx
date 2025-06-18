@@ -25,8 +25,8 @@ export default function Pickup() {
   const [distance, setDistance] = useState(null);
 
   const customerLocation = {
-    latitude: acceptedOrderDetails.address_id.currentLocation?.latitude,
-    longitude: acceptedOrderDetails.address_id.currentLocation?.longitude,
+    latitude: acceptedOrderDetails?.address_id.currentLocation?.latitude,
+    longitude: acceptedOrderDetails?.address_id.currentLocation?.longitude,
   };
 
 
@@ -129,8 +129,8 @@ export default function Pickup() {
 
         <View style={styles.infoRow}>
           <View style={styles.nameIdContainer}>
-            <Text style={styles.Name}>{acceptedOrderDetails.user_id.name}</Text>
-            <Text style={styles.id}>{acceptedOrderDetails.user_id.mobileNo}</Text>
+            <Text style={styles.Name}>{acceptedOrderDetails?.user_id?.name}</Text>
+            <Text style={styles.id}>{acceptedOrderDetails?.user_id?.mobileNo}</Text>
           </View>
 
           <TouchableOpacity style={styles.mapsbutton} onPress={handleMaps}>
@@ -143,10 +143,10 @@ export default function Pickup() {
 
         <Text style={styles.pharmacyAddress}>
 
-          {acceptedOrderDetails.address_id.street},
-          {acceptedOrderDetails.address_id.city},
-          {acceptedOrderDetails.address_id.state},
-          {acceptedOrderDetails.address_id.pincode}
+          {acceptedOrderDetails?.address_id.street},
+          {acceptedOrderDetails?.address_id.city},
+          {acceptedOrderDetails?.address_id.state},
+          {acceptedOrderDetails?.address_id.pincode}
         </Text>
 
         <TouchableOpacity style={styles.bottomButton} onPress={() => { router.push('./order') }}>
