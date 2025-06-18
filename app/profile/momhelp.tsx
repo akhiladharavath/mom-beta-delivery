@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#eef7f6',
-    padding: 20,
+    padding: 7,
     marginHorizontal: 5,
   },
   top:{
@@ -149,8 +149,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     color: '#00a99d',
-    // marginBottom: 20,
-    // marginVertical: 5,
+
     marginLeft : 20
   },
       MaterialIcons: {
@@ -164,6 +163,18 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     elevation: 3,
     // marginHorizontal: 12,
+    shadowColor: '#00a99d',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    borderWidth: 1,
+    borderColor: '#e0f2f1',
+    marginHorizontal: 4,
+    marginTop: 4,
+    marginBottom: 12,
+    elevation: 5,
+    minHeight: 60,
+    justifyContent: 'center',
   },
   questionRow: {
     flexDirection: 'row',
@@ -176,6 +187,7 @@ const styles = StyleSheet.create({
     color: '#333',
     flex: 1,
     paddingRight: 10,
+    paddingLeft:7
   },
   answerText: {
     marginTop: 10,

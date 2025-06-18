@@ -21,7 +21,10 @@ const { width, height } = Dimensions.get('window');
 const wp = (percentage: string) => (width * parseFloat(percentage)) / 100;
 const hp = (percentage: string) => (height * parseFloat(percentage)) / 100;
 
+import { useNavigation } from '@react-navigation/native';
+
 export default function AddressBook() {
+  const navigation = useNavigation();
   const [addresses, setAddresses] = useState<any[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
   const [isPrimaryModalVisible, setIsPrimaryModalVisible] = useState(false);
@@ -121,14 +124,16 @@ export default function AddressBook() {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: hp('10%') }}>
-      <SafeAreaView>
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
         <View style={styles.header}>
-          <Ionicons name="arrow-back" size={24} color="#00A99D" marginVertical='20' />
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="#00A99D" style={{ marginVertical: 20 }} />
+          </TouchableOpacity>
           <Text style={styles.headerText}>My Store Location</Text>
         </View>
         <View style={styles.head}>
-        <Text style={styles.subHeader}>Store Addresses</Text>
+          <Text style={styles.subHeader}>Store Addresses</Text>
         </View>
 
         {addresses.map((item, index) => (
@@ -153,9 +158,7 @@ export default function AddressBook() {
             <Text style={styles.distanceText}>Distance: {item.distance || 'N/A'}</Text>
 
             <TouchableOpacity onPress={() => handleNavigate(item)}>
-    
               <Text style={styles.navigationText}>Open in Maps</Text>
-        
             </TouchableOpacity>
           </View>
         ))}
@@ -184,15 +187,15 @@ export default function AddressBook() {
             </View>
           </View>
         </Modal>
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#eef7f6',
     padding: 8,
     // marginHorizontal: 12,
   },
@@ -220,11 +223,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 15,
     color: '#000',
-    backgroundColor:'#ACD9D4',
-    borderRadius: 20,
+    // backgroundColor:'#ACD9D4',
+    borderRadius: 15,
     borderColor: '#00A99D',
     borderWidth: 0.5,
-    marginHorizontal: 4
+    marginHorizontal: 4,
     
   },
   subHeader:{
@@ -235,15 +238,32 @@ const styles = StyleSheet.create({
 
   },
   card: {
-    
     padding: 15,
-    borderRadius: 12,
     marginBottom: 10,
-    backgroundColor: "#D5ECE9",
-    borderColor: '#00A99D',
-    borderWidth: 1,
-    marginHorizontal: 4
+    backgroundColor: '#F8FAFA',
+    // borderColor: '#00A99D',
 
+    // shadowColor: '#00A99D',
+    // shadowOffset: { width: 0, height: 6 },
+    // shadowOpacity: 0.18,
+    // shadowRadius: 8,
+    // // Android shadow
+    // elevation: 4,
+    elevation: 3,
+    // marginHorizontal: 12,
+    shadowColor: '#00a99d',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    borderWidth: 1,
+    borderColor: '#e0f2f1',
+
+    marginVertical: 8,
+    marginHorizontal: 8,
+    paddingVertical: 20,
+    paddingHorizontal: 18,
+    borderRadius: 16,
+    borderWidth: 1, // Keep only one borderWidth
   },
   radioRow: {
     flexDirection: 'row',
@@ -256,6 +276,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#000',
+    
   },
   cardText: {
     fontSize: 16,
