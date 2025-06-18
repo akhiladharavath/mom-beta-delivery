@@ -10,7 +10,7 @@ import {
   ScrollView,
   SafeAreaView,
   Dimensions,
-  Alert,
+  
   Linking,
 } from 'react-native';
 import * as Location from 'expo-location';
@@ -35,7 +35,7 @@ export default function Pickup() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location permission is required to open maps.');
+        console.log('Permission Denied', 'Location permission is required to open maps.');
         return;
       }
 
@@ -52,7 +52,7 @@ export default function Pickup() {
       Linking.openURL(url);
     } catch (error) {
       console.error('Error opening maps:', error);
-      Alert.alert('Error', 'Unable to open maps.');
+      console.log('Error', 'Unable to open maps.');
     }
   };
 
@@ -60,7 +60,7 @@ export default function Pickup() {
     try {
       if (!originCoords || !originCoords.latitude || !originCoords.longitude) {
         console.error('Invalid origin coordinates:', originCoords);
-        Alert.alert('Error', 'Invalid origin coordinates.');
+        console.log('Error', 'Invalid origin coordinates.');
         return;
       }
 
@@ -72,7 +72,7 @@ export default function Pickup() {
 
       if (res.status !== 'OK' || !res.routes?.length || !res.routes[0].legs?.length) {
         console.error('No routes found', res);
-        Alert.alert('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
+        console.log('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
         return;
       }
 
@@ -81,7 +81,7 @@ export default function Pickup() {
       console.log('Distance:', distanceText);
     } catch (error) {
       console.error('Error fetching distance:', error);
-      Alert.alert('Error', 'Could not calculate distance.');
+      console.log('Error', 'Could not calculate distance.');
     }
   };
 

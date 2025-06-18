@@ -1,73 +1,108 @@
 import { router } from 'expo-router';
-import React from 'react';
-import { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Linking, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Image, Text, StyleSheet, TouchableOpacity, Alert, Linking } from 'react-native';
 import * as Location from 'expo-location';
+import { useFocusEffect } from '@react-navigation/native';
+import userDeliveryAuth from '@/context/authContext';
+import apiClient from '@/utils/apiClient';
+import { useOrders } from '@/context/orderContext';
 
 export default function Pickup() {
-    const PickUpLocation = {
-      latitude: 17.4572416,
-      longitude: 78.3806970,
-    };
-    const [currentLocation, setCurrentLocation] = useState(null);
-    const [distance, setDistance] = useState(null);
-  const handleBackPress = () => {
-    console.log('Back pressed');
+  const PickUpLocation = {
+    latitude: 17.4572416,
+    longitude: 78.3806970,
+  };
+
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [distance, setDistance] = useState(null);
+
+  const { currentOrder, fetchCurrentOrder } = useOrders();
+  const { extractToken } = userDeliveryAuth();
+  useFocusEffect(
+    useCallback(() => {
+      fetchCurrentOrder();
+    }, [])
+  );
+
+  const handlePickup = async () => {
+    if (!currentOrder?._id) return Alert.alert('Error', 'No active order found.');
+    console.log("orderpick",currentOrder?._id)
+    const token = await extractToken();
+
+    try {
+      const result = await apiClient(`api/setPickup/${currentOrder?._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (result) {
+        console.log('Pickup set successfully:', result);
+        await fetchCurrentOrder();
+        
+        router.replace('/delivery/deliver');
+      } else {
+        console.log('Error', 'Failed to confirm pickup.');
+      }
+    } catch (err) {
+      console.error('Error during pickup:', err);
+      
+    }
   };
 
   const handleMaps = async () => {
-        try {
-          const { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== 'granted') {
-            Alert.alert('Permission Denied', 'Location permission is required to open maps.');
-            return;
-          }
-    
-          const location = await Location.getCurrentPositionAsync({});
-          const originCoords = {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          };
-          setCurrentLocation(originCoords);
-    
-          await fetchDistance(originCoords);
-    
-          const url = `https://www.google.com/maps/dir/?api=1&origin=${originCoords.latitude},${originCoords.longitude}&destination=${PickUpLocation.latitude},${PickUpLocation.longitude}&travelmode=driving`;
-          Linking.openURL(url);
-        } catch (error) {
-          console.error('Error opening maps:', error);
-          Alert.alert('Error', 'Unable to open maps.');
-        }
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission Denied', 'Location permission is required to open maps.');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const originCoords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
       };
-    
-      const fetchDistance = async (originCoords) => {
-        try {
-          if (!originCoords || !originCoords.latitude || !originCoords.longitude) {
-            console.error('Invalid origin coordinates:', originCoords);
-            Alert.alert('Error', 'Invalid origin coordinates.');
-            return;
-          }
-    
-          const apiKey = ''; 
-          const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originCoords.latitude},${originCoords.longitude}&destination=${PickUpLocation.latitude},${PickUpLocation.longitude}&key=${apiKey}`;
-    
-          const response = await fetch(url);
-          const res = await response.json();
-    
-          if (res.status !== 'OK' || !res.routes?.length || !res.routes[0].legs?.length) {
-            console.error('No routes found', res);
-            Alert.alert('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
-            return;
-          }
-    
-          const distanceText = res.routes[0].legs[0].distance.text;
-          setDistance(distanceText);
-          console.log('Distance:', distanceText);
-        } catch (error) {
-          console.error('Error fetching distance:', error);
-          Alert.alert('Error', 'Could not calculate distance.');
-        }
-      };
+      setCurrentLocation(originCoords);
+
+      await fetchDistance(originCoords);
+
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${originCoords.latitude},${originCoords.longitude}&destination=${PickUpLocation.latitude},${PickUpLocation.longitude}&travelmode=driving`;
+      Linking.openURL(url);
+    } catch (error) {
+      console.error('Error opening maps:', error);
+      console.log('Error', 'Unable to open maps.');
+    }
+  };
+
+  const fetchDistance = async (originCoords) => {
+    try {
+      if (!originCoords?.latitude || !originCoords?.longitude) {
+        console.log('Error', 'Invalid origin coordinates.');
+        return;
+      }
+
+      const apiKey = ''; 
+      const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${originCoords.latitude},${originCoords.longitude}&destination=${PickUpLocation.latitude},${PickUpLocation.longitude}&key=${apiKey}`;
+
+      const response = await fetch(url);
+      const res = await response.json();
+
+      if (res.status !== 'OK' || !res.routes?.length || !res.routes[0].legs?.length) {
+        console.log('Error', res.error_message || 'No valid routes found.');
+        return;
+      }
+
+      const distanceText = res.routes[0].legs[0].distance.text;
+      setDistance(distanceText);
+      console.log('Distance:', distanceText);
+    } catch (error) {
+      console.error('Error fetching distance:', error);
+      Alert.alert('Error', 'Could not calculate distance.');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -115,7 +150,10 @@ export default function Pickup() {
           <Text style={styles.mapsText}>Maps</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={()=>router.push('./deliver')} style={styles.bottomButton}>
+        <TouchableOpacity onPress={async () => {
+    await handlePickup();      
+    router.push('./deliver');  
+  }} style={styles.bottomButton}>
           <Text style={styles.bottomButtonText}>Reached pickup location</Text>
         </TouchableOpacity>
       </View>
