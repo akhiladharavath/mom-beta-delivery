@@ -22,7 +22,7 @@ const options = [
   },
   {
     title: 'Cash Balance',
-     icon: <Image source={require('@/assets/images/cashbalance.jpeg')} style={{ height: 20, width: 20,}} />,
+     icon: <Image source={require('@/assets/images/balance1.png')} style={{ height: 20, width: 20,}} />,
     Link: '/profile/CashBalance/'
 
   },
@@ -114,7 +114,7 @@ export default function MyProfile() {
             />
           </View>
           <TouchableOpacity onPress={openCamera}>
-            <Image source={require('../../assets/images/Profile/camera.png')} style={styles.cam}></Image>
+            <Image source={require('../../assets/images/Profile/camera2.png')} style={styles.cam}></Image>
           </TouchableOpacity>
 
           <View style={styles.nameContainer}>
@@ -175,14 +175,16 @@ const styles = StyleSheet.create({
   },
   cam:
   {
-    height: 40,
-    width: 40,
+    height: 30,
+    width: 30,
     borderRadius: 30,
     textAlign: 'center',
     paddingEnd: 2,
     marginHorizontal: -25,
     marginTop: 50,
-    backgroundColor: '#7DF9FF'
+    backgroundColor:'#fff',
+    
+    
 
 
 
@@ -247,7 +249,6 @@ const styles = StyleSheet.create({
     height:'auto',
     
     paddingHorizontal: 14,
-    backgroundColor: '#D9EDEB',
     borderRadius: 40
   },
   profileImageWrapper: 
@@ -301,17 +302,18 @@ const styles = StyleSheet.create({
     padding: 10,
     gap:20,
     alignItems: "center",
-    borderWidth:1,
-    borderColor:'#00A99B',
+    
+    
     borderRadius:17,
-    backgroundColor:'#007E710D', //box 
-    height:60
+    backgroundColor:'#d5ece9', //box 
+    height:60,
+     elevation: 3,
 
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
-    color: '#333',
+    color: '#007a7e',
     //  marginTop: -20,
     //  marginLeft: 50,
   },
