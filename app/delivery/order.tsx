@@ -15,7 +15,6 @@ import {
   Pressable,
   ScrollView,
   Image,
-  Alert,
   Linking,
 } from 'react-native';
 import { useOnlineStatus } from '@/context/deliveryBoyStatusContext';
@@ -89,7 +88,7 @@ const App = () => {
       if(deliveryEarnings){
         const data = response
       }else{
-        Alert.alert("Earning is not added" , "Please check you earnigs is not added")
+        console.log("Earning is not added" , "Please check you earnigs is not added")
       }
     } catch (error) {
       // console.error('error')
@@ -106,7 +105,7 @@ const App = () => {
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          Alert.alert('Permission Denied', 'Location permission is required to open maps.');
+          console.log('Permission Denied', 'Location permission is required to open maps.');
           return;
         }
   
@@ -123,7 +122,7 @@ const App = () => {
         Linking.openURL(url);
       } catch (error) {
         console.error('Error opening maps:', error);
-        Alert.alert('Error', 'Unable to open maps.');
+        console.log('Error', 'Unable to open maps.');
       }
     };
   
@@ -131,7 +130,7 @@ const App = () => {
       try {
         if (!originCoords || !originCoords.latitude || !originCoords.longitude) {
           console.error('Invalid origin coordinates:', originCoords);
-          Alert.alert('Error', 'Invalid origin coordinates.');
+          console.log('Error', 'Invalid origin coordinates.');
           return;
         }
   
@@ -143,7 +142,7 @@ const App = () => {
   
         if (res.status !== 'OK' || !res.routes?.length || !res.routes[0].legs?.length) {
           console.error('No routes found', res);
-          Alert.alert('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
+          console.log('Error', res.error_message || 'No valid routes found. Check your API key or coordinates.');
           return;
         }
   
@@ -152,7 +151,7 @@ const App = () => {
         console.log('Distance:', distanceText);
       } catch (error) {
         console.error('Error fetching distance:', error);
-        Alert.alert('Error', 'Could not calculate distance.');
+        console.log('Error', 'Could not calculate distance.');
       }
     };
   

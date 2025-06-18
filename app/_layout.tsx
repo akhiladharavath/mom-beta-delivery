@@ -1,12 +1,12 @@
-import { DeliveryBoyAuthProvider } from "@/context/authContext";
+import React from "react";
+import { Stack } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { COLORS } from "@/constants/COLORS";
 
+import { DeliveryBoyAuthProvider } from "@/context/authContext";
 import { LocationProvider } from "@/context/locatonContext";
 import { OrderProvider } from "@/context/orderContext";
 import { StatusProvider } from "@/context/deliveryBoyStatusContext";
-import { Stack } from "expo-router";
-import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { COLORS } from "@/constants/COLORS";
 
 export default function RootLayout() {
   return (
@@ -21,9 +21,7 @@ export default function RootLayout() {
                   backgroundColor: COLORS.secondary,
                 },
               }}
-            >
-              <Stack />
-            </Stack>
+            />
           </OrderProvider>
         </StatusProvider>
       </LocationProvider>
