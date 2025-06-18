@@ -19,14 +19,14 @@ export default function details() {
                     </TouchableOpacity>
                     <Text style={styles.text}>Details</Text>
                 </View>
-                <View style={styles.help}>
+                <TouchableOpacity style={styles.help} onPress={() => router.push('/profile/momhelp')}>
                     <Entypo name="help-with-circle" size={27} color="#00a99d" />
                     <Text style={styles.text}>Help</Text>
-                </View>
+                </TouchableOpacity>
             </View>
 
             {/* body */}
-            <ScrollView>
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
                 <View style={styles.container}>
                     <Text style={styles.heading}>Personal Details</Text>
                     <View style={styles.detailsbox}>
@@ -161,6 +161,7 @@ export default function details() {
                     />
                 </View>
 
+                <View style={styles.bottomPadding} />
 
             </ScrollView>
         </View>
@@ -170,7 +171,7 @@ export default function details() {
 const styles = StyleSheet.create({
     body: {
         backgroundColor: '#D0E8E6',
-
+        flex: 1,
     },
     header: {
         backgroundColor: "#fff",
@@ -190,8 +191,16 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         fontWeight: 500
-    }
-    ,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 20,
+    },
+    container: {
+        flex: 1,
+    },
     heading: {
         color: 'gray',
         fontSize: 20,
@@ -205,7 +214,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         marginHorizontal: 15,
         borderRadius: 10,
-
+        marginBottom: 10,
     },
     flexbox: {
         flexDirection: 'row',
@@ -231,6 +240,8 @@ const styles = StyleSheet.create({
     },
     icon: {
         paddingVertical: 7
+    },
+    bottomPadding: {
+        height: 50,
     }
-
 })
