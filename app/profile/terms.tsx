@@ -9,7 +9,7 @@ const TermsAndConditionsScreen = () => {
       <ScrollView contentContainerStyle={styles.contentContainer}>
       <View style={styles.headerRow}>
         <MaterialIcons name="arrow-back" size={24} color="#00A99D" style={styles.MaterialIcons} onPress={()=>router.back()} />
-        <Text style={styles.title}>Terms & Conditions for Delivery Partners</Text>
+        <Text style={styles.title}>Welcome Guide for Delivery Partners</Text>
         </View>
 
         <Text style={styles.heading}>1. Eligibility</Text>
@@ -80,56 +80,61 @@ const TermsAndConditionsScreen = () => {
   );
 };
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#f7fdfd',
-    },
-    contentContainer: {
-      padding: 20,
-    },
-    headerRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-  
-      justifyContent: 'flex-start',
-      marginBottom: 10,
-    },
-    MaterialIcons: {
-      marginLeft: -10,
-      marginTop: 10,
-    },
-    title: {
-      fontSize: 18,
-      fontWeight: '700',
-      color: '#00a99d',
-      marginBottom: 10,
-      marginTop: 17,
-    },
-    date: {
-      fontSize: 14,
-      color: '#777',
-      marginBottom: 20,
-    },
-    heading: {
-      fontSize: 16,
-      fontWeight: '700',
-      color: '#333',
-      marginTop: 15,
-      marginBottom: 5,
-    },
-    paragraph: {
-      fontSize: 14,
-      color: '#444',
-      lineHeight: 22,
-    },
-    footer: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: '#000',
-      textAlign: 'center',
-      marginTop: 25,
-      marginBottom: 30,
-    },
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#e6f7f6',
+  },
+  contentContainer: {
+    padding: 24,
+    paddingBottom: 40,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
+    marginTop: 8,
+  },
+  MaterialIcons: {
+    marginTop: 0,
+
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#00a99d',
+
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#00897b',
+    marginTop: 12,
+    marginBottom: 6,
+    letterSpacing: 0.2,
+  },
+  paragraph: {
+    fontSize: 16,
+    color: '#444',
+    lineHeight: 24,
+    backgroundColor: '#f9fefd',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 2,
+    elevation: 1,
+    shadowColor: '#00A99D',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.07,
+    shadowRadius: 1,
+  },
+  footer: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#00a99d',
+    textAlign: 'center',
+    marginTop: 30,
+    marginBottom: 30,
+    letterSpacing: 0.2,
+  },
+});
   
 export default TermsAndConditionsScreen;
