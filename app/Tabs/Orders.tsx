@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,8 @@ import {
   ScrollView,
   ActivityIndicator,
   StyleSheet,
-  Image,
-  Dimensions,
-} from 'react-native';
+  Dimensions, 
+} from 'react-native'; 
 import { useOrders } from '../../context/orderContext';
 import { useLocation } from '@/context/locatonContext';
 import { COLORS } from '@/constants/COLORS';
@@ -39,38 +38,39 @@ const DeliveryDashboard = () => {
     rejectOrder,
     fetchOrders,
   } = useOrders();
-  
+
+  const { locationCoords } = useLocation() as LocationContextType;
+
+  const [currentTime, setCurrentTime] = useState(new Date());
   const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (isInitialMount.current) {
-      console.log('Orders page mounted - starting auto-refresh');
       isInitialMount.current = false;
-    }
-    
-    fetchOrders();
-    
-    const intervalId = setInterval(() => {
       fetchOrders();
-    }, 5000);
-    return () => clearInterval(intervalId);
+    }
+
+    const fetchInterval = setInterval(fetchOrders, 5000);
+    const timeInterval = setInterval(() => setCurrentTime(new Date()), 60000);
+
+    return () => {
+      clearInterval(fetchInterval);
+      clearInterval(timeInterval);
+    };
   }, []);
 
-  // Debug logs
-  useEffect(() => {
-    console.log('Current orders:', orders);
-    if (orders.length > 0) {
-      console.log('First order details:', {
-        id: orders[0]._id,
-        status: orders[0].status,
-        createdAt: orders[0].createdAt,
-        deliveredAt: orders[0].deliveredAt,
-        updatedAt: orders[0].updatedAt
-      });
-    }
-  }, [orders]);
+  const getTimeAgo = (timestamp: string) => {
+    const time = new Date(timestamp);
+    const diffMs = currentTime.getTime() - time.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
 
-  const { locationCoords } = useLocation() as LocationContextType;
+    if (diffMins < 1) return 'just now';
+    if (diffMins === 1) return '1 minute ago';
+    if (diffMins < 60) return `${diffMins} minutes ago`;
+
+    const hours = Math.floor(diffMins / 60);
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  };
 
   const getDistance = (lat1: number, lon1: number, lat2: number, lon2: number): string => {
     const toRad = (value: number) => (value * Math.PI) / 180;
@@ -81,10 +81,8 @@ const DeliveryDashboard = () => {
 
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(toRad(lat1)) *
-        Math.cos(toRad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c;
@@ -92,11 +90,10 @@ const DeliveryDashboard = () => {
   };
 
   const confirmedOrders = orders
-    .filter(
-      (o) =>
-        o.status === 'confirmed' &&
-        !o.deliveryboy_id &&
-        !rejectedOrderIds.includes(o._id)
+    .filter(o =>
+      o.status === 'confirmed' &&
+      !o.deliveryboy_id &&
+      !rejectedOrderIds.includes(o._id)
     )
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 2);
@@ -147,12 +144,23 @@ const DeliveryDashboard = () => {
             style={styles.declineButton}
             onPress={() => rejectOrder(item._id)}
           >
-            <Text style={{color:'black',fontWeight:400}}>Decline</Text>
+            <Text style={{ color: 'black', fontWeight: '400' }}>Decline</Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
+
+  const latestDeliveredOrder = orders
+    .filter(order =>
+      (order.status === 'delivered' || order.status === 'completed') &&
+      !!order.deliveryboy_id
+    )
+    .sort((a, b) => {
+      const timeA = new Date(a.deliveredAt || a.updatedAt || a.createdAt).getTime();
+      const timeB = new Date(b.deliveredAt || b.updatedAt || b.createdAt).getTime();
+      return timeB - timeA;
+    })[0];
 
   return (
     <ScrollView style={{ backgroundColor: '#D0E8E6', marginBottom: 40 }}>
@@ -171,47 +179,48 @@ const DeliveryDashboard = () => {
 
         <View style={styles.pastOrders}>
           <Text style={styles.pasttxt}>Past Orders</Text>
-          {orders.length > 0 && (
+          {latestDeliveredOrder && (
             <Text style={styles.pasttxt2}>
-              Last delivery {new Date(orders[0].deliveredAt || orders[0].updatedAt || orders[0].createdAt).toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: true
-              })} ago
+              Last delivery {getTimeAgo(
+                latestDeliveredOrder.deliveredAt ||
+                latestDeliveredOrder.updatedAt ||
+                latestDeliveredOrder.createdAt
+              )}
             </Text>
           )}
 
+          {/* Replace 'yourDeliveryBoyId' with the actual delivery boy's ID from context, props, or state */}
           {orders
-            .filter(order => {
-              const isCompleted = order.status === 'delivered' || order.status === 'completed';
-              const hasDeliveryBoy = !!order.deliveryboy_id;
-              return isCompleted && hasDeliveryBoy;
-            })
-            .sort((a, b) => {
-              const timeA = new Date(a.deliveredAt || a.updatedAt || a.createdAt).getTime();
-              const timeB = new Date(b.deliveredAt || b.updatedAt || b.createdAt).getTime();
-              return timeB - timeA;
-            })
-            .slice(0, 4)
-            .map((order) => {
-              const deliveryTime = new Date(order.deliveredAt || order.updatedAt || order.createdAt);
-              return (
-                <React.Fragment key={order._id}>
-                  <View style={styles.pastCod}>
-                    <Text style={styles.pastDetails}>
-                      {deliveryTime.toLocaleTimeString('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        hour12: true
-                      })}
-                    </Text>
-                    <Text style={styles.pastCodetxt}>COD</Text>
-                  </View>
-                  <Text style={styles.pasttxt2}>Order ID: #{order._id}</Text>
-                  <View style={styles.divider} />
-                </React.Fragment>
-              );
+  .filter(order =>
+    (order.status === 'delivered' || order.status === 'completed') &&
+    !!order.deliveryboy_id // Show all delivered orders with a deliveryboy_id
+  )
+  .sort((a, b) => {
+    const timeA = new Date(a.deliveredAt || a.updatedAt || a.createdAt).getTime();
+    const timeB = new Date(b.deliveredAt || b.updatedAt || b.createdAt).getTime();
+    return timeB - timeA;
+  })
+  .slice(0, 4)
+  .map((order) => {
+    const deliveryTime = new Date(order.deliveredAt || order.updatedAt || order.createdAt);
+    return (
+      <React.Fragment key={order._id}>
+        <View style={styles.pastCod}>
+          <Text style={styles.pastDetails}>
+            {deliveryTime.toLocaleTimeString('en-US', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true,
             })}
+          </Text>
+          <Text style={styles.pastCodetxt}>COD</Text>
+        </View>
+        <Text style={styles.pasttxt2}>Order ID: #{order._id}</Text>
+        <View style={styles.divider} />
+      </React.Fragment>
+    );
+  })}
+
         </View>
       </View>
     </ScrollView>
@@ -225,14 +234,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#D0E8E6',
     flex: 1,
     padding: 5,
-    marginTop:20,
+    marginTop: 20,
   },
   currentText: {
     fontSize: 20,
     fontWeight: '500',
-    marginTop: 0,
     marginLeft: 20,
-    
   },
   orderCard: {
     padding: 15,
@@ -258,17 +265,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     borderRadius: 15,
   },
-  declineButton:{
+  declineButton: {
     backgroundColor: "white",
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 15,
-    borderWidth:1,
-    borderColor:COLORS.main
+    borderWidth: 1,
+    borderColor: COLORS.main,
   },
   textBtn: {
     color: 'white',
-    fontWeight:500,
+    fontWeight: '500',
   },
   errorText: {
     color: 'red',
@@ -282,9 +289,8 @@ const styles = StyleSheet.create({
   },
   pastOrders: {
     backgroundColor: 'white',
-    height: 'auto',
     width: 395,
-    marginTop:20,
+    marginTop: 20,
     alignSelf: 'center',
     borderRadius: 30,
     paddingHorizontal: 10,
