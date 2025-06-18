@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   footer: {
-    marginTop: 23  0,
+    marginTop: 23,
     paddingTop: 10,
     borderTopWidth: 1,
     borderColor: '#A0C4C4',
@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 4,
     marginRight: 12,
-    marginLeft: -10,
+    marginLeft: -15,
   },
   referButton: {
     backgroundColor: '#00a99d',
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginTop: -20,
-    marginLeft: 20
+    marginLeft: 8
   },
   image: {
     width: '40%',

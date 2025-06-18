@@ -29,11 +29,16 @@ export default function _layout() {
 
   return (
     <>
-       <Stack.Navigator id={undefined} screenOptions={{headerShown:true}}>
+       <Stack.Navigator id={undefined} screenOptions={{headerShown:true,}}>
         <Stack.Screen name='TopBarTabs'  component={TopBarTabs} options={{
             headerLeft:()=><BackNavigation/> ,
             title:"Cash Balance",
-            headerRight:()=><Help/>
+            headerRight:()=><Help/>,
+            headerTitleStyle: {
+              color: '#00a99d',
+              fontWeight: 'bold', 
+              fontSize: 18,       
+            },
         }} />
        </Stack.Navigator>
     </>
