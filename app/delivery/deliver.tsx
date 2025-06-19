@@ -92,19 +92,19 @@ export default function Pickup() {
       <Text style={styles.tag}>#Earn more stars by on-time delivery</Text>
       <View style={styles.pinContainer}>
         <Image
-          source={require('../../assets/images/Orders/holdingmed.png')}
+          source={require('../../assets/images/Orders/holdingmed1.jpeg')}
           style={styles.pinIcon}
         />
       </View>
 
       <View style={styles.routeContainer}>
         <View style={styles.imagesRow}>
-          <Image source={require('../../assets/images/scooter.png')} style={styles.routeImage} />
+          <Image source={require('../../assets/images/scooty.jpeg')} style={styles.routeImage} />
           <View style={styles.middleColumn}>
             <Text style={styles.reachTime}>Reaching in 10 minutes</Text>
             <View style={styles.dottedLine} />
           </View>
-          <Image source={require('../../assets/images/01.png')} style={styles.routeImage} />
+          <Image source={require('../../assets/images/deliverhome.jpeg')} style={styles.routeImage} />
         </View>
 
         <View style={styles.labelsRow}>
@@ -117,7 +117,7 @@ export default function Pickup() {
       <View style={styles.combinedCard}>
         <View style={styles.pickupTitleRow}>
           <Image
-            source={require('../../assets/images/prof.png')}
+            source={require('../../assets/images/prof1.jpeg')}
             style={styles.orderIcon}
           />
           <Text style={styles.pickupTitle}>Deliver to</Text>

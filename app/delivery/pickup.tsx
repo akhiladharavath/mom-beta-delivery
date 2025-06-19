@@ -110,12 +110,12 @@ export default function Pickup() {
       <Text style={styles.tag}>#Deliver on time, Earn more coupons!</Text>
 
       <View style={styles.pinContainer}>
-        <Image source={require('../../assets/images/deliverymaps.png')} style={styles.pinIcon} />
+        <Image source={require('../../assets/images/deliverymap1.jpeg')} style={styles.pinIcon} />
       </View>
 
       <View style={styles.routeContainer}>
         <View style={styles.imagesRow}>
-          <Image source={require('../../assets/images/scooter.png')} style={styles.routeImage} />
+          <Image source={require('../../assets/images/scooty.jpeg')} style={styles.routeImage} />
           <View style={styles.middleColumn}>
             <Text style={styles.reachTime}>On the way to store</Text>
             <View style={styles.dottedLine} />

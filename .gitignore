@@ -8,7 +8,10 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
-
+android/
+.history/
+android
+.history
 # Native
 *.orig.*
 *.jks
