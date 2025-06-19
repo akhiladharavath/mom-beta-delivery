@@ -88,7 +88,7 @@ export const OrderProvider = ({ children }) => {
       const acceptedOrder = orders.find((o) => o._id === orderId);
       setAcceptedOrderDetails(acceptedOrder);
 
-      Alert.alert("Success");
+      console.log("navigating to pickup page");
       if (onSuccess) onSuccess();
       fetchOrders();
     } catch (err) {

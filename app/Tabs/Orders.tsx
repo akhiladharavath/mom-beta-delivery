@@ -100,7 +100,7 @@ const DeliveryDashboard = () => {
 
   const handleAccept = (id: string) => {
     acceptOrder(id, () => {
-      router.push('/delivery/pickup');
+      router.replace('/delivery/pickup');
     });
   };
 

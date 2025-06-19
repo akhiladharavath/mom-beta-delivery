@@ -85,10 +85,6 @@ export default function Pickup() {
     }
   };
 
-  const handleBackPress = () => {
-    router.back()
-  };
-
 
   return (
     <View style={styles.viewcontainer}>
