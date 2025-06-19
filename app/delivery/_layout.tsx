@@ -20,13 +20,6 @@ export default function _layout() {
           title: 'Pickup',
           headerRight: () => <Help/>,
           gestureEnabled:false,
-          // No back button on pickup screen
-        
-        //     <TouchableOpacity style={{ marginLeft: 15 }}>
-        //       <MaterialIcons name="arrow-back" size={24} color="transparent" />
-        //     </TouchableOpacity>
-        //   ),
-          
         }} 
       />
       <Stack.Screen 
@@ -34,14 +27,7 @@ export default function _layout() {
         options={{
           title: 'Delivery',
           headerRight: () => <Help/>,
-          
-            // <TouchableOpacity 
-            //   style={{ marginLeft: 15 }}
-            //   onPress={() => router.replace('/delivery/pickup')}
-            // >
-            //   <MaterialIcons name="arrow-back" size={24} color="#00a99d" />
-            // </TouchableOpacity>
-          
+          headerLeft: () => null,
         }} 
       />
       <Stack.Screen 
@@ -49,14 +35,6 @@ export default function _layout() {
         options={{
           title: 'Order',
           headerRight: () => <Help/>,
-          
-            // <TouchableOpacity 
-            //   style={{ marginLeft: 15 }}
-            //   onPress={() => router.replace('/delivery/deliver')}
-            // >
-            //   <MaterialIcons name="arrow-back" size={24} color="#00a99d" />
-            // </TouchableOpacity>
-          
         }} 
       />
     </Stack>

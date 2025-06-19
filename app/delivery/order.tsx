@@ -163,11 +163,10 @@ const App = () => {
         {/* Profile Section */}
         <View style={styles.profileSection}>
           <Image
-            source={require('../../assets/images/prof.png')}
+            source={require('../../assets/images/prof1.jpeg')}
             style={styles.profileImage}
           />
-          <View>
-            <Text style={styles.label}>Deliver to</Text>
+          <View>            <Text style={styles.label}>Deliver to</Text>
             <Text style={styles.name}>{acceptedOrderDetails?.user_id.name}</Text>
             <Text style={styles.contact}>{acceptedOrderDetails?.user_id.mobileNo}</Text>
           </View>

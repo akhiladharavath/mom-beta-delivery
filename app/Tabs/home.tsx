@@ -21,8 +21,6 @@ import { useLocation } from "@/context/locatonContext";
 import { useEarnings } from "@/Hooks/earningHooks";
 import { useOnlineStatus } from "@/context/deliveryBoyStatusContext";
 import BannerCarousel from "@/components/banner";
-import LocationIcon from "../../assets/images/location";
-import Help from "@/assets/images/helpsupport";
 import FooterComponent from "@/components/footer";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -102,7 +100,10 @@ const HomeScreen = () => {
           <View style={styles.leftSection}>
             <TouchableOpacity onPress={refreshLocation}>
               <View style={styles.row}>
-                <LocationIcon />
+                <Image
+                  source={require("../../assets/images/location.png")}
+                  style={styles.locationIcon}
+                />
                 <Text
                   style={styles.locationText}
                   numberOfLines={1}
@@ -140,7 +141,10 @@ const HomeScreen = () => {
             style={styles.helpButton}
             onPress={() => router.push("/profile/momhelp")}
           >
-            <Help height={35} width={35} />
+            <Image
+              source={require("../../assets/images/helpsupport.svg")}
+              style={styles.helpIcon}
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -540,5 +544,13 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  locationIcon: {
+    width: 20,
+    height: 20,
+  },
+  helpIcon: {
+    width: 35,
+    height: 35,
   },
 });
