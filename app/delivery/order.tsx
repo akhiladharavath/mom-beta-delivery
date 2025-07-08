@@ -28,7 +28,7 @@ const App = () => {
   const [deliveryDetailsVisible, setDeliveryDetailsVisible] = useState(true);
   const [itemDetailsVisible, setItemDetailsVisible] = useState(true);
   const { extractToken } = userDeliveryAuth();
-  const { acceptedOrderDetails,currentOrder, fetchCurrentOrder } = useOrders()
+  const { acceptedOrderDetails } = useOrders()
   const { setIsOnline} = useOnlineStatus()
   const [currentLocation, setCurrentLocation] = useState(null);
   const [distance, setDistance] = useState(null);
@@ -47,7 +47,7 @@ const App = () => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
        },
-       body: JSON.stringify({ orderId:currentOrder?._id, base_earning:20, bonus:0, deduction:0, ETA:12, total_earning:20 }),
+       body: JSON.stringify({ orderId:acceptedOrderDetails?._id, base_earning:20, bonus:0, deduction:0, ETA:12, total_earning:20 }),
     }
     const response = await apiClient("earning/create" ,options)
     
@@ -64,12 +64,13 @@ const App = () => {
  }
 
  
-  console.log("orderid",currentOrder?._id)
+  console.log("orderid",acceptedOrderDetails?._id)
+  console.log('all details',acceptedOrderDetails)
   const handleDelivery = async () => {
     const token = await extractToken();
     console.log("token",token)
     try {
-      const response = await apiClient(`api/delivered/${currentOrder?._id}`, {
+      const response = await apiClient(`api/delivered/${acceptedOrderDetails?._id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -93,7 +94,7 @@ const App = () => {
     } catch (error) {
       // console.error('error')
     }
-    router.replace('/Tabs/Orders')
+    router.push('/Tabs/Orders')
   };
 
   const handleCall = (phone) =>{
@@ -163,10 +164,11 @@ const App = () => {
         {/* Profile Section */}
         <View style={styles.profileSection}>
           <Image
-            source={require('../../assets/images/prof1.jpeg')}
+            source={require('../../assets/images/prof.png')}
             style={styles.profileImage}
           />
-          <View>            <Text style={styles.label}>Deliver to</Text>
+          <View>
+            <Text style={styles.label}>Deliver to</Text>
             <Text style={styles.name}>{acceptedOrderDetails?.user_id.name}</Text>
             <Text style={styles.contact}>{acceptedOrderDetails?.user_id.mobileNo}</Text>
           </View>
@@ -232,7 +234,6 @@ const App = () => {
           </TouchableOpacity>
           {itemDetailsVisible && (
             <FlatList
-            scrollEnabled={false}
               data={acceptedOrderDetails?.medicines}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
@@ -240,9 +241,9 @@ const App = () => {
                   {item.name} x {item.quantity}
                 </Text>
               )}
-              
             />
           )}
+          
         </View>
 
         {/* Delivery Complete */}
