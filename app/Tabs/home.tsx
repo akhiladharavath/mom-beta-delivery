@@ -15,7 +15,7 @@ import { Entypo } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { router, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
-import apiClient from "@/utils/apiClient";
+import apiClient from "../../utils/apiClient";
 import userDeliveryAuth from "@/context/authContext";
 import { useLocation } from "@/context/locatonContext";
 import { useEarnings } from "@/Hooks/earningHooks";
@@ -61,7 +61,7 @@ const HomeScreen = () => {
   const updateOnlineStatus = async (status) => {
     const token = await extractToken();
     try {
-      const response = await apiClient(`delivery/loginhours`, {
+      const response = await apiClient("delivery/loginhours", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -120,32 +120,33 @@ const HomeScreen = () => {
                     }}
                   >
                     {latitude && longitude
-                      ? `${latitude}, ${longitude}`
+                      ? ${latitude}, ${longitude}
                       : "Loading..."}
                   </Text>
                 } */}
                 <Entypo
-                  style={{ marginTop: 2, marginLeft: 5 }}
+                  style={{ marginTop: 2, marginLeft: 1 }}
                   name="chevron-down"
                   size={20}
                   color="black"
                 />
               </View>
             </TouchableOpacity>
+            <View style={styles.momimg}>
+            <TouchableOpacity
+              style={styles.helpButton}
+              onPress={() => router.push("/profile/momhelp")}
+            >
+              <Image
+                source={require("../../assets/images/helpimage.png")}
+                style={styles.helpIcon}
+              />
+            </TouchableOpacity>
+            <Text style={styles.texthelp}>Help</Text>
+          </View>
           </View>
 
-          {/* <TouchableOpacity style={styles.helpButton}>
-            <FontAwesome6 name="user-large" size={24} color="black" onPress={() => router.push('./profile/profile')} />
-          </TouchableOpacity> */}
-          <TouchableOpacity
-            style={styles.helpButton}
-            onPress={() => router.push("/profile/momhelp")}
-          >
-            <Image
-              source={require("../../assets/images/helpsupport.svg")}
-              style={styles.helpIcon}
-            />
-          </TouchableOpacity>
+         
         </View>
       </View>
 
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e5f2f1",
     paddingHorizontal: 20,
     paddingTop: 5,
-    marginTop: -10,
+    // marginTop: -10,
   },
   txt: {
     color: "#00a99d",
@@ -302,8 +303,11 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   leftSection: {
-    flex: 1,
-    marginRight: 10,
+    flex:1,
+    justifyContent:'space-between',
+    // marginRight: 10,
+    // backgroundColor:'pink',
+    flexDirection:'row'
   },
   statItem: {
     flex: 1,
@@ -358,7 +362,11 @@ const styles = StyleSheet.create({
     textAlign: "left",
     maxWidth: 180,
   },
-  helpButton: {},
+  helpButton: {
+    marginRight: 10,
+    marginBottom: 20,
+    color: "red",
+  },
 
   topSection: {
     backgroundColor: "#fff",
@@ -550,7 +558,14 @@ const styles = StyleSheet.create({
     height: 20,
   },
   helpIcon: {
-    width: 35,
-    height: 35,
+    width: 20,
+    height: 20,
+  },
+  momimg: {
+    display: "flex",
+    flexDirection: "row",
+  },
+  texthelp: {
+    // backgroundColor:'green'
   },
 });

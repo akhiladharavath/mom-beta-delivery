@@ -1,14 +1,15 @@
 import { Text, View, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import React, { useEffect } from "react";
-import userDeliveryAuth from "@/context/authContext";
-import LoadingScreen from "@/components/LoadingScreen";
-import { useOrders } from "@/context/orderContext";
+import React, { useEffect, useState } from "react";
+import userDeliveryAuth from "../context/authContext";
+import LoadingScreen from "../components/LoadingScreen";
+import { useOrders } from "../context/orderContext";
 
 export default function Index() {
   const { loading, deliveryBoyDetails, extractToken, getDeliveryBoyDetails } = userDeliveryAuth();
   const { currentOrder, fetchCurrentOrder } = useOrders();
 
+ 
   useEffect(() => {
     const init = async () => {
       const token = await extractToken();
@@ -25,6 +26,7 @@ export default function Index() {
   useEffect(() => {
     if (deliveryBoyDetails !== null && currentOrder !== undefined) {
       const isRegistered = deliveryBoyDetails?.isRegistered;
+      
       if (!isRegistered) {
         router.replace("/Login/signup");
         return;
